@@ -209,6 +209,7 @@ application1/ds.properties
 <li>Tests ported to JUnit 4. 
 <li>Maven 2/3 support. 
 <li>Support for basic datatypes (Byte, Short, Integer, Long, Float, Double, Character) in .properties/.ini/.xml files added.
+<li>Support for quotation marks (quotation marks get removed)
 </ul>
 
 <h4>Failed Tests in 0.11.4.1</h4>
@@ -252,3 +253,113 @@ SimpleJndi
 		SharedMemoryTestSimpleContextFactory.java
 			testSjn73()
 </pre>        
+<h4>Tests in 1.0.0</h4>
+<pre>
+[INFO] Scanning for projects...
+[INFO] ------------------------------------------------------------------------
+[INFO] Building Unnamed - simple-jndi:simple-jndi:jar:1.0.0
+[INFO]    task-segment: [test]
+[INFO] ------------------------------------------------------------------------
+[INFO] [resources:resources {execution: default-resources}]
+[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+[INFO] skip non existing resourceDirectory /Users/hot/LACIE/Synchronize/to-do/Installers/libs/java/JNDI/NameService/Simple-JNDI/src/main/resources
+[INFO] [compiler:compile {execution: default-compile}]
+[INFO] Nothing to compile - all classes are up to date
+[INFO] [resources:testResources {execution: default-testResources}]
+[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+[INFO] Copying 23 resources to config
+[INFO] Copying 1 resource
+[INFO] Copying 18 resources to roots
+[INFO] [compiler:testCompile {execution: default-testCompile}]
+[INFO] Compiling 1 source file to /Users/hot/LACIE/Synchronize/to-do/Installers/libs/java/JNDI/NameService/Simple-JNDI/target/test-classes
+[INFO] [surefire:test {execution: default-test}]
+
+-------------------------------------------------------
+ T E S T S
+-------------------------------------------------------
+Running org.osjava.sj.EncTest
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.062 sec - in org.osjava.sj.EncTest
+Running org.osjava.sj.loader.convert.ConstructorConverterTest
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 sec - in org.osjava.sj.loader.convert.ConstructorConverterTest
+Running org.osjava.sj.loader.JndiLoaderTest
+Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.177 sec - in org.osjava.sj.loader.JndiLoaderTest
+Running org.osjava.sj.loader.util.PropertiesTest
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 sec - in org.osjava.sj.loader.util.PropertiesTest
+Running org.osjava.sj.loader.util.ReplaceTest
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 sec - in org.osjava.sj.loader.util.ReplaceTest
+Running org.osjava.sj.loader.util.SplitTest
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 sec - in org.osjava.sj.loader.util.SplitTest
+Running org.osjava.sj.loader.util.XmlPropertiesTest
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 sec - in org.osjava.sj.loader.util.XmlPropertiesTest
+Running org.osjava.sj.memory.DotSeparatorTest
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 sec - in org.osjava.sj.memory.DotSeparatorTest
+Running org.osjava.sj.memory.JndiLoaderSharedTest
+Tests run: 22, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.143 sec - in org.osjava.sj.memory.JndiLoaderSharedTest
+Running org.osjava.sj.memory.JndiLoaderTest
+Tests run: 22, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.115 sec - in org.osjava.sj.memory.JndiLoaderTest
+Running org.osjava.sj.memory.SharedMemorySimpleContextFactoryTest
+Tests run: 3, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.042 sec <<< FAILURE! - in org.osjava.sj.memory.SharedMemorySimpleContextFactoryTest
+testSjn73(org.osjava.sj.memory.SharedMemorySimpleContextFactoryTest)  Time elapsed: 0.014 sec  <<< ERROR!
+javax.naming.NamingException: Invalid subcontext 'path' in context ''
+	at org.osjava.sj.memory.SharedMemorySimpleContextFactoryTest.testSjn73(SharedMemorySimpleContextFactoryTest.java:112)
+
+Running org.osjava.sj.memory.SharedMemoryTest
+Tests run: 3, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.013 sec <<< FAILURE! - in org.osjava.sj.memory.SharedMemoryTest
+testSjn73(org.osjava.sj.memory.SharedMemoryTest)  Time elapsed: 0.012 sec  <<< ERROR!
+javax.naming.NamingException: Invalid subcontext 'path' in context ''
+	at org.osjava.sj.memory.SharedMemoryTest.testSjn73(SharedMemoryTest.java:112)
+
+Running org.osjava.sj.memory.SlashSeparatorTest
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 sec - in org.osjava.sj.memory.SlashSeparatorTest
+Running org.osjava.sj.SimpleContextTest
+Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.09 sec - in org.osjava.sj.SimpleContextTest
+Running org.osjava.sj.SimpleJndiTest
+Expected Exception !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+javax.naming.NamingException: Invalid subcontext 'myContext1' in context 'java:comp/env'
+	at org.osjava.sj.jndi.AbstractContext.lookup(AbstractContext.java:251)
+	at org.osjava.sj.jndi.AbstractContext.lookup(AbstractContext.java:249)
+	at org.osjava.sj.jndi.AbstractContext.lookup(AbstractContext.java:249)
+	at org.osjava.sj.jndi.AbstractContext.lookup(AbstractContext.java:284)
+	at org.osjava.sj.jndi.DelegatingContext.lookup(DelegatingContext.java:56)
+	at javax.naming.InitialContext.lookup(InitialContext.java:392)
+	at org.osjava.sj.jndi.DelegatingContext.lookup(DelegatingContext.java:56)
+	at javax.naming.InitialContext.lookup(InitialContext.java:392)
+	at org.osjava.sj.SimpleJndiTest.sharedContextsWithDifferentRoots(SimpleJndiTest.java:200)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.execute(JUnit4Provider.java:367)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeWithRerun(JUnit4Provider.java:274)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeTestSet(JUnit4Provider.java:238)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.invoke(JUnit4Provider.java:161)
+	at org.apache.maven.surefire.booter.ForkedBooter.invokeProviderInSameClassLoader(ForkedBooter.java:290)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:242)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:121)
+Tests run: 21, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.136 sec - in org.osjava.sj.SimpleJndiTest
+Running org.osjava.sj.Sjn77Test
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 sec - in org.osjava.sj.Sjn77Test
+Running org.osjava.sj.SystemPropertyTest
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 sec - in org.osjava.sj.SystemPropertyTest
+
+Results :
+
+Tests in error: 
+  SharedMemorySimpleContextFactoryTest.testSjn73:112 » Naming Invalid subcontext...
+  SharedMemoryTest.testSjn73:112 » Naming Invalid subcontext 'path' in context '...
+
+Tests run: 103, Failures: 0, Errors: 2, Skipped: 0
+</pre>
