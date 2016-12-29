@@ -141,6 +141,29 @@ enabled.type=java.lang.Boolean
 Note that the ProductionDS and TestDS return types are objects of type javax.sql.DataSource, while application1.users.quantity is an Integer and application1.users.enabled is the Boolean true value. 
 </p>
 
+<h3>DataSources</h3>
+
+<p>The most popular object to get from JNDI is a object of type <i>javax.sql.DataSource</i>, allowing the developer to obtain JDBC connections to databases. Simple-JNDI supports this out of the box.</p>
+
+<p>There are four mandatory parameters for a DataSource in Simple-JNDI, and four optional parameters (see next section). The mandatory parameters are <i>url, driver, user, password</i>. The following shows an example of a DataSource that will be available under the lookup key <i>application1/ds/TestDS</i>. </p>
+
+<code>application1/ds.properties</code>
+<pre>
+    TestDS.type=javax.sql.DataSource
+    TestDS.driver=org.gjt.mm.mysql.Driver
+    TestDS.url=jdbc:mysql://localhost/testdb
+    TestDS.user=testuser
+    TestDS.password=testing
+    </pre>
+
+    <p>The code to obtain it would be: </p>
+    <pre>
+      InitialContext ctxt = new InitialContext();
+      DataSource ds = (DataSource) ctxt.lookup("application1/ds/TestDS");
+    </pre>
+
+    <p>This example uses a delimiter of '/', which must be set with the <i>org.osjava.sj.delimiter</i> property. </p>
+
 <h3>Memory implementation configuration</h3>
 
 <p>Setting <code>org.osjava.sj.jndi.shared=true</code> will put the in-memory JNDI implementation into a mode whereby all InitialContext's share the same memory. By default this is not set, so two separate InitialContext's do not share the same memory and what is bound to one will not be viewable in the other. </p>
