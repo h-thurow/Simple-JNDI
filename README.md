@@ -126,7 +126,7 @@ enabled=true<br>
 enabled.type=java.lang.Boolean
 </dd>
 </dl>
-The following pieces of Java are all legal ways in which to get values from Simple-JNDI. They assume they are preceded with a line of 'InitialContext ctxt = new InitialContext();'.
+<p>The following pieces of Java are all legal ways in which to get values from Simple-JNDI. They assume they are preceded with a line of 'InitialContext ctxt = new InitialContext();'.</p>
 <ul>
 <li>Object value = ctxt.lookup("debug.state")</li>
 <li>Object value = ctxt.lookup("name")</li>
