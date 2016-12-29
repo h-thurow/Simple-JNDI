@@ -64,6 +64,80 @@ org.osjava.sj.delimiter=/
 If no org.osjava.sj.delimiter is specified, then a '.' (dot) is chosen. 
 </p>
 
+<h3>Creating your data files</h3>
+
+<p>Simple-JNDI stores values in multiple .properties, xml or ini files and are looked up using a specified name convention, such as dot or slash delimited. It is also possible to set the type of object a property represents. As already mentioned, the files are located under a root directory as specified with the <i>org.osjava.sj.root</i> property. </p>
+<p>In addition to the delimited lookup key structure, directory names and file names become part of the lookup key. Each delimited tree-node becomes a JNDI Context, while the leaves are implementations. The only exceptions are pseudo sub-values, which you will see with DataSource and other converters. </p>
+<h5>Examples</h5>
+<p>
+The easiest way to understand is to consider a few examples. Imagine a file-structure looking like,
+</p>
+<code>
+config/<br></br>
+config/debug.properties<br></br>
+config/ProductionDS.properties<br></br>
+config/application1/default.properties<br></br>
+config/application1/ds.properties<br></br>
+config/application1/users.properties<br></br>
+</code>
+<p>
+in which the files look like;
+<dl>
+<dt>default.properties</dt>
+<dd>
+name=Prototype<br></br>
+url=http://www.generationjava.com/
+</dd>
+<dt>debug.properties</dt>
+<dd>
+state=ERROR
+</dd>
+<dt>ProductionDS.properties</dt>
+<dd>
+type=javax.sql.DataSource<br></br>
+driver=org.gjt.mm.mysql.Driver<br></br>
+url=jdbc:mysql://localhost/testdb<br></br>
+user=testuser<br></br>
+password=testing
+</dd>
+<dt>application1/default.properties</dt>
+<dd>
+name=My Application<br></br>
+version=v3.4
+</dd>
+<dt>application1/ds.properties</dt>
+<dd>
+TestDS.type=javax.sql.DataSource<br></br>
+TestDS.driver=org.gjt.mm.mysql.Driver<br></br>
+TestDS.url=jdbc:mysql://localhost/testdb<br></br>
+TestDS.user=testuser<br></br>
+TestDS.password=testing
+</dd>
+<dt>application1/users.properties</dt>
+<dd>
+admin=fred<br></br>
+customer=jim<br></br>
+quantity=5<br></br>
+quantity.type=java.lang.Integer<br></br>
+enabled=true<br></br>
+enabled.type=java.lang.Boolean
+</dd>
+</dl>
+The following pieces of Java are all legal ways in which to get values from Simple-JNDI. They assume they are preceded with a line of 'InitialContext ctxt = new InitialContext();'.
+<ul>
+<li>Object value = ctxt.lookup("debug.state")</li>
+<li>Object value = ctxt.lookup("name")</li>
+<li>Object value = ctxt.lookup("url")</li>
+<li>Object value = ctxt.lookup("ProductionDS")</li>
+<li>Object value = ctxt.lookup("application1.name")</li>
+<li>Object value = ctxt.lookup("application1.TestDS")</li>
+<li>Object value = ctxt.lookup("application1.users.admin")</li>
+<li>Object value = ctxt.lookup("application1.users.quantity")</li>
+<li>Object value = ctxt.lookup("application1.users.enabled")</li>
+</ul>
+Note that the ProductionDS and TestDS return types are objects of type javax.sql.DataSource, while application1.users.quantity is an Integer and application1.users.enabled is the Boolean true value. 
+</p>
+
 <h3>Memory implementation configuration</h3>
 
 <p>Setting <code>org.osjava.sj.jndi.shared=true</code> will put the in-memory JNDI implementation into a mode whereby all InitialContext's share the same memory. By default this is not set, so two separate InitialContext's do not share the same memory and what is bound to one will not be viewable in the other. </p>
