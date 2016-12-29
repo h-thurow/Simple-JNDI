@@ -1,0 +1,869 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html><head><title>Changes - simple-jndi</title><style type="text/css" media="all">
+          @import url("./style/maven-base.css");
+          
+          @import url("./style/maven-classic.css");</style><link rel="stylesheet" href="./style/print.css" type="text/css" media="print"></link><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"></meta><meta name="author" content="Henri Yandell"></meta><meta name="email" content="bayard@generationjava.com"></meta></head><body class="composite"><div id="banner"><a href="http://www.osjava.org/" id="organizationLogo"><img alt="OSJava" src="./images/osjava.gif"></img></a><a href="http://www.osjava.org/simple-jndi/" id="projectLogo"><img alt="simple-jndi" src="./images/simple-jndi-logo.png"></img></a><div class="clear"><hr></hr></div></div><div id="breadcrumbs"><div class="xleft">Last published: 05 August 2008
+                <span class="separator">|</span> Doc for  v0.11.4.1
+                </div><div class="xright"></div><div class="clear"><hr></hr></div></div><div id="leftColumn"><div id="navcolumn"><div id="menuOverview"><h5>Overview</h5><ul><li class="none"><a href="index.html">Introduction</a></li><li class="none"><strong><a href="changes-report.html">Release Notes</a></strong></li><li class="none"><a href="manual/index.html">Manual</a></li><li class="none"><a href="Download.html">Download</a></li><li class="none"><a href="FAQ.html">FAQ</a></li><li class="none"><a href="license.html">License</a></li></ul></div><div id="menuCode_docs"><h5>Code docs</h5><ul><li class="none"><a href="apidocs">JavaDocs (0.11.4.1)</a></li><li class="none"><a href="http://dist.osjava.org/releases/multidoc-jnr/simple-jndi/index.html" class="externalLink" title="External Link">MultiDocs (0.11.1-)</a></li><li class="none"><a href="xref/index.html">Latest Source XReference</a></li><li class="none"><a href="xref-test/index.html">Latest Test XReference</a></li></ul></div><div id="menuResources"><h5>Resources</h5><ul><li class="none"><a href="mail-lists.html">Mailing List</a></li><li class="none"><a href="dependencies.html">Optional Jar Dependencies</a></li><li class="none"><a href="http://www.osjava.org/svn.html?project=simple-jndi" class="externalLink" title="External Link">SVN Repository</a></li><li class="none"><a href="issue-tracking.html">Bug Tracking</a></li><li class="none"><a href="http://issues.osjava.org/jira/browse/SJN" class="externalLink" title="External Link">Old Bug Tracking</a></li></ul></div><div id="legend"><h5>Legend</h5><ul><li class="externalLink">External Link</li><li class="newWindow">Opens in a new window</li></ul></div><a href="http://maven.apache.org/" title="Built by Maven" id="poweredBy"><img alt="Built by Maven" src="./images/logos/maven-feather.png"></img></a></div></div><div id="bodyColumn"><div class="contentBox"><div class="section"><a name="Release_History"></a><h2>Release History</h2>
+      <table class="bodyTable">
+        <tr class="a">
+          <th style="width:50px">Version</th>
+          <th>Date</th>
+          <th>Description</th>
+        </tr>
+        <tr class="b">
+          <td>
+            <a href="#0_11_4_1">0.11.4.1</a>
+          </td>
+          <td>2008-08-02</td>
+          <td>Bugfix bugfix</td>
+        </tr>
+        <tr class="a">
+          <td>
+            <a href="#0_11_4">0.11.4</a>
+          </td>
+          <td>2008-07-31</td>
+          <td>Two more bugfixes</td>
+        </tr>
+        <tr class="b">
+          <td>
+            <a href="#0_11_3">0.11.3</a>
+          </td>
+          <td>2008-04-08</td>
+          <td>More bugfixes</td>
+        </tr>
+        <tr class="a">
+          <td>
+            <a href="#0_11_2">0.11.2</a>
+          </td>
+          <td>2007-06-26</td>
+          <td>Minor bugfixes</td>
+        </tr>
+        <tr class="b">
+          <td>
+            <a href="#0_11_1">0.11.1</a>
+          </td>
+          <td>2005-09-29</td>
+          <td>Some critical bugfixes</td>
+        </tr>
+        <tr class="a">
+          <td>
+            <a href="#0_11">0.11</a>
+          </td>
+          <td>2005-09-05</td>
+          <td>Complete rewrite with major improvements</td>
+        </tr>
+        <tr class="b">
+          <td>
+            <a href="#0_10">0.10</a>
+          </td>
+          <td>2004-12-09</td>
+          <td>Non-public release to support osjava-threads</td>
+        </tr>
+        <tr class="a">
+          <td>
+            <a href="#0_9_1">0.9.1</a>
+          </td>
+          <td>2004-02-10</td>
+          <td>DataSource bugfix</td>
+        </tr>
+        <tr class="b">
+          <td>
+            <a href="#0_9">0.9</a>
+          </td>
+          <td>2004-02-07</td>
+          <td>HTTP protocol and shared memory ability</td>
+        </tr>
+        <tr class="a">
+          <td>
+            <a href="#0_8_1">0.8.1</a>
+          </td>
+          <td>2004-01-18</td>
+          <td>Standard JNDI System property support</td>
+        </tr>
+        <tr class="b">
+          <td>
+            <a href="#0_8">0.8</a>
+          </td>
+          <td>2004-01-03</td>
+          <td>Improved quality, better docs, no mandatory dependencies</td>
+        </tr>
+        <tr class="a">
+          <td>
+            <a href="#0_7">0.7</a>
+          </td>
+          <td>2003-12-06</td>
+          <td>XML support added</td>
+        </tr>
+        <tr class="b">
+          <td>
+            <a href="#0_6">0.6</a>
+          </td>
+          <td>2003-08-12</td>
+          <td>java: on Windows</td>
+        </tr>
+        <tr class="a">
+          <td>
+            <a href="#0_5">0.5</a>
+          </td>
+          <td>2003-04-08</td>
+          <td>r/w Context, System property support</td>
+        </tr>
+        <tr class="b">
+          <td>
+            <a href="#0_4">0.4</a>
+          </td>
+          <td>2003-02-27</td>
+          <td>Type support, early XML support, Lists</td>
+        </tr>
+        <tr class="a">
+          <td>
+            <a href="#0_3">0.3</a>
+          </td>
+          <td>2003-02-14</td>
+          <td>Classpath protocol, configurable delimiter</td>
+        </tr>
+      </table>
+      <p>Get the RSS feed of the last changes
+        <a href="changes.rss">
+          <img src="images/rss.png" alt=""></img>
+        </a>
+      </p>
+    </div><div class="section"><a name="Release_0_11_4_1_-_2008-08-02"></a><h2>Release 0.11.4.1 - 2008-08-02</h2>
+      <a name="0_11_4_1">
+      </a>
+      <table class="bodyTable">
+        <tr class="b">
+          <th style="width:50px">Type</th>
+          <th>Changes</th>
+          <th style="width:70px">By</th>
+        </tr>
+        <tr class="a">
+          <td>
+            <img alt="fix" title="fix" src="images/fix.gif"></img>
+          </td>
+          <td>The previous fix to support multiple pool names had a bug in that it tried to synchronize on null, generating a NullPointerException - now we synchronize on the class</td>
+          <td>
+            <a href="team-list.html#hen">hen</a>
+          </td>
+        </tr>
+      </table>
+    </div><div class="section"><a name="Release_0_11_4_-_2008-07-31"></a><h2>Release 0.11.4 - 2008-07-31</h2>
+      <a name="0_11_4">
+      </a>
+      <table class="bodyTable">
+        <tr class="b">
+          <th style="width:50px">Type</th>
+          <th>Changes</th>
+          <th style="width:70px">By</th>
+        </tr>
+        <tr class="a">
+          <td>
+            <img alt="fix" title="fix" src="images/fix.gif"></img>
+          </td>
+          <td>The element removal in the AbstractContext.close() method is bad and will lead to a ConcurrentModificationException. Code rewritten such that removal happens separately from the collection iteration</td>
+          <td>
+            <a href="team-list.html#hen">hen</a>
+          </td>
+        </tr>
+        <tr class="b">
+          <td>
+            <img alt="fix" title="fix" src="images/fix.gif"></img>
+          </td>
+          <td>DBCP pooling now supports pool names such that two separate DataSources will no longer clash and reuse the same pool</td>
+          <td>
+            <a href="team-list.html#hen">hen</a>
+          </td>
+        </tr>
+      </table>
+    </div><div class="section"><a name="Release_0_11_3_-_2008-04-08"></a><h2>Release 0.11.3 - 2008-04-08</h2>
+      <a name="0_11_3">
+      </a>
+      <table class="bodyTable">
+        <tr class="a">
+          <th style="width:50px">Type</th>
+          <th>Changes</th>
+          <th style="width:70px">By</th>
+        </tr>
+        <tr class="b">
+          <td>
+            <img alt="fix" title="fix" src="images/fix.gif"></img>
+          </td>
+          <td>If a resource directory config/java and file config/java.properties both exist, indeterminate result Fixes
+            <a href="http://code.google.com/p/osjava/issues/SJN-54" class="externalLink" title="External Link">SJN-54</a>.</td>
+          <td>
+            <a href="team-list.html#hen">hen</a>
+          </td>
+        </tr>
+        <tr class="a">
+          <td>
+            <img alt="fix" title="fix" src="images/fix.gif"></img>
+          </td>
+          <td>Using shared memory (org.osjava.sj.jndi.shared=true) causes javax.naming.NameAlreadyBoundException Fixes
+            <a href="http://code.google.com/p/osjava/issues/SJN-73" class="externalLink" title="External Link">SJN-73</a>.</td>
+          <td>
+            <a href="team-list.html#hen">hen</a>
+          </td>
+        </tr>
+        <tr class="b">
+          <td>
+            <img alt="fix" title="fix" src="images/fix.gif"></img>
+          </td>
+          <td>Avoiding "Missing javax.sql:jdbc-stdext:jar:2.0" caused by DBCP 1.1 while using Maven 2 Fixes
+            <a href="http://code.google.com/p/osjava/issues/SJN-74" class="externalLink" title="External Link">SJN-74</a>.</td>
+          <td>
+            <a href="team-list.html#hen">hen</a>
+          </td>
+        </tr>
+        <tr class="a">
+          <td>
+            <img alt="add" title="add" src="images/add.gif"></img>
+          </td>
+          <td>Using simple-jndi for testing with Maven 2 Fixes
+            <a href="http://code.google.com/p/osjava/issues/SJN-75" class="externalLink" title="External Link">SJN-75</a>.</td>
+          <td>
+            <a href="team-list.html#hen">hen</a>
+          </td>
+        </tr>
+        <tr class="b">
+          <td>
+            <img alt="fix" title="fix" src="images/fix.gif"></img>
+          </td>
+          <td>InitialContext.close() improperly throws exception when using JNDI Memory implementation separately Fixes
+            <a href="http://code.google.com/p/osjava/issues/SJN-77" class="externalLink" title="External Link">SJN-77</a>.</td>
+          <td>
+            <a href="team-list.html#hen">hen</a>
+          </td>
+        </tr>
+        <tr class="a">
+          <td>
+            <img alt="fix" title="fix" src="images/fix.gif"></img>
+          </td>
+          <td>Does not compiled with JDK-1.6 Fixes
+            <a href="http://code.google.com/p/osjava/issues/SJN-78" class="externalLink" title="External Link">SJN-78</a>.</td>
+          <td>
+            <a href="team-list.html#hen">hen</a>
+          </td>
+        </tr>
+        <tr class="b">
+          <td>
+            <img alt="add" title="add" src="images/add.gif"></img>
+          </td>
+          <td>lookup return null instead throiwiung exceptions Fixes
+            <a href="http://code.google.com/p/osjava/issues/SJN-79" class="externalLink" title="External Link">SJN-79</a>.</td>
+          <td>
+            <a href="team-list.html#hen">hen</a>
+          </td>
+        </tr>
+        <tr class="a">
+          <td>
+            <img alt="add" title="add" src="images/add.gif"></img>
+          </td>
+          <td>Allow DBCP par ameters to be passed in Fixes
+            <a href="http://code.google.com/p/osjava/issues/SJN-81" class="externalLink" title="External Link">SJN-81</a>.</td>
+          <td>
+            <a href="team-list.html#hen">hen</a>
+          </td>
+        </tr>
+      </table>
+    </div><div class="section"><a name="Release_0_11_2_-_2007-06-26"></a><h2>Release 0.11.2 - 2007-06-26</h2>
+      <a name="0_11_2">
+      </a>
+      <table class="bodyTable">
+        <tr class="b">
+          <th style="width:50px">Type</th>
+          <th>Changes</th>
+          <th style="width:70px">By</th>
+        </tr>
+        <tr class="a">
+          <td>
+            <img alt="add" title="add" src="images/add.gif"></img>
+          </td>
+          <td>Maven2 build added</td>
+          <td>
+            <a href="team-list.html#hen">hen</a>
+          </td>
+        </tr>
+        <tr class="b">
+          <td>
+            <img alt="fix" title="fix" src="images/fix.gif"></img>
+          </td>
+          <td>Removed debug from SJDataSource</td>
+          <td>
+            <a href="team-list.html#hen">hen</a>
+          </td>
+        </tr>
+        <tr class="a">
+          <td>
+            <img alt="fix" title="fix" src="images/fix.gif"></img>
+          </td>
+          <td>Updated to latest dbcp/pool</td>
+          <td>
+            <a href="team-list.html#hen">hen</a>
+          </td>
+        </tr>
+      </table>
+    </div><div class="section"><a name="Release_0_11_1_-_2005-09-29"></a><h2>Release 0.11.1 - 2005-09-29</h2>
+      <a name="0_11_1">
+      </a>
+      <table class="bodyTable">
+        <tr class="b">
+          <th style="width:50px">Type</th>
+          <th>Changes</th>
+          <th style="width:70px">By</th>
+        </tr>
+        <tr class="a">
+          <td>
+            <img alt="add" title="add" src="images/add.gif"></img>
+          </td>
+          <td>BeanConverter, create empty instance and call setXxx(String) methods</td>
+          <td>
+            <a href="team-list.html#hen">hen</a>
+          </td>
+        </tr>
+        <tr class="b">
+          <td>
+            <img alt="fix" title="fix" src="images/fix.gif"></img>
+          </td>
+          <td>Can't have 'type' at the top level inside a file Fixes
+            <a href="http://code.google.com/p/osjava/issues/SJN-69" class="externalLink" title="External Link">SJN-69</a>.</td>
+          <td>
+            <a href="team-list.html#hen">hen</a>
+          </td>
+        </tr>
+        <tr class="a">
+          <td>
+            <img alt="fix" title="fix" src="images/fix.gif"></img>
+          </td>
+          <td>Shared memory not working Fixes
+            <a href="http://code.google.com/p/osjava/issues/SJN-68" class="externalLink" title="External Link">SJN-68</a>.</td>
+          <td>
+            <a href="team-list.html#hen">hen</a>
+          </td>
+        </tr>
+      </table>
+    </div><div class="section"><a name="Release_0_11_-_2005-09-05"></a><h2>Release 0.11 - 2005-09-05</h2>
+      <a name="0_11">
+      </a>
+      <table class="bodyTable">
+        <tr class="b">
+          <th style="width:50px">Type</th>
+          <th>Changes</th>
+          <th style="width:70px">By</th>
+        </tr>
+        <tr class="a">
+          <td>
+            <img alt="fix" title="fix" src="images/fix.gif"></img>
+          </td>
+          <td>Move from gj-xml to DOM Fixes
+            <a href="http://code.google.com/p/osjava/issues/SJN-59" class="externalLink" title="External Link">SJN-59</a>.</td>
+          <td>
+            <a href="team-list.html#eric">eric</a>
+          </td>
+        </tr>
+        <tr class="b">
+          <td>
+            <img alt="add" title="add" src="images/add.gif"></img>
+          </td>
+          <td>Create user manual Fixes
+            <a href="http://code.google.com/p/osjava/issues/SJN-60" class="externalLink" title="External Link">SJN-60</a>.</td>
+          <td>
+            <a href="team-list.html#hen">hen</a>
+          </td>
+        </tr>
+        <tr class="a">
+          <td>
+            <img alt="add" title="add" src="images/add.gif"></img>
+          </td>
+          <td>Pluggable converters Fixes
+            <a href="http://code.google.com/p/osjava/issues/SJN-22" class="externalLink" title="External Link">SJN-22</a>.</td>
+          <td>
+            <a href="team-list.html#hen">hen</a>
+          </td>
+        </tr>
+        <tr class="b">
+          <td>
+            <img alt="add" title="add" src="images/add.gif"></img>
+          </td>
+          <td>COLON_REPLACE concept Fixes
+            <a href="http://code.google.com/p/osjava/issues/SJN-65" class="externalLink" title="External Link">SJN-65</a>.</td>
+          <td>
+            <a href="team-list.html#hen">hen</a>
+          </td>
+        </tr>
+        <tr class="a">
+          <td>
+            <img alt="add" title="add" src="images/add.gif"></img>
+          </td>
+          <td>System properties supported Fixes
+            <a href="http://code.google.com/p/osjava/issues/SJN-63" class="externalLink" title="External Link">SJN-63</a>.</td>
+          <td>
+            <a href="team-list.html#hen">hen</a>
+          </td>
+        </tr>
+        <tr class="b">
+          <td>
+            <img alt="add" title="add" src="images/add.gif"></img>
+          </td>
+          <td>SPACE concept Fixes
+            <a href="http://code.google.com/p/osjava/issues/SJN-64" class="externalLink" title="External Link">SJN-64</a>.</td>
+          <td>
+            <a href="team-list.html#hen">hen</a>
+          </td>
+        </tr>
+        <tr class="a">
+          <td>
+            <img alt="fix" title="fix" src="images/fix.gif"></img>
+          </td>
+          <td>Unable to have DataSource files with more than 2 elements Fixes
+            <a href="http://code.google.com/p/osjava/issues/SJN-33" class="externalLink" title="External Link">SJN-33</a>.</td>
+          <td>
+            <a href="team-list.html#hen">hen</a>
+          </td>
+        </tr>
+        <tr class="b">
+          <td>
+            <img alt="fix" title="fix" src="images/fix.gif"></img>
+          </td>
+          <td>Unable to use simple-jndi on Windows with standard java naming Fixes
+            <a href="http://code.google.com/p/osjava/issues/SJN-3" class="externalLink" title="External Link">SJN-3</a>.</td>
+          <td>
+            <a href="team-list.html#hen">hen</a>
+          </td>
+        </tr>
+        <tr class="a">
+          <td>
+            <img alt="fix" title="fix" src="images/fix.gif"></img>
+          </td>
+          <td>NotContextException error in GenericContext.createSubContext Fixes
+            <a href="http://code.google.com/p/osjava/issues/SJN-57" class="externalLink" title="External Link">SJN-57</a>.</td>
+          <td>
+            <a href="team-list.html#rzigweid">rzigweid</a>
+          </td>
+        </tr>
+        <tr class="b">
+          <td>
+            <img alt="add" title="add" src="images/add.gif"></img>
+          </td>
+          <td>Created in-memory JNDI implementation</td>
+          <td>
+            <a href="team-list.html#rzigweid">rzigweid</a>
+          </td>
+        </tr>
+        <tr class="a">
+          <td>
+            <img alt="fix" title="fix" src="images/fix.gif"></img>
+          </td>
+          <td>Unable to create subcontexts Fixes
+            <a href="http://code.google.com/p/osjava/issues/SJN-58" class="externalLink" title="External Link">SJN-58</a>.</td>
+          <td>
+            <a href="team-list.html#rzigweid">rzigweid</a>
+          </td>
+        </tr>
+      </table>
+    </div><div class="section"><a name="Release_0_10_-_2004-12-09"></a><h2>Release 0.10 - 2004-12-09</h2>
+      <a name="0_10">
+      </a>
+      <table class="bodyTable">
+        <tr class="b">
+          <th style="width:50px">Type</th>
+          <th>Changes</th>
+          <th style="width:70px">By</th>
+        </tr>
+        <tr class="a">
+          <td>
+            <img alt="add" title="add" src="images/add.gif"></img>
+          </td>
+          <td>Added NameParser support.</td>
+          <td>
+            <a href="team-list.html#rzigweid">rzigweid</a>
+          </td>
+        </tr>
+        <tr class="b">
+          <td>
+            <img alt="add" title="add" src="images/add.gif"></img>
+          </td>
+          <td>Added subcontext support.</td>
+          <td>
+            <a href="team-list.html#rzigweid">rzigweid</a>
+          </td>
+        </tr>
+        <tr class="a">
+          <td>
+            <img alt="add" title="add" src="images/add.gif"></img>
+          </td>
+          <td>Added additional constructors. This includes a default constructor, a constructor which allows the system environment to not override the passed in environment and one to supply a NameParser different from the default.</td>
+          <td>
+            <a href="team-list.html#rzigweid">rzigweid</a>
+          </td>
+        </tr>
+        <tr class="b">
+          <td>
+            <img alt="update" title="update" src="images/update.gif"></img>
+          </td>
+          <td>Converted the basis of storage to be Name's instead of Strings. This goes along with the NameParser support above.</td>
+          <td>
+            <a href="team-list.html#rzigweid">rzigweid</a>
+          </td>
+        </tr>
+      </table>
+    </div><div class="section"><a name="Release_0_9_1_-_2004-02-10"></a><h2>Release 0.9.1 - 2004-02-10</h2>
+      <a name="0_9_1">
+      </a>
+      <table class="bodyTable">
+        <tr class="a">
+          <th style="width:50px">Type</th>
+          <th>Changes</th>
+          <th style="width:70px">By</th>
+        </tr>
+        <tr class="b">
+          <td>
+            <img alt="add" title="add" src="images/add.gif"></img>
+          </td>
+          <td>Fixed #SJN-49, a problem in loading DataSources from particular .properties files.</td>
+          <td>
+            <a href="team-list.html#hen">hen</a>
+          </td>
+        </tr>
+      </table>
+    </div><div class="section"><a name="Release_0_9_-_2004-02-07"></a><h2>Release 0.9 - 2004-02-07</h2>
+      <a name="0_9">
+      </a>
+      <table class="bodyTable">
+        <tr class="a">
+          <th style="width:50px">Type</th>
+          <th>Changes</th>
+          <th style="width:70px">By</th>
+        </tr>
+        <tr class="b">
+          <td>
+            <img alt="add" title="add" src="images/add.gif"></img>
+          </td>
+          <td>Tested, and fixed, the usage of http as a protocol for getting simple-jndi values, #SJN-27. Untested on servers that do not allow directory-listings.</td>
+          <td>
+            <a href="team-list.html#hen">hen</a>
+          </td>
+        </tr>
+        <tr class="a">
+          <td>
+            <img alt="add" title="add" src="images/add.gif"></img>
+          </td>
+          <td>Feature #SJN-30, to have a static memory behind the contexts and not a per-instance memory. It is turned on via the org.osjava.jndi.shared=true jndi.properties parameter.</td>
+          <td>
+            <a href="team-list.html#hen">hen</a>
+          </td>
+        </tr>
+      </table>
+    </div><div class="section"><a name="Release_0_8_1_-_2004-01-18"></a><h2>Release 0.8.1 - 2004-01-18</h2>
+      <a name="0_8_1">
+      </a>
+      <table class="bodyTable">
+        <tr class="b">
+          <th style="width:50px">Type</th>
+          <th>Changes</th>
+          <th style="width:70px">By</th>
+        </tr>
+        <tr class="a">
+          <td>
+            <img alt="add" title="add" src="images/add.gif"></img>
+          </td>
+          <td>Added feature #SJN-48, in which the simple-jndi is configurable from system properties as well as jndi.properties and a Hashtable. The system property takes precedence.</td>
+          <td>
+            <a href="team-list.html#hen">hen</a>
+          </td>
+        </tr>
+      </table>
+    </div><div class="section"><a name="Release_0_8_-_2004-01-03"></a><h2>Release 0.8 - 2004-01-03</h2>
+      <a name="0_8">
+      </a>
+      <table class="bodyTable">
+        <tr class="b">
+          <th style="width:50px">Type</th>
+          <th>Changes</th>
+          <th style="width:70px">By</th>
+        </tr>
+        <tr class="a">
+          <td>
+            <img alt="fix" title="fix" src="images/fix.gif"></img>
+          </td>
+          <td>Fixed bug #SJN-45, in which the XML property loader did not correctly handle multiple tags with the same name forming a List object.</td>
+          <td>
+            <a href="team-list.html#hen">hen</a>
+          </td>
+        </tr>
+        <tr class="b">
+          <td>
+            <img alt="fix" title="fix" src="images/fix.gif"></img>
+          </td>
+          <td>Fixed a bug in which 'ty pe' did not work in a DataSource file in which you had the DS name as the filename and not delimited in the file.</td>
+          <td>
+            <a href="team-list.html#hen">hen</a>
+          </td>
+        </tr>
+        <tr class="a">
+          <td>
+            <img alt="remove" title="remove" src="images/remove.gif"></img>
+          </td>
+          <td>Deprecated usage of the 'org.osjava.jndi.datasource' property in favour of a simple type=javax.sql.DataSource. Especially as JIRA issue #SJN-42 exists with the datasource usage. Will be removed in 0.9.</td>
+          <td>
+            <a href="team-list.html#hen">hen</a>
+          </td>
+        </tr>
+        <tr class="b">
+          <td>
+            <img alt="add" title="add" src="images/add.gif"></img>
+          </td>
+          <td>Added an example for xml, ini and properties creation of Collections in simple-jndi.</td>
+          <td>
+            <a href="team-list.html#hen">hen</a>
+          </td>
+        </tr>
+        <tr class="a">
+          <td>
+            <img alt="add" title="add" src="images/add.gif"></img>
+          </td>
+          <td>Added an example for xml, ini and properties built DataSources in simple-jndi.</td>
+          <td>
+            <a href="team-list.html#hen">hen</a>
+          </td>
+        </tr>
+        <tr class="b">
+          <td>
+            <img alt="add" title="add" src="images/add.gif"></img>
+          </td>
+          <td>Connection pooling added via the use of Jakarta Commons DBCP.</td>
+          <td>
+            <a href="team-list.html#hen">hen</a>
+          </td>
+        </tr>
+        <tr class="a">
+          <td>
+            <img alt="update" title="update" src="images/update.gif"></img>
+          </td>
+          <td>While I've decided not to use log4j, I have implemented a classic System.out debug system with a -DSJ.DEBUG=true system property to turn it on.</td>
+          <td>
+            <a href="team-list.html#hen">hen</a>
+          </td>
+        </tr>
+        <tr class="b">
+          <td>
+            <img alt="update" title="update" src="images/update.gif"></img>
+          </td>
+          <td>Switched dependencies and inlined code so that no jars are needed by default, but to get the xml feature you need gj-xml, to get converting you need commons-convert and to get connection-pooling you need commons-dbcp, which needs commons-pool and commons-collections.</td>
+          <td>
+            <a href="team-list.html#hen">hen</a>
+          </td>
+        </tr>
+      </table>
+    </div><div class="section"><a name="Release_0_7_-_2003-12-06"></a><h2>Release 0.7 - 2003-12-06</h2>
+      <a name="0_7">
+      </a>
+      <table class="bodyTable">
+        <tr class="a">
+          <th style="width:50px">Type</th>
+          <th>Changes</th>
+          <th style="width:70px">By</th>
+        </tr>
+        <tr class="b">
+          <td>
+            <img alt="fix" title="fix" src="images/fix.gif"></img>
+          </td>
+          <td>XML bug #SJN-39 fixed. In 0.6, XML was barely functional and 0.7 fixes those bugs.</td>
+          <td>
+            <a href="team-list.html#hen">hen</a>
+          </td>
+        </tr>
+        <tr class="a">
+          <td>
+            <img alt="add" title="add" src="images/add.gif"></img>
+          </td>
+          <td>In addition to .properties and .xml files, simple-jndi now supports .ini files. The precedence in case of similar naming is .properties, .xml then .ini.</td>
+          <td>
+            <a href="team-list.html#hen">hen</a>
+          </td>
+        </tr>
+        <tr class="b">
+          <td>
+            <img alt="update" title="update" src="images/update.gif"></img>
+          </td>
+          <td>DataSources may now be configured through the '.type' conversion mechanism as well as the org.osjava.jndi.datasource mechanism. This is needed for XML which cannot use the org.osjava.jndi.datasource mechanism. Most likely this will be the only mechanism for DataSources in a future version.</td>
+          <td>
+            <a href="team-list.html#hen">hen</a>
+          </td>
+        </tr>
+      </table>
+    </div><div class="section"><a name="Release_0_6_-_2003-08-12"></a><h2>Release 0.6 - 2003-08-12</h2>
+      <a name="0_6">
+      </a>
+      <table class="bodyTable">
+        <tr class="a">
+          <th style="width:50px">Type</th>
+          <th>Changes</th>
+          <th style="width:70px">By</th>
+        </tr>
+        <tr class="b">
+          <td>
+            <img alt="update" title="update" src="images/update.gif"></img>
+          </td>
+          <td>You may now see and modify the Simple-JNDI parameters through Simple-JNDI.</td>
+          <td>
+            <a href="team-list.html#hen">hen</a>
+          </td>
+        </tr>
+        <tr class="a">
+          <td>
+            <img alt="fix" title="fix" src="images/fix.gif"></img>
+          </td>
+          <td>Because Windows cannot handle ':' in a filename, "java:" is quietly converted to "java".</td>
+          <td>
+            <a href="team-list.html#hen">hen</a>
+          </td>
+        </tr>
+        <tr class="b">
+          <td>
+            <img alt="update" title="update" src="images/update.gif"></img>
+          </td>
+          <td>Unit Tests written and plugged into Maven.</td>
+          <td>
+            <a href="team-list.html#hen">hen</a>
+          </td>
+        </tr>
+      </table>
+    </div><div class="section"><a name="Release_0_5_-_2003-04-08"></a><h2>Release 0.5 - 2003-04-08</h2>
+      <a name="0_5">
+      </a>
+      <table class="bodyTable">
+        <tr class="a">
+          <th style="width:50px">Type</th>
+          <th>Changes</th>
+          <th style="width:70px">By</th>
+        </tr>
+        <tr class="b">
+          <td>
+            <img alt="update" title="update" src="images/update.gif"></img>
+          </td>
+          <td>Moved from the 'com.generationjava' namespace to the 'org.osjava' namespace, and an accompanying change in look and feel to the site.</td>
+          <td>
+            <a href="team-list.html#hen">hen</a>
+          </td>
+        </tr>
+        <tr class="a">
+          <td>
+            <img alt="add" title="add" src="images/add.gif"></img>
+          </td>
+          <td>Boolean and URL Converters added.</td>
+          <td>
+            <a href="team-list.html#hen">hen</a>
+          </td>
+        </tr>
+        <tr class="b">
+          <td>
+            <img alt="add" title="add" src="images/add.gif"></img>
+          </td>
+          <td>Values in the System properties [ie) -Dfoo.bar=baa ] now override simple-jndi.</td>
+          <td>
+            <a href="team-list.html#hen">hen</a>
+          </td>
+        </tr>
+        <tr class="a">
+          <td>
+            <img alt="add" title="add" src="images/add.gif"></img>
+          </td>
+          <td>Values may now be bound to the JNDI space, where they override the configured simple-jndi properties. When removed, the value goes back to the simple-jndi default.</td>
+          <td>
+            <a href="team-list.html#hen">hen</a>
+          </td>
+        </tr>
+      </table>
+    </div><div class="section"><a name="Release_0_4_-_2003-02-27"></a><h2>Release 0.4 - 2003-02-27</h2>
+      <a name="0_4">
+      </a>
+      <table class="bodyTable">
+        <tr class="b">
+          <th style="width:50px">Type</th>
+          <th>Changes</th>
+          <th style="width:70px">By</th>
+        </tr>
+        <tr class="a">
+          <td>
+            <img alt="add" title="add" src="images/add.gif"></img>
+          </td>
+          <td>com.foo.Value can have a partner key of com.foo.Value.type which specifies the type of object to use for the key. While this system will be pluggable, currently it supports java.lang.Number only.</td>
+          <td>
+            <a href="team-list.html#hen">hen</a>
+          </td>
+        </tr>
+        <tr class="b">
+          <td>
+            <img alt="add" title="add" src="images/add.gif"></img>
+          </td>
+          <td>Any XML format may be used underneath instead of a .properties system. Properties files take precedence over XML files, so in the light of foo.xml and foo.properties, only foo.properties will be read.</td>
+          <td>
+            <a href="team-list.html#hen">hen</a>
+          </td>
+        </tr>
+        <tr class="a">
+          <td>
+            <img alt="update" title="update" src="images/update.gif"></img>
+          </td>
+          <td>The underlying properties parsing has been improved. It now handles ordered collections. These are implemented by specifying a key multiple times. One issue with this is that the object returned maybe a List or a String [or something else depending on type ] , leading to an ugly instanceof style of programming. The following eases this.</td>
+          <td>
+            <a href="team-list.html#hen">hen</a>
+          </td>
+        </tr>
+        <tr class="b">
+          <td>
+            <img alt="add" title="add" src="images/add.gif"></img>
+          </td>
+          <td>org.osjava.naming.Jndi is a wrapper which automatically grabs the default InitialContext and provides simple helper routines for getting data out. One such example is getList(String key) which improves the situation in the previous bullet point.</td>
+          <td>
+            <a href="team-list.html#hen">hen</a>
+          </td>
+        </tr>
+      </table>
+    </div><div class="section"><a name="Release_0_3_-_2003-02-14"></a><h2>Release 0.3 - 2003-02-14</h2>
+      <a name="0_3">
+      </a>
+      <table class="bodyTable">
+        <tr class="a">
+          <th style="width:50px">Type</th>
+          <th>Changes</th>
+          <th style="width:70px">By</th>
+        </tr>
+        <tr class="b">
+          <td>
+            <img alt="add" title="add" src="images/add.gif"></img>
+          </td>
+          <td>Implemented a protocol system for the simple-jndi root's location. The original file location was retrofitted into this and a classpath location was added. A http location is planned</td>
+          <td>
+            <a href="team-list.html#hen">hen</a>
+          </td>
+        </tr>
+        <tr class="a">
+          <td>
+            <img alt="add" title="add" src="images/add.gif"></img>
+          </td>
+          <td>If a protocol is unspecified, then resort to v0.2 format, ie) file://</td>
+          <td>
+            <a href="team-list.html#hen">hen</a>
+          </td>
+        </tr>
+        <tr class="b">
+          <td>
+            <img alt="add" title="add" src="images/add.gif"></img>
+          </td>
+          <td>If root is unspecified, then use the classpath</td>
+          <td>
+            <a href="team-list.html#hen">hen</a>
+          </td>
+        </tr>
+        <tr class="a">
+          <td>
+            <img alt="update" title="update" src="images/update.gif"></img>
+          </td>
+          <td>The delimiter in the search values is configurable, so people can more easily mimic LDAP</td>
+          <td>
+            <a href="team-list.html#hen">hen</a>
+          </td>
+        </tr>
+      </table>
+    </div></div></div><div class="clear"><hr></hr></div><div id="footer"><div class="xright">© 2003-2008, OSJava</div><div class="clear"><hr></hr></div></div></body></html>
