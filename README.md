@@ -7,6 +7,12 @@ Unit tests or prototype code often need to emulate the environment within which 
 common one is to get an object of type javax.sql.DataSource from JNDI so a java.sql.Connection to your database of 
 choice may be opened.<br>
 
+<h3>Download</h3>
+
+<a href=https://github.com/h-thurow/Simple-JNDI/raw/master/dist/simple-jndi-1.0.0.jar>simple-jndi-1.0.0.jar</a><br>
+<a href=https://github.com/h-thurow/Simple-JNDI/raw/master/dist/simple-jndi-1.0.0-sources.jar>simple-jndi-1.0.0-sources.jar</a><br>
+<a href=https://github.com/h-thurow/Simple-JNDI/raw/master/dist/simple-jndi-1.0.0-test-sources.jar>simple-jndi-1.0.0-test-sources.jar</a>
+
 <h3>Installing Simple-JNDI</h3>
 
 After download, installing Simple-JNDI is as simple as adding the simple-jndi jar to your classpath. Some of the features 
