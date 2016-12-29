@@ -1,0 +1,1 @@
+java -classpath ../../../target/simple-jndi-0.8.jar:.:properties -Djava.naming.factory.initial=org.osjava.jndi.PropertiesFactory -Dorg.osjava.jndi.root=classpath://config -Dorg.osjava.jndi.delimiter=/ example_code.Example

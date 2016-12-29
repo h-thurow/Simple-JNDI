@@ -1,0 +1,11 @@
+<config>
+<value>13</value>
+<one two="three"/>
+<four>
+  <five>Bang</five>
+</four>
+<multi>
+  <item>one</item>
+  <item>two</item>
+</multi>
+</config>

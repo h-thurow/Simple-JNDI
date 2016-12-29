@@ -1,0 +1,7 @@
+<ATestDS type="javax.sql.DataSource">
+  <!-- <type>javax.sql.DataSource</type> -->
+  <driver>org.gjt.mm.mysql.Driver</driver>
+  <url>jdbc:mysql://192.168.133.2/bikehell</url>
+  <user>nico</user>
+  <password>bear</password>
+</ATestDS>
