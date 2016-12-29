@@ -31,26 +31,24 @@
  */
 package org.osjava.sj;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-
 import javax.sql.DataSource;
+import java.util.ArrayList;
+import java.util.List;
 
+import static org.junit.Assert.assertEquals;
 
-import junit.framework.TestCase;
-
-public class SimpleContextTest extends TestCase {
+public class SimpleContextTest {
 
     private InitialContext ctxt;
 
-    public SimpleContextTest(String name) {
-        super(name);
-    }
-
+    @Before
     public void setUp() {
         try {
             ctxt = new InitialContext();
@@ -59,14 +57,18 @@ public class SimpleContextTest extends TestCase {
         }
     }
 
-    public void tearDown() {
+    @After
+    public void tearDown() throws NamingException {
+        ctxt.close();
         this.ctxt = null;
     }
 
+    @Test
     public void testValueLookup() throws NamingException {
         assertEquals( "13", this.ctxt.lookup("test.value") );
     }
 
+    @Test
     public void testListLookup() throws NamingException {
         ArrayList list = new ArrayList();
         list.add( "24" );
@@ -75,6 +77,7 @@ public class SimpleContextTest extends TestCase {
         assertEquals( list, this.ctxt.lookup("thing.type.bob.age") );
     }
 
+    @Test
     public void testList2Lookup() throws NamingException {
         ArrayList list2 = new ArrayList();
         list2.add( "Henri" );
@@ -84,6 +87,7 @@ public class SimpleContextTest extends TestCase {
         assertEquals( "Foo", this.ctxt.lookup("com.genjava") );
     }
 
+    @Test
     public void testXmlLookup() throws NamingException {
 //            System.err.println("XML: "+this.ctxt.lookup("xmltest") );
 // TODO: Should this return something? XML?
@@ -97,13 +101,16 @@ public class SimpleContextTest extends TestCase {
             assertEquals( list, this.ctxt.lookup("xmltest.config.multi.item") );
     }
 
+    @Test
     public void testIniLookup() throws NamingException {
         assertEquals( "blockless", this.ctxt.lookup("testini.first") );
         assertEquals( "13", this.ctxt.lookup("testini.block1.value") );
         assertEquals( "pears", this.ctxt.lookup("testini.block2.apple") );
         assertEquals( "stairs", this.ctxt.lookup("testini.block2.orange") );
+        assertEquals("multiple words value", ctxt.lookup("testini.block2.doubleQuotes"));
     }
 
+    @Test
     public void testColonReplaceLookup() throws NamingException {
         assertEquals( "42", this.ctxt.lookup("java:.magic") );
 
@@ -111,6 +118,7 @@ public class SimpleContextTest extends TestCase {
         assertEquals( "42", subCtxt.lookup("magic") );
     }
 
+    @Test
     public void testDoubleDSLookup() throws NamingException {
         String dsString = "org.gjt.mm.mysql.Driver::::jdbc:mysql://127.0.0.1/tmp::::sa";
         DataSource fooDS = (DataSource) this.ctxt.lookup("nested-datasource.com.foo.FooDS");

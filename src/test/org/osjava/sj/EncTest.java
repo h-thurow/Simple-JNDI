@@ -31,22 +31,22 @@
  */
 package org.osjava.sj;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-
 import javax.sql.DataSource;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
 
-public class EncTest extends TestCase {
+public class EncTest {
 
     private InitialContext initContext;
 
-    public EncTest(String name) {
-        super(name);
-    }
-
+    @Before
     public void setUp() {
         System.setProperty("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
         System.setProperty("org.osjava.sj.root", "file://src/test/config/enc-test");
@@ -59,10 +59,17 @@ public class EncTest extends TestCase {
         }
     }
 
-    public void tearDown() {
-        this.initContext = null;
+    @After
+    public void tearDown() throws NamingException {
+        initContext.close();
+        initContext = null;
+        System.clearProperty("java.naming.factory.initial");
+        System.clearProperty("org.osjava.sj.root");
+        System.clearProperty("org.osjava.sj.delimiter");
+        System.clearProperty("org.osjava.sj.space");
     }
 
+    @Test
     public void testSystemPropertyContext() throws NamingException {
         String dsString = "bing::::foofoo::::Boo";
         Context envContext = (Context) initContext.lookup("java:/comp/env");

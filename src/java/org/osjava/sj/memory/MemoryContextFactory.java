@@ -40,11 +40,14 @@
 
 package org.osjava.sj.memory;
 
-import java.util.Hashtable;
+import org.osjava.sj.SimpleContext;
+import org.osjava.sj.jndi.DelegatingContext;
 
 import javax.naming.Context;
 import javax.naming.NamingException;
 import javax.naming.spi.InitialContextFactory;
+import java.util.Hashtable;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Initial Context Factory for MemoryContexts.
@@ -54,6 +57,9 @@ import javax.naming.spi.InitialContextFactory;
  * @version $Rev: 1743 $ $Date: 2005-06-24 16:56:40 -0700 (Fri, 24 Jun 2005) $
  */
 public class MemoryContextFactory implements InitialContextFactory {
+
+    private static final ConcurrentHashMap<String, Context> contextsByRoot =
+            new ConcurrentHashMap<String, Context>();
 
     /**
      * Create a MemoryContextFactory
@@ -66,8 +72,40 @@ public class MemoryContextFactory implements InitialContextFactory {
      * @see javax.naming.spi.InitialContextFactory#getInitialContext(java.util.Hashtable)
      */
     public Context getInitialContext(Hashtable environment) throws NamingException {
-        MemoryContext context = new MemoryContext(environment);
-        return context;
+        final Boolean isShared = Boolean.valueOf(
+                (String) environment.get(SimpleContext.SIMPLE_SHARED));
+        if (!isShared) {
+            return new MemoryContext(environment);
+        }
+        else {
+            final String root = (String) environment.get(SimpleContext.SIMPLE_ROOT);
+            final Context ctx = contextsByRoot.get(root);
+            // ctx.listBindings("").hasMore(): Ob alle Kontexte zerstört wurden.
+            if (ctx != null) {
+                return ctx;
+            }
+            else {
+                MemoryContext context = new MemoryContext(environment);
+                final DelegatingContext delegatingContext = new DelegatingContext(context) {
+                    @Override
+                    public void close() throws NamingException {
+                        // first remove, so the context will be removed even when close()
+                        // throws an Exception
+                        contextsByRoot.remove(root);
+                        target.close();
+                    }
+                };
+                contextsByRoot.put(root, delegatingContext);
+                return delegatingContext;
+            }
+        }
+    }
+
+    /**
+     * package-private: Only for Testing!
+     */
+    static void clearCache() {
+        contextsByRoot.clear();
     }
 
 }

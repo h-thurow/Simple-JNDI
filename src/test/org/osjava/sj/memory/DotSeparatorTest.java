@@ -44,10 +44,6 @@ package org.osjava.sj.memory;
  */
 public class DotSeparatorTest extends MemoryContextTestAbstract {
 
-    public DotSeparatorTest(String name) {
-        super(name);
-    }
-
     protected String getDelimiter() {
         return ".";
     }

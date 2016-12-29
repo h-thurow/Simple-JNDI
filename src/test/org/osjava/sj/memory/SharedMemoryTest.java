@@ -29,18 +29,15 @@
  */
 package org.osjava.sj.memory;
 
-import java.util.Hashtable;
+import org.junit.Test;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import java.util.Hashtable;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
 
-public class SharedMemoryTest extends TestCase {
-
-    public SharedMemoryTest(String name) {
-        super(name);
-    }
+public class SharedMemoryTest {
 
     private InitialContext createContext() throws NamingException {
         /* Initial configuration voodoo for the default context. */
@@ -58,12 +55,14 @@ public class SharedMemoryTest extends TestCase {
         /* The intial context. */
         return new InitialContext(contextEnv);
     }
-    
+
     // Bug report submitted by Thomas A. Oehser
-    public void testSharedMemory() {
+    @Test
+    public void testSharedMemory() throws NamingException {
+        InitialContext ctxA = null;
         try {
             String foo = "bar";
-            InitialContext ctxA = createContext();
+            ctxA = createContext();
             ctxA.bind("fooKey", foo);
             Object oA = ctxA.lookup("fooKey");
             Object oB = createContext().lookup("fooKey");
@@ -72,11 +71,18 @@ public class SharedMemoryTest extends TestCase {
         } catch (NamingException e) {
             fail("NamingException " + e.getMessage());
         }
+        finally {
+            if (ctxA != null) {
+                ctxA.close();
+            }
+        }
     }
 
-    public void testSharedSubContextMemory() {
+    @Test
+    public void testSharedSubContextMemory() throws NamingException {
+        InitialContext context = null;
         try {
-            InitialContext context = createContext();
+            context = createContext();
             context.createSubcontext("path");
             context.bind("path/foo", "42");
             context = createContext();
@@ -84,15 +90,38 @@ public class SharedMemoryTest extends TestCase {
         } catch (NamingException e) {
             fail("NamingException " + e.getMessage());
         }
+        finally {
+            if (context != null) {
+                context.close();
+            }
+
+        }
     }
 
+    /**
+     * 0.11.4.1 javax.naming.ContextNotEmptyException
+     */
+    @Test
     public void testSjn73() throws Exception {
-        String propShared = "org.osjava.sj.jndi.shared";
-        System.setProperty(propShared, "true");
-        InitialContext ctx = new InitialContext();
-        assertNotNull(ctx.lookup("path.foo"));
-        InitialContext ctx1 = new InitialContext();
-        assertNotNull(ctx1.lookup("path.foo"));
-        System.getProperties().remove(propShared);
+        InitialContext ctx = null;
+        InitialContext ctx1 = null;
+        try {
+            String propShared = "org.osjava.sj.jndi.shared";
+            System.setProperty(propShared, "true");
+            ctx = new InitialContext();
+            assertNotNull(ctx.lookup("path.foo"));
+            ctx1 = new InitialContext();
+            assertNotNull(ctx1.lookup("path.foo"));
+            System.getProperties().remove(propShared);
+        }
+        finally {
+            if (ctx != null) {
+                ctx.close();
+            }
+            if (ctx1 != null) {
+                ctx1.close();
+            }
+
+        }
     }
 }

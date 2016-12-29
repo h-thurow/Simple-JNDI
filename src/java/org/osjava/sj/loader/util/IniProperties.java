@@ -75,10 +75,19 @@ public class IniProperties extends AbstractProperties {
                 // split equals sign
                 idx = line.indexOf('=');
                 if(idx != -1) {
+                    String value = line.substring(idx + 1);
+                    // Quoted values[edit]
+                    // Some implementations allow values to be quoted, typically using
+                    // double quotes and/or apostrophes. This allows for explicit declaration
+                    // of whitespace, and/or for quoting of special characters (equals,
+                    // semicolon, etc.). The standard Windows function GetPrivateProfileString
+                    // supports this, and will remove quotation marks that surround the values.
+                    // https://en.wikipedia.org/wiki/INI_file
+                    value = replaceQuotes(value);
                     if("".equals(block)) {
-                        this.setProperty(line.substring(0,idx), line.substring(idx+1));
+                        this.setProperty(line.substring(0,idx), value);
                     } else {
-                        this.setProperty(block + getDelimiter() + line.substring(0,idx), line.substring(idx+1));
+                        this.setProperty(block + getDelimiter() + line.substring(0,idx), value);
                     }
                 } else {
                     // blank line, or just a bad line

@@ -31,13 +31,8 @@
  */
 package org.osjava.sj.jndi;
 
+import javax.naming.*;
 import java.util.Hashtable;
-
-import javax.naming.Context;
-import javax.naming.Name;
-import javax.naming.NameParser;
-import javax.naming.NamingEnumeration;
-import javax.naming.NamingException;
 
 
 /**
@@ -46,9 +41,10 @@ import javax.naming.NamingException;
  */
 public abstract class DelegatingContext implements Context {
 
-    private Context target;
+    protected Context target;
 
     public DelegatingContext(Context ctxt) {
+        // ctxt ist ein MemoryContext.
         this.target = ctxt;
     }
 
@@ -166,10 +162,6 @@ public abstract class DelegatingContext implements Context {
 
     public String getNameInNamespace() throws NamingException {
         return this.target.getNameInNamespace();
-    }
-
-    protected Context getTarget() {
-        return this.target;
     }
 
 }

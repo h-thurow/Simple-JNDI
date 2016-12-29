@@ -8,4 +8,6 @@
   <item>one</item>
   <item>two</item>
 </multi>
+<inDoubleQuotes>"inDoubleQuotes"</inDoubleQuotes>
+<inSingleQuotes>'in single quotes'</inSingleQuotes>
 </config>

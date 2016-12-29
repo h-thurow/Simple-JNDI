@@ -31,20 +31,13 @@
  */
 package org.osjava.sj.loader.util;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-public class SplitTest extends TestCase {
+import static org.junit.Assert.assertEquals;
 
-    public SplitTest(String name) {
-        super(name);
-    }
+public class SplitTest {
 
-    public void setUp() {
-    }
-
-    public void tearDown() {
-    }
-
+    @Test
     public void testSplit() {
         assertArrayEquals("", new String[] { "config", "one", "two"}, Utils.split("config.one.two", ".") );
         assertArrayEquals("", new String[] { "one", "two", "three"}, Utils.split("one.two.three", ".") );

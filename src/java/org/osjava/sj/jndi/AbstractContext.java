@@ -32,24 +32,8 @@
 
 package org.osjava.sj.jndi;
 
-import javax.naming.Context;
-import javax.naming.ContextNotEmptyException;
-import javax.naming.NamingException;
-import javax.naming.NameParser;
-import javax.naming.InvalidNameException;
-import javax.naming.NameAlreadyBoundException;
-import javax.naming.NotContextException;
-import javax.naming.NameNotFoundException;
-import javax.naming.NamingEnumeration;
-import javax.naming.Name;
-
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Map;
-
-import java.util.List;
-import java.util.LinkedList;
+import javax.naming.*;
+import java.util.*;
 
 /**
  * The heart of the system, the abstract implementation of context for 
@@ -63,11 +47,8 @@ import java.util.LinkedList;
 public abstract class AbstractContext 
         implements Cloneable, Context  {
 
-    // used for the shared feature
-    private static final Hashtable TABLE = new Hashtable();
-    private static final Hashtable SUB_CONTEXTS = new Hashtable();
-
-    // table is used as a read-write cache which sits 
+    private static final String SHARED = "org.osjava.sj.jndi.shared";
+    // table is used as a read-write cache which sits
     // above the file-store
     private Hashtable table = new Hashtable();
     private Hashtable subContexts = new Hashtable();
@@ -94,7 +75,8 @@ public abstract class AbstractContext
     }
     
     /**
-     * Creates a AbstractContext.
+     * Creates a AbstractContext.<br>
+     * By default allow system properties to override.
      * 
      * @param env a Hashtable containing the Context's environemnt.
      */
@@ -166,22 +148,17 @@ public abstract class AbstractContext
         String shared = null;
         if(env != null) {
             this.env = (Hashtable)env.clone();
-            shared = (String)this.env.get("org.osjava.sj.jndi.shared");
+            shared = (String)this.env.get(SHARED);
         }
 
         /* let System properties override the jndi.properties file, if
          * systemOverride is true */
         if(systemOverride) {
-            if(System.getProperty("org.osjava.sj.jndi.shared") != null) {
-                shared = System.getProperty("org.osjava.sj.jndi.shared");
+            if(System.getProperty(SHARED) != null) {
+                shared = System.getProperty(SHARED);
             }
         }
         
-        if("true".equals(shared)) {
-            this.table = new StaticHashtable(TABLE);
-            this.subContexts = new StaticHashtable(SUB_CONTEXTS);
-        }
-
         if(parser == null) {
             try {
                 nameParser = new SimpleNameParser(this);
@@ -233,6 +210,7 @@ public abstract class AbstractContext
      *
      * @see javax.naming.Context#lookup(javax.naming.Name)
      */
+    @Override
     public Object lookup(Name name) throws NamingException {
         /* 
          * The string form of the name will be used in several places below 
@@ -301,6 +279,7 @@ public abstract class AbstractContext
     /**
      * @see javax.naming.Context#lookup(java.lang.String)
      */
+    @Override
     public Object lookup(String name) throws NamingException {
         return lookup(nameParser.parse(name));
     }
@@ -308,6 +287,7 @@ public abstract class AbstractContext
     /**
      * @see javax.naming.Context#bind(javax.naming.Name, java.lang.Object)
      */
+    @Override
     public void bind(Name name, Object object) throws NamingException {
         /* 
          * If the name of obj doesn't start with the name of this context, 
@@ -341,6 +321,7 @@ public abstract class AbstractContext
     /**
      * @see javax.naming.Context#bind(java.lang.String, java.lang.Object)
      */
+    @Override
     public void bind(String name, Object object) throws NamingException {
         bind(nameParser.parse(name), object);
     }
@@ -348,6 +329,7 @@ public abstract class AbstractContext
     /**
      * @see javax.naming.Context#rebind(javax.naming.Name, java.lang.Object)
      */
+    @Override
     public void rebind(Name name, Object object) throws NamingException {
         if(name.isEmpty()) {
             throw new InvalidNameException("Cannot bind to empty name");
@@ -364,6 +346,7 @@ public abstract class AbstractContext
     /**
      * @see javax.naming.Context#rebind(java.lang.String, java.lang.Object)
      */
+    @Override
     public void rebind(String name, Object object) throws NamingException {
         rebind(nameParser.parse(name), object);
     }
@@ -371,6 +354,7 @@ public abstract class AbstractContext
     /**
      * @see javax.naming.Context#unbind(javax.naming.Name)
      */
+    @Override
     public void unbind(Name name) throws NamingException {
         if(name.isEmpty()) {
             throw new InvalidNameException("Cannot unbind to empty name");
@@ -379,6 +363,9 @@ public abstract class AbstractContext
         if(name.size() == 1) {
             if(table.containsKey(name)) {
                 table.remove(name);
+            }
+            if (subContexts.containsKey(name)) {
+                subContexts.remove(name);
             }
             return;
         }
@@ -394,6 +381,7 @@ public abstract class AbstractContext
     /**
      * @see javax.naming.Context#unbind(java.lang.String)
      */
+    @Override
     public void unbind(String name) throws NamingException {
         unbind(nameParser.parse(name));
     }
@@ -401,6 +389,7 @@ public abstract class AbstractContext
     /**
      * @see javax.naming.Context#rename(javax.naming.Name, javax.naming.Name)
      */
+    @Override
     public void rename(Name oldName, Name newName) throws NamingException {
         /* Confirm that this works.  We might have to catch the exception */
         Object old = lookup(oldName);
@@ -432,6 +421,7 @@ public abstract class AbstractContext
     /**
      * @see javax.naming.Context#rename(java.lang.String, java.lang.String)
      */
+    @Override
     public void rename(String oldName, String newName) throws NamingException {
         rename(nameParser.parse(oldName), nameParser.parse(newName));
     }
@@ -441,6 +431,7 @@ public abstract class AbstractContext
     /**
      * @see javax.naming.Context#list(javax.naming.Name)
      */
+    @Override
     public NamingEnumeration list(Name name) throws NamingException {
 //      if name is a directory, we should do the same as we do above
 //      if name is a properties file, we should return the keys (?)
@@ -479,6 +470,7 @@ public abstract class AbstractContext
     /**
      * @see javax.naming.Context#list(java.lang.String)
      */
+    @Override
     public NamingEnumeration list(String name) throws NamingException {
         return list(nameParser.parse(name));
     }
@@ -486,6 +478,7 @@ public abstract class AbstractContext
     /**
      * @see javax.naming.Context#listBindings(javax.naming.Name)
      */
+    @Override
     public NamingEnumeration listBindings(Name name) throws NamingException {
         if(name == null || name.isEmpty()) {
             /* 
@@ -518,6 +511,7 @@ public abstract class AbstractContext
     /**
      * @see javax.naming.Context#listBindings(java.lang.String)
      */
+    @Override
     public NamingEnumeration listBindings(String name) throws NamingException {
         return listBindings(nameParser.parse(name));
     }
@@ -526,11 +520,12 @@ public abstract class AbstractContext
     /**
      * @see javax.naming.Context#destroySubcontext(javax.naming.Name)
      */
+    @Override
     public void destroySubcontext(Name name) throws NamingException {
         if(name.size() > 1) {
             if(subContexts.containsKey(name.getPrefix(1))) {
                 Context subContext = (Context)subContexts.get(name.getPrefix(1));
-                subContext.destroySubcontext(name.getSuffix(1));
+                destroySubcontexts(subContext);
                 return;
             } 
             /* TODO: Better message might be necessary */
@@ -544,19 +539,43 @@ public abstract class AbstractContext
         if(!subContexts.containsKey(name)) {
             throw new NameNotFoundException();
         }
-        Context subContext = (Context)subContexts.get(name); 
-        /* Look to see if the context is empty */
-        NamingEnumeration names = subContext.list("");
-        if(names.hasMore()) {
-            throw new ContextNotEmptyException();
-        }
-        ((Context)subContexts.get(name)).close();
+        Context subContext = (Context)subContexts.get(name);
+        destroySubcontexts(subContext);
+        subContext.close();
         subContexts.remove(name);
+    }
+
+    private void destroySubcontexts(Context context) throws NamingException {
+        NamingEnumeration<Binding> bindings = context.listBindings("");
+        while (bindings.hasMore()) {
+            final Binding binding = bindings.next();
+            try {
+                final NamingEnumeration<Binding> enumeration
+                        = context.listBindings(binding.getName());
+                if (enumeration.hasMore()) {
+                    destroySubcontexts((Context) context.lookup(binding.getName()));
+                }
+            }
+            catch (NotContextException e) {
+                context.unbind(binding.getName());
+            }
+        }
+        bindings = context.listBindings("");
+        while (bindings.hasMore()) {
+            final Binding binding = bindings.next();
+            final NamingEnumeration<Binding> enumeration
+                    = context.listBindings(binding.getName());
+            if (enumeration.hasMore()) {
+                destroySubcontexts((Context) context.lookup(binding.getName()));
+            }
+            context.destroySubcontext(binding.getName());
+        }
     }
 
     /**
      * @see javax.naming.Context#destroySubcontext(java.lang.String)
      */
+    @Override
     public void destroySubcontext(String name) throws NamingException {
         destroySubcontext(nameParser.parse(name));
     }
@@ -564,6 +583,7 @@ public abstract class AbstractContext
     /**
      * @see javax.naming.Context#createSubcontext(javax.naming.Name)
      */
+    @Override
     public abstract Context createSubcontext(Name name) throws NamingException;
     /* TODO: Put this example implemenation into the javadoc.
     /* Example implementation 
@@ -598,6 +618,7 @@ public abstract class AbstractContext
     /**
      * @see javax.naming.Context#createSubcontext(java.lang.String)
      */
+    @Override
     public Context createSubcontext(String name) throws NamingException {
         return createSubcontext(nameParser.parse(name));
     }
@@ -606,6 +627,7 @@ public abstract class AbstractContext
     /**
      * @see javax.naming.Context#lookupLink(javax.naming.Name)
      */
+    @Override
     public Object lookupLink(Name name) throws NamingException {
         return lookup(name);
     }
@@ -613,6 +635,7 @@ public abstract class AbstractContext
     /**
      * @see javax.naming.Context#lookupLink(java.lang.String)
      */
+    @Override
     public Object lookupLink(String name) throws NamingException {
         return lookup(nameParser.parse(name));
     }
@@ -620,6 +643,7 @@ public abstract class AbstractContext
     /**
      * @see javax.naming.Context#getNameParser(javax.naming.Name)
      */
+    @Override
     public NameParser getNameParser(Name name) throws NamingException {
         /* 
          * XXX: Not sure this conditional is adequate.  It might still cause
@@ -640,6 +664,7 @@ public abstract class AbstractContext
     /**
      * @see javax.naming.Context#getNameParser(java.lang.String)
      */
+    @Override
     public NameParser getNameParser(String name) throws NamingException {
         return getNameParser(nameParser.parse(name));
     }
@@ -647,6 +672,7 @@ public abstract class AbstractContext
     /**
      * @see javax.naming.Context#composeName(javax.naming.Name, javax.naming.Name)
      */
+    @Override
     public Name composeName(Name name, Name prefix) throws NamingException {
         // XXX: NO IDEA IF THIS IS RIGHT
         if(name == null || prefix == null) {
@@ -660,6 +686,7 @@ public abstract class AbstractContext
     /**
      * @see javax.naming.Context#composeName(java.lang.String, java.lang.String)
      */
+    @Override
     public String composeName(String name, String prefix) throws NamingException {
         Name retName = composeName(nameParser.parse(name), nameParser.parse(prefix));
         /* toString pretty much is guaranteed to exist */
@@ -669,6 +696,7 @@ public abstract class AbstractContext
     /**
      * @see javax.naming.Context#addToEnvironment(java.lang.String, java.lang.Object)
      */
+    @Override
     public Object addToEnvironment(String name, Object object) throws NamingException {
         if(this.env == null) {
             return null;
@@ -679,6 +707,7 @@ public abstract class AbstractContext
     /**
      * @see javax.naming.Context#removeFromEnvironment(java.lang.String)
      */
+    @Override
     public Object removeFromEnvironment(String name) throws NamingException {
         if(this.env == null) {
             return null;
@@ -689,6 +718,7 @@ public abstract class AbstractContext
     /**
      * @see javax.naming.Context#getEnvironment()
      */
+    @Override
     public Hashtable getEnvironment() throws NamingException {
         if(this.env == null) {
             return new Hashtable();
@@ -699,19 +729,18 @@ public abstract class AbstractContext
     /**
      * @see javax.naming.Context#close()
      */
+    @Override
     public void close() throws NamingException {
         /* Don't try anything if we're already in the process of closing */
         // BUG: closing is never actually set
         if(closing) {
             return;
         }
-        Iterator it = subContexts.keySet().iterator();
-        while(it.hasNext()) {
-            destroySubcontext((Name)it.next());
-        }
-        
+        destroySubcontexts(this);
+
+        // TODO This block is never entered by current tests.
         while(table.size() > 0 || subContexts.size() > 0) {
-            it = table.keySet().iterator();
+            Iterator it = table.keySet().iterator();
             List toRemove = new LinkedList();
             while(it.hasNext()) {
                 Name name = (Name)it.next();
@@ -751,6 +780,7 @@ public abstract class AbstractContext
     /**
      * @see javax.naming.Context#getNameInNamespace()
      */
+    @Override
     public String getNameInNamespace() throws NamingException {
         return nameInNamespace.toString();
     }
@@ -807,15 +837,6 @@ public abstract class AbstractContext
     protected Hashtable getSubContexts() {
         return (Hashtable)subContexts.clone();
     }
-
-    /**
-     * Whether this context is running in shared mode AND has already 
-     * been loaded with data. 
-     */
-    public static boolean isSharedAndLoaded() {
-        return (TABLE.size() != 0 || SUB_CONTEXTS.size() != 0);
-    }
-
 }
 
 

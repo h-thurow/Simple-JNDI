@@ -40,16 +40,10 @@
 
 package org.osjava.sj.memory;
 
-import java.util.Hashtable;
-
-import javax.naming.Context;
-import javax.naming.Name;
-import javax.naming.NameAlreadyBoundException;
-import javax.naming.NameNotFoundException;
-import javax.naming.NameParser;
-import javax.naming.NamingException;
-
 import org.osjava.sj.jndi.AbstractContext;
+
+import javax.naming.*;
+import java.util.Hashtable;
 
 /**
  * A generic context that requires no DataSource backend.   It is designed to
@@ -66,7 +60,6 @@ public class MemoryContext extends AbstractContext {
      */
     public MemoryContext() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
     /**
@@ -74,7 +67,6 @@ public class MemoryContext extends AbstractContext {
      */
     public MemoryContext(Hashtable env) {
         super(env);
-        // TODO Auto-generated constructor stub
     }
 
     /**
@@ -83,7 +75,6 @@ public class MemoryContext extends AbstractContext {
      */
     public MemoryContext(Hashtable env, boolean systemOverride) {
         super(env, systemOverride);
-        // TODO Auto-generated constructor stub
     }
 
     /**
@@ -92,7 +83,6 @@ public class MemoryContext extends AbstractContext {
      */
     public MemoryContext(Hashtable env, NameParser parser) {
         super(env, parser);
-        // TODO Auto-generated constructor stub
     }
 
     /**
@@ -100,7 +90,6 @@ public class MemoryContext extends AbstractContext {
      */
     public MemoryContext(boolean systemOverride) {
         super(systemOverride);
-        // TODO Auto-generated constructor stub
     }
 
     /**
@@ -109,7 +98,6 @@ public class MemoryContext extends AbstractContext {
      */
     public MemoryContext(boolean systemOverride, NameParser parser) {
         super(systemOverride, parser);
-        // TODO Auto-generated constructor stub
     }
 
     /**
@@ -117,7 +105,6 @@ public class MemoryContext extends AbstractContext {
      */
     public MemoryContext(NameParser parser) {
         super(parser);
-        // TODO Auto-generated constructor stub
     }
 
     /**
@@ -127,7 +114,6 @@ public class MemoryContext extends AbstractContext {
      */
     public MemoryContext(Hashtable env, boolean systemOverride, NameParser parser) {
         super(env, systemOverride, parser);
-        // TODO Auto-generated constructor stub
     }
 
     /**
@@ -135,12 +121,12 @@ public class MemoryContext extends AbstractContext {
      */
     public MemoryContext(AbstractContext that) {
         super(that);
-        // TODO Auto-generated constructor stub
     }
 
     /**
      * @see javax.naming.Context#createSubcontext(javax.naming.Name)
      */
+    @Override
     public Context createSubcontext(Name name) throws NamingException {
         Context newContext;
         /* Get the subcontexts of /this/ subcontext. */

@@ -32,19 +32,25 @@
 package org.osjava.sj;
 
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import java.util.Hashtable;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
 
-public class SystemPropertyTest extends TestCase {
+/**
+ * By default allow system properties to override environment argument. See
+ * {@link org.osjava.sj.jndi.AbstractContext#AbstractContext(Hashtable)}
+ */
+public class SystemPropertyTest {
 
     private InitialContext ctxt;
 
-    public SystemPropertyTest(String name) {
-        super(name);
-    }
-
+    @Before
     public void setUp() {
         System.setProperty("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
         System.setProperty("org.osjava.sj.root", "file://src/test/config/system-test");
@@ -56,10 +62,16 @@ public class SystemPropertyTest extends TestCase {
         }
     }
 
-    public void tearDown() {
+    @After
+    public void tearDown() throws NamingException {
+        ctxt.close();
         this.ctxt = null;
+        System.clearProperty("java.naming.factory.initial");
+        System.clearProperty("org.osjava.sj.root");
+        System.clearProperty("org.osjava.sj.delimiter");
     }
 
+    @Test
     public void testSystemPropertyContext() throws NamingException {
         assertEquals( "1234", this.ctxt.lookup("one::::two::::three::::four") );
     }

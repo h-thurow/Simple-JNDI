@@ -44,9 +44,16 @@ public class ConvertRegistry {
     // TODO: Support inheritence; ie) key on Class not String?
     //       Use gj-core ClassMap code?
     public ConvertRegistry() {
-        this.converters.put( "javax.sql.DataSource", new DataSourceConverter() );
-        this.converters.put( "java.util.Date", new DateConverter() );
-        this.converters.put( "java.lang.Boolean", new ConstructorConverter() );
+        this.converters.put( "javax.sql.DataSource", new DataSourceConverter());
+        this.converters.put( "java.util.Date", new DateConverter());
+        this.converters.put( "java.lang.Boolean", new ConstructorConverter());
+        this.converters.put( "java.lang.Byte", new ConstructorConverter());
+        this.converters.put( "java.lang.Short", new ConstructorConverter());
+        this.converters.put( "java.lang.Integer", new ConstructorConverter());
+        this.converters.put( "java.lang.Long", new ConstructorConverter());
+        this.converters.put( "java.lang.Float", new ConstructorConverter());
+        this.converters.put( "java.lang.Double", new ConstructorConverter());
+        this.converters.put( "java.lang.Character", new CharacterConverter());
     }
 
     public Converter getConverter(String type) {

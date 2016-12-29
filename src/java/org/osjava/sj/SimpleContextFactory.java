@@ -40,11 +40,14 @@
 
 package org.osjava.sj;
 
-import java.util.Hashtable;
+import org.osjava.sj.jndi.DelegatingContext;
 
 import javax.naming.Context;
+import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.naming.spi.InitialContextFactory;
+import java.util.Hashtable;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Initial Context Factory for SimpleContexts
@@ -55,9 +58,9 @@ import javax.naming.spi.InitialContextFactory;
  */
 public class SimpleContextFactory implements InitialContextFactory {
 
-    /**
-     * Create a SimpleContextFactory
-     */
+    private static final ConcurrentHashMap<String, DelegatingContext> contextsByRoot =
+            new ConcurrentHashMap<String, DelegatingContext>();
+
     public SimpleContextFactory() {
         super();
     }
@@ -66,8 +69,39 @@ public class SimpleContextFactory implements InitialContextFactory {
      * @see javax.naming.spi.InitialContextFactory#getInitialContext(java.util.Hashtable)
      */
     public Context getInitialContext(Hashtable environment) throws NamingException {
-        SimpleContext context = new SimpleContext(environment);
-        return context;
+        final Boolean isShared = Boolean.valueOf(
+                (String) environment.get(SimpleContext.SIMPLE_SHARED));
+        if (!isShared) {
+            return new SimpleContext(environment).loadRoot();
+        }
+        else {
+            final String root = (String) environment.get(SimpleContext.SIMPLE_ROOT);
+            final Context ctx = contextsByRoot.get(root);
+            if (ctx != null) {
+                return ctx;
+            }
+            else {
+                InitialContext context = new SimpleContext(environment).loadRoot();
+                final DelegatingContext delegatingContext = new DelegatingContext(context) {
+                    @Override
+                    public void close() throws NamingException {
+                        // first remove, so the context will be removed even when close()
+                        // throws an Exception
+                        contextsByRoot.remove(root);
+                        target.close();
+                    }
+                };
+                contextsByRoot.put(root, delegatingContext);
+                return delegatingContext;
+            }
+        }
+    }
+
+    /**
+     * package-private: Only for Testing!
+     */
+    static void clearCache() {
+        contextsByRoot.clear();
     }
 
 }

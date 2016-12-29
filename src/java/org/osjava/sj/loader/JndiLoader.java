@@ -32,26 +32,16 @@
 package org.osjava.sj.loader;
 
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Properties;
+import org.osjava.sj.loader.convert.ConvertRegistry;
+import org.osjava.sj.loader.convert.Converter;
+import org.osjava.sj.loader.util.*;
 
 import javax.naming.Context;
 import javax.naming.NamingException;
-
-import org.osjava.sj.loader.convert.ConvertRegistry;
-import org.osjava.sj.loader.convert.Converter;
-
-import org.osjava.sj.loader.util.AbstractProperties;
-import org.osjava.sj.loader.util.CustomProperties;
-import org.osjava.sj.loader.util.IniProperties;
-import org.osjava.sj.loader.util.Utils;
-import org.osjava.sj.loader.util.XmlProperties;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * Loads a .properties file into a JNDI server.
@@ -263,7 +253,7 @@ public class JndiLoader {
             }
 
 // System.err.println("Putting: "+key);
-            jndiPut( ctxt, key, properties.get(key) );
+            jndiPut(ctxt, key, value);
         }
 
         Iterator typeIterator = typeMap.keySet().iterator();
@@ -348,9 +338,21 @@ public class JndiLoader {
         //       and in the API itself
         Converter converter = convertRegistry.getConverter(type);
         if(converter != null) {
-            return converter.convert(properties, type);
+            final Object values = properties.get("");
+            if (values instanceof List) {
+                List<String> vals = (List<String>) values;
+                final LinkedList converted = new LinkedList();
+                for (String val : vals) {
+                    final Properties p = new Properties();
+                    p.setProperty("", val);
+                    converted.add(converter.convert(p, type));
+                }
+                return converted;
+            }
+            else {
+                return converter.convert(properties, type);
+            }
         }
-
         return properties.get("");
 
     }

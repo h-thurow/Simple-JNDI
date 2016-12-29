@@ -40,28 +40,28 @@
 
 package org.osjava.sj.memory;
 
-import java.util.Hashtable;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import java.util.Hashtable;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
 
 /**
  * @author rzigweid
  */
-public abstract class MemoryContextTestAbstract extends TestCase {
+public abstract class MemoryContextTestAbstract {
 
     private Context context;
     private String delimiter;
 
-    public MemoryContextTestAbstract(String name) {
-        super(name);
-    }
-
     protected abstract String getDelimiter();
 
+    @Before
     public void setUp() {
         this.delimiter = getDelimiter();
         
@@ -83,16 +83,16 @@ public abstract class MemoryContextTestAbstract extends TestCase {
         }
     }
     
+    @After
     public void tearDown() {
-        /* - Needs improving as you cannot close a Context with values in
         try {
             context.close();
         } catch (NamingException e) {
             e.printStackTrace();
         }
-        */
     }
-    
+
+    @Test
     public void testCreateSubContext1() {
         try {
             /* Create the subContext object */
@@ -106,6 +106,7 @@ public abstract class MemoryContextTestAbstract extends TestCase {
         }
     }
 
+    @Test
     public void testCreateNestedSubcontext() {
         try {
             Context sub = context.createSubcontext("path");
@@ -119,6 +120,7 @@ public abstract class MemoryContextTestAbstract extends TestCase {
         }
     }
 
+    @Test
     public void testLookupInContext() {
         try {
             context.createSubcontext("path");
@@ -128,4 +130,5 @@ public abstract class MemoryContextTestAbstract extends TestCase {
             fail("NamingException " + e.getMessage());
         }
     }
+
 }

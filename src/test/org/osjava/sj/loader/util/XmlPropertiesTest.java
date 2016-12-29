@@ -32,30 +32,38 @@
 
 package org.osjava.sj.loader.util;
 
+import org.junit.Test;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
 
-public class XmlPropertiesTest extends TestCase {
-   
+public class XmlPropertiesTest {
+
+    @Test
     public void testLoad() throws IOException {
         InputStream is = new FileInputStream("src/test/config/xmltest.xml");
         XmlProperties xmlProperties = new XmlProperties();
         xmlProperties.load(is);
-        
+        is.close();
+
         List list = new LinkedList();
         list.add("one");
         list.add("two");
-        
+
         assertEquals(xmlProperties.get("config.value"), "13");
         assertEquals(xmlProperties.get("config.one.two"), "three");
         assertEquals(xmlProperties.get("config.four.five"), "Bang");
         assertEquals(xmlProperties.get("config.multi.item"), list);
-        is.close();
+        assertEquals("\"inDoubleQuotes\"",
+                xmlProperties.getProperty("config.inDoubleQuotes"));
+        assertEquals("'in single quotes'",
+                xmlProperties.getProperty("config.inSingleQuotes"));
+
     }
 
 }

@@ -31,20 +31,13 @@
  */
 package org.osjava.sj.loader.util;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-public class ReplaceTest extends TestCase {
+import static org.junit.Assert.assertEquals;
 
-    public ReplaceTest(String name) {
-        super(name);
-    }
+public class ReplaceTest {
 
-    public void setUp() {
-    }
-
-    public void tearDown() {
-    }
-
+    @Test
     public void testReplace() {
         assertEquals("one:two:three", Utils.replace("one--two--three", "--", ":" ) );
         assertEquals("one:two:", Utils.replace("one--two--", "--", ":" ) );

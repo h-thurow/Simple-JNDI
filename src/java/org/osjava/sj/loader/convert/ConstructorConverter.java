@@ -32,10 +32,9 @@
 
 package org.osjava.sj.loader.convert;
 
-import java.util.Properties;
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Properties;
 
 /**
  * Convert a text value to any object whose constructor 
@@ -55,7 +54,6 @@ public class ConstructorConverter implements Converter {
 
     public Object convert(Properties properties, String type) {
         String value = properties.getProperty("");
-
         if(value == null) {
             throw new RuntimeException("Missing value");
         }

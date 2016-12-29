@@ -31,103 +31,116 @@
  */
 package org.osjava.sj;
 
-import org.osjava.sj.jndi.DelegatingContext;
-import org.osjava.sj.jndi.AbstractContext;
-
-import java.io.File;
-import java.io.IOException;
-
-import java.util.Hashtable;
-import javax.naming.NamingException;
-import javax.naming.InitialContext;
-import javax.naming.Context;
-
 import org.osjava.sj.loader.JndiLoader;
 import org.osjava.sj.loader.util.Utils;
 
-// job is to hide the JndiLoader, apart from a jndi.properties entry
-// can also handle switching . to / so that the delimiter may be settable
-public class SimpleContext extends DelegatingContext {
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import java.io.File;
+import java.io.IOException;
+import java.util.Hashtable;
 
-    // root
+/**
+ * job is to hide the JndiLoader, apart from a jndi.properties entry.
+ * Can also handle switching . to / so that the delimiter may be settable.
+ */
+public class SimpleContext {
+
     public static final String SIMPLE_ROOT = "org.osjava.sj.root";
-
     public static final String SIMPLE_DELEGATE = "org.osjava.sj.factory";
-
     // option for top level space; ie) java:comp
     public static final String SIMPLE_SPACE = "org.osjava.sj.space";
+    public static final String SIMPLE_SHARED = "org.osjava.sj.jndi.shared";
+    private Hashtable environment;
 
-    /*
-     * 
-     * root
-     *    org.osjava.jndi.root
-     * separator, or just put them in as contexts?
-     *    org.osjava.jndi.delimiter
-     * option for top level space; ie) java:comp
-     *    org.osjava.jndi.space
-     * share the same InitialContext
-     *    org.osjava.jndi.shared
+    /**
+     * root: {@link #SIMPLE_ROOT}<br>
+     * separator, or just put them in as contexts?: org.osjava.jndi.delimiter<br>
+     * option for top level space; ie) java:comp: {@link #SIMPLE_SPACE}<br>
+     * share the same InitialContext: {@link #SIMPLE_SHARED}
+     * <p>
+     * By default allow system properties to override environment. Siehe
+     * {@link org.osjava.sj.jndi.AbstractContext#AbstractContext(Hashtable)}
      */
-    public SimpleContext(Hashtable env) throws NamingException {
-        super(createContext(env));
+    SimpleContext(Hashtable environment) {
+        this.environment = environment;
+        overwriteEnvironmentWithSystemProperties();
+    }
 
-        JndiLoader loader = new JndiLoader(env);
+    InitialContext loadRoot() throws NamingException {
+        initializeStandardJndiEnvironment();
 
+        String root = getRoot(environment);
+
+        final InitialContext initialContext = createInitialContext();
+        Context ctxt = initialContext;
+        ctxt = createENC(environment, ctxt);
+        try {
+            final JndiLoader loader = new JndiLoader(environment);
+            loader.loadDirectory( new File(root), ctxt );
+        } catch(IOException ioe) {
+            throw new NamingException("Unable to load data from directory: "+root+" due to error: "+ioe.getMessage());
+        }
+        return initialContext;
+    }
+
+    /**
+     * To simulate an environment naming context (ENC), the org.osjava.sj.space property
+     * may be used. Whatever the property is set to will be automatically prepended to
+     * every value loaded into the system. Thus org.osjava.sj.space=java:/comp/env
+     * simulates the JNDI environment of Tomcat.
+     */
+    private Context createENC(Hashtable env, Context ctxt) throws NamingException {
+        String space = (String) env.get(SIMPLE_SPACE);
+        if(space != null) {
+            String[] array = Utils.split(space, (String) env.get(JndiLoader.SIMPLE_DELIMITER) );
+            for (String anArray : array) {
+                ctxt = ctxt.createSubcontext(anArray);
+            }
+        }
+        return ctxt;
+    }
+
+    private String getRoot(Hashtable env) {
         String root = (String) env.get(SIMPLE_ROOT);
-
         if(root == null) {
             throw new IllegalStateException("Property "+SIMPLE_ROOT+" is mandatory. ");
         }
-
         if(root.startsWith("file://")) {
             root = root.substring("file://".length());
         }
-
-        if(!AbstractContext.isSharedAndLoaded()) {
-            Context ctxt = this;
-            String space = (String) env.get(SIMPLE_SPACE);
-            if(space != null) {
-                // make contexts for space...
-                String[] array = Utils.split(space, (String) env.get(JndiLoader.SIMPLE_DELIMITER) );
-                for(int i=0; i<array.length; i++) {
-                    ctxt = ctxt.createSubcontext(array[i]);
-                }
-            }
-
-            try {
-                loader.loadDirectory( new File(root), ctxt );
-            } catch(IOException ioe) {
-                throw new NamingException("Unable to load data from directory: "+root+" due to error: "+ioe.getMessage());
-            }
-        }
-    }
-    
-    private static InitialContext createContext(Hashtable env) throws NamingException {
-
-        copyFromSystemProperties(env, JndiLoader.SIMPLE_DELIMITER);
-        copyFromSystemProperties(env, SIMPLE_ROOT);
-        copyFromSystemProperties(env, SIMPLE_SPACE);
-        copyFromSystemProperties(env, JndiLoader.SIMPLE_SHARED);
-        copyFromSystemProperties(env, SIMPLE_DELEGATE);
-        
-        env.put("jndi.syntax.direction", "left_to_right");
-        if(!env.containsKey(JndiLoader.SIMPLE_DELIMITER)) {
-            env.put(JndiLoader.SIMPLE_DELIMITER, ".");
-        }
-        env.put("jndi.syntax.separator", env.get(JndiLoader.SIMPLE_DELIMITER));
-
-        if(!env.containsKey(SIMPLE_DELEGATE)) {
-            env.put(SIMPLE_DELEGATE, "org.osjava.sj.memory.MemoryContextFactory");
-        }
-
-        env.put("java.naming.factory.initial", env.get(SIMPLE_DELEGATE) );
-
-        return new InitialContext(env);
+        return root;
     }
 
-    private static void copyFromSystemProperties(Hashtable env, String key) {
+    private void initializeStandardJndiEnvironment() {
+        environment.put("jndi.syntax.direction", "left_to_right");
+        if(!environment.containsKey(JndiLoader.SIMPLE_DELIMITER)) {
+            environment.put(JndiLoader.SIMPLE_DELIMITER, ".");
+        }
+        environment.put("jndi.syntax.separator", environment.get(JndiLoader.SIMPLE_DELIMITER));
+    }
+
+    private InitialContext createInitialContext() throws NamingException {
+        if(!environment.containsKey(SIMPLE_DELEGATE)) {
+            environment.put(SIMPLE_DELEGATE, "org.osjava.sj.memory.MemoryContextFactory");
+        }
+        environment.put("java.naming.factory.initial", environment.get(SIMPLE_DELEGATE) );
+        // Hier wird MemoryContextFactory#getInitialContext() gerufen!
+        return new InitialContext(environment);
+    }
+
+    private void overwriteEnvironmentWithSystemProperties() {
+        overwriteFromSystemProperty(JndiLoader.SIMPLE_DELIMITER);
+        overwriteFromSystemProperty(SIMPLE_ROOT);
+        overwriteFromSystemProperty(SIMPLE_SPACE);
+        overwriteFromSystemProperty(JndiLoader.SIMPLE_SHARED);
+        overwriteFromSystemProperty(SIMPLE_DELEGATE);
+    }
+
+    private void overwriteFromSystemProperty(String key) {
         if(System.getProperty(key) != null) {
-            env.put(key, System.getProperty(key));
+            environment.put(key, System.getProperty(key));
         }
     }
 

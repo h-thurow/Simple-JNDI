@@ -44,10 +44,6 @@ package org.osjava.sj.memory;
  */
 public class SlashSeparatorTest extends MemoryContextTestAbstract {
 
-    public SlashSeparatorTest(String name) {
-        super(name);
-    }
-
     protected String getDelimiter() {
         return "/";
     }

@@ -35,18 +35,25 @@ package org.osjava.sj.loader.util;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 
 public abstract class AbstractProperties extends Properties {
 
+    private static final String doubleQuote = "\"";
+    private static final String singleQuote = "'";
     private String delimiter = ".";
+    // our index for the ordering
+    protected ArrayList index = new ArrayList();
+
+    public AbstractProperties() {
+        super();
+    }
+
+    // the props attribute is for defaults. These will need to be
+    // remembered for the save/store method.
+    public AbstractProperties(Properties props) {
+        super(props);
+    }
 
     public abstract void load(InputStream in) throws IOException;
 
@@ -65,7 +72,7 @@ public abstract class AbstractProperties extends Properties {
                 List list = new LinkedList();
                 list.add(obj);
                 obj = list;
-            } 
+            }
             ((List)obj).add(value);
             value = obj;
         }
@@ -73,19 +80,6 @@ public abstract class AbstractProperties extends Properties {
             index.add(key);
         }
         return super.put(key, value);
-    }
-
-    // our index for the ordering
-    protected ArrayList index = new ArrayList();
-
-    public AbstractProperties() {
-        super();
-    }
-
-    // the props attribute is for defaults. These will need to be 
-    // remembered for the save/store method.
-    public AbstractProperties(Properties props) {
-        super(props);
     }
 
     public synchronized Object setProperty(String key, String value) {
@@ -125,4 +119,23 @@ public abstract class AbstractProperties extends Properties {
         super.store(outstrm,header);
     }
 
+    protected String replaceQuotes(String value) {
+        if (value.startsWith(doubleQuote)) {
+            value = replace(value, doubleQuote);
+        }
+        else if (value.startsWith(singleQuote)){
+            value = replace(value, singleQuote);
+        }
+        return value;
+    }
+
+    private String replace(String stringValue, String doubleQuote) {
+        String value;
+        stringValue = stringValue.substring(stringValue.indexOf(doubleQuote) + 1);
+        if (stringValue.endsWith(doubleQuote)) {
+            stringValue = stringValue.substring(0, stringValue.length() - 1);
+        }
+        value = stringValue;
+        return value;
+    }
 }
