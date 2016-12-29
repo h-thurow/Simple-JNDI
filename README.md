@@ -199,3 +199,56 @@ application1/ds.properties
 <p>To simulate an environment naming context (ENC), the <code>org.osjava.sj.space</code> property may be used. Whatever the property is set to will be automatically prepended to every value loaded into the system. Thus <code>org.osjava.sj.space=java:comp/env</code> simulates the JNDI environment of Tomcat. </p>
  <p>As <code>:</code> is usually found in an ENC, using this property to handle ENCs is a simpler way to handle the colon than using 
  the colon-replace property. </p>
+ 
+ <h3>Explanatory note</h3>
+ 
+<p>This project is based on old https://github.com/hen/osjava/tree/master/simple-jndi .</p>
+<ul>
+<li>Several bugs fixed and many new tests added.
+<li>Changed the way contexts are shared, because of ContextNotEmptyException with type=javax.sql.DataSource. 
+<li>Tests ported to JUnit 4. 
+<li>Maven 2/3 support. 
+<li>Support for basic datatypes (Byte, Short, Integer, Long, Float, Double, Character) in .properties/.ini/.xml files added.
+</ul>
+
+<h4>Failed Tests in 0.11.4.1</h4>
+<pre>
+SimpleJndi
+	org.osjava.sj
+		SimpleJndiTest.java
+			beanNoSetterShared()
+			beanNoSetterSharedNoPresetSpace()
+			beanNoSetterSharedTwoInitialContexts()
+			destroyContextShared()
+			quotationMarks()
+			sameNamesInDifferentBranchesShared()
+			sharedContextsWithDifferentRoots()
+			sharedContextWithDataSource()
+			typedProperty1()
+			closeContext()
+	org.osjava.sj.memory
+		JndiLoaderSharedTest.java
+			testDbcp()
+			testDbcp1()
+			testDbcp2()
+			testDbcp3()
+			testDbcp4()
+			testDbcpPooltest()
+			testDefaultFile()
+			testDirectory()
+			testMultiValueAttributeBooleans()
+			testMultiValueAttributeCharacters()
+			testMultiValueAttributeShorts()
+			testProperties()
+			testTopLevelDataSource()
+		JndiLoaderTest.java
+			testMultiValueAttributeBooleans()
+			testMultiValueAttributeCharacters()
+			testMultiValueAttributeMultipleContexts()
+			testMultiValueAttributeShorts()
+		MemoryContextTestAbstract.java
+		SharedMemoryTest.java
+			testSjn73()
+		SharedMemoryTestSimpleContextFactory.java
+			testSjn73()
+</pre>        
