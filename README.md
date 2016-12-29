@@ -255,25 +255,6 @@ SimpleJndi
 </pre>        
 <h4>Tests in 1.0.0</h4>
 <pre>
-[INFO] Scanning for projects...
-[INFO] ------------------------------------------------------------------------
-[INFO] Building Unnamed - simple-jndi:simple-jndi:jar:1.0.0
-[INFO]    task-segment: [test]
-[INFO] ------------------------------------------------------------------------
-[INFO] [resources:resources {execution: default-resources}]
-[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
-[INFO] skip non existing resourceDirectory /Users/hot/LACIE/Synchronize/to-do/Installers/libs/java/JNDI/NameService/Simple-JNDI/src/main/resources
-[INFO] [compiler:compile {execution: default-compile}]
-[INFO] Nothing to compile - all classes are up to date
-[INFO] [resources:testResources {execution: default-testResources}]
-[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
-[INFO] Copying 23 resources to config
-[INFO] Copying 1 resource
-[INFO] Copying 18 resources to roots
-[INFO] [compiler:testCompile {execution: default-testCompile}]
-[INFO] Compiling 1 source file to /Users/hot/LACIE/Synchronize/to-do/Installers/libs/java/JNDI/NameService/Simple-JNDI/target/test-classes
-[INFO] [surefire:test {execution: default-test}]
-
 -------------------------------------------------------
  T E S T S
 -------------------------------------------------------
