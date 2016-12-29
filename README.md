@@ -190,9 +190,9 @@ application1/ds.properties
 
 <p>Setting <code>org.osjava.sj.jndi.shared=true</code> will put the in-memory JNDI implementation into a mode whereby all InitialContext's share the same memory. By default this is not set, so two separate InitialContext's do not share the same memory and what is bound to one will not be viewable in the other. </p>
 
-<h3>Dealing with java: while loading</h3>
+<h3>Dealing with "java:comp/env" while loading</h3>
 
- <p>Windows does not like having a : in a filename, so to deal with the : you can use the <code>org.osjava.sj.colon.replace</code> property. If, for example, you choose to replace a <code>:</code> with <code>--</code> (ie <code>org.osjava.sj.colon.replace=--</code>), then you will need a file named <code>java--.properties</code>, or a directory named <code>java--</code>. Alternatively, the next section provides a different way of handling things. </p>
+ <p>Windows does not like having a : in a filename, so to deal with the : you can use the <code>org.osjava.sj.colon.replace</code> property. If, for example, you choose to replace a <code>:</code> with <code>--</code> (ie <code>org.osjava.sj.colon.replace=--</code>), then you will need a file named <code>java--.properties</code>, or a directory named <code>java--</code>. Alternatively, the next section "Dealing with ENCs while loading" provides a different way of handling things. </p>
 
 <h3>Dealing with ENCs while loading</h3>
 
