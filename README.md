@@ -66,5 +66,6 @@ If no org.osjava.sj.delimiter is specified, then a '.' (dot) is chosen.
 
 <h3>Dealing with ENCs while loading</h3>
 
-<p>To simulate an environment naming context (ENC), the <code>org.osjava.sj.space</code> property may be used. Whatever the property is set to will be automatically prepended to every value loaded into the system. Thus <code>org.osjava.sj.space=java:/comp/env</code> simulates the JNDI environment of Tomcat. </p>
- <p>As <code>:</code> is usually found in an ENC, using this property to handle ENCs is a simpler way to handle the colon than using the colon-replace property. </p>
+<p>To simulate an environment naming context (ENC), the <code>org.osjava.sj.space</code> property may be used. Whatever the property is set to will be automatically prepended to every value loaded into the system. Thus <code>org.osjava.sj.space=java:comp/env</code> simulates the JNDI environment of Tomcat. </p>
+ <p>As <code>:</code> is usually found in an ENC, using this property to handle ENCs is a simpler way to handle the colon than using 
+ the colon-replace property. </p>
