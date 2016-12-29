@@ -32,7 +32,7 @@ java.naming.factory.initial=org.osjava.sj.SimpleContextFactory
 </pre>
 <p>This property, <i>java.naming.factory.initial</i>, is a part of the jndi specification. </p>
 <p>
-There are two simple-jndi specific parameters. <br></br>
+There are two simple-jndi specific parameters. <br>
 The first (required) parameter, org.osjava.sj.root, is the location of your simple-jndi root, which is the location in which simple-jndi looks for values when code asks for them. The following code block details a few examples with explanatory comments.
 </p>
 <pre>
@@ -69,24 +69,26 @@ If no org.osjava.sj.delimiter is specified, then a '.' (dot) is chosen.
 
 <p>Simple-JNDI stores values in multiple .properties, xml or ini files and are looked up using a specified name convention, such as dot or slash delimited. It is also possible to set the type of object a property represents. As already mentioned, the files are located under a root directory as specified with the <i>org.osjava.sj.root</i> property. </p>
 <p>In addition to the delimited lookup key structure, directory names and file names become part of the lookup key. Each delimited tree-node becomes a JNDI Context, while the leaves are implementations. The only exceptions are pseudo sub-values, which you will see with DataSource and other converters. </p>
-<h5>Examples</h5>
+
+<h4>Examples</h4>
+
 <p>
 The easiest way to understand is to consider a few examples. Imagine a file-structure looking like,
 </p>
-<code>
-config/<br></br>
-config/debug.properties<br></br>
-config/ProductionDS.properties<br></br>
-config/application1/default.properties<br></br>
-config/application1/ds.properties<br></br>
-config/application1/users.properties<br></br>
-</code>
+<pre>
+config/
+config/debug.properties
+config/ProductionDS.properties
+config/application1/default.properties
+config/application1/ds.properties
+config/application1/users.properties
+</pre>
 <p>
 in which the files look like;
 <dl>
 <dt>default.properties</dt>
 <dd>
-name=Prototype<br></br>
+name=Prototype<br>
 url=http://www.generationjava.com/
 </dd>
 <dt>debug.properties</dt>
@@ -95,32 +97,32 @@ state=ERROR
 </dd>
 <dt>ProductionDS.properties</dt>
 <dd>
-type=javax.sql.DataSource<br></br>
-driver=org.gjt.mm.mysql.Driver<br></br>
-url=jdbc:mysql://localhost/testdb<br></br>
-user=testuser<br></br>
+type=javax.sql.DataSource
+driver=org.gjt.mm.mysql.Driver
+url=jdbc:mysql://localhost/testdb
+user=testuser
 password=testing
 </dd>
 <dt>application1/default.properties</dt>
 <dd>
-name=My Application<br></br>
+name=My Application<br>
 version=v3.4
 </dd>
 <dt>application1/ds.properties</dt>
 <dd>
-TestDS.type=javax.sql.DataSource<br></br>
-TestDS.driver=org.gjt.mm.mysql.Driver<br></br>
-TestDS.url=jdbc:mysql://localhost/testdb<br></br>
-TestDS.user=testuser<br></br>
+TestDS.type=javax.sql.DataSource<br>
+TestDS.driver=org.gjt.mm.mysql.Driver<br>
+TestDS.url=jdbc:mysql://localhost/testdb<br>
+TestDS.user=testuser<br>
 TestDS.password=testing
 </dd>
 <dt>application1/users.properties</dt>
 <dd>
-admin=fred<br></br>
-customer=jim<br></br>
-quantity=5<br></br>
-quantity.type=java.lang.Integer<br></br>
-enabled=true<br></br>
+admin=fred<br>
+customer=jim<br>
+quantity=5<br>
+quantity.type=java.lang.Integer<br>
+enabled=true<br>
 enabled.type=java.lang.Boolean
 </dd>
 </dl>
