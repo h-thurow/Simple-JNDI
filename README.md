@@ -209,7 +209,7 @@ application1/ds.properties
 <li>Tests ported to JUnit 4. 
 <li>Maven 2/3 support. 
 <li>Support for basic datatypes (Byte, Short, Integer, Long, Float, Double, Character) in .properties/.ini/.xml files added.
-<li>Support for quotation marks (quotation marks get removed)
+<li>Support for values in quotation marks (quotation marks get removed)
 </ul>
 
 <h4>Failed Tests in 0.11.4.1</h4>
