@@ -3,39 +3,19 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <!--<name>simple-jndi</name>-->
-  <groupId>simple-jndi</groupId>
+  <groupId>com.github.h-thurow</groupId>
   <artifactId>simple-jndi</artifactId>
-  <version>0.12.0</version>
-  <organization>
-    <name>OSJava</name>
-    <url>https://code.google.com/archive/p/osjava/</url>
-    <!--<logo>/images/osjava.gif</logo>-->
-  </organization>
-  <inceptionYear>2003</inceptionYear>
-  <!--<package>org.osjava</package>-->
-  <!--<logo>/images/simple-jndi-logo.png</logo>-->
+  <version>0.12.0-SNAPSHOT</version>
+  <name>${project.groupId}:${project.artifactId}</name>
   <description>
-    A simple implementation of JNDI. It is entirely library based, so no server instances are started, and it sits upon Java .properties files, XML files or .ini files, so it is easy to use and simple to understand. The .properties/.xml/.ini files may be either on the file system or in the classpath.
+    A simple implementation of JNDI. It is entirely memory based, so no server instances are started. The structure of a root directory serves as a model for the contexts structure. The contexts get populated with Objects defined by .properties files, XML files or Windows-style .ini files.
   </description>
-  <!--<shortDescription>A JNDI implementation using .properties</shortDescription>-->
-  <url>https://code.google.com/archive/p/osjava/</url>
-  <!--<issueTrackingUrl>http://code.google.com/p/osjava/issues/list</issueTrackingUrl>-->
-  <!--<siteAddress>dist.osjava.org/maven/simple-jndi</siteAddress>-->
-  <!--<siteDirectory>/sites/org/osjava/www/maven/genjava/simple-jndi/</siteDirectory>-->
-  <!--<distributionDirectory>/sites/org/osjava/www/maven/builds/</distributionDirectory>-->
-  <!--<repository>-->
-    <!--<connection>scm:svn:http://osjava.googlecode.com/svn/trunk/simple-jndi</connection>-->
-    <!--<url>http://code.google.com/p/osjava/source/checkout</url>-->
-  <!--</repository>-->
-  <mailingLists>
-    <mailingList>
-      <name>osjava google group</name>
-      <subscribe>http://groups.google.com/group/osjava</subscribe>
-      <unsubscribe>http://groups.google.com/group/osjava</unsubscribe>
-      <archive>http://groups.google.com/group/osjava</archive>
-    </mailingList>
-  </mailingLists>
+  <url>https://github.com/h-thurow/Simple-JNDI</url>
+  <scm>
+    <connection>>scm:git:git//github.com/h-thurow/Simple-JNDI.git</connection>
+    <developerConnection>scm:git:ssh//github.com/h-thurow/Simple-JNDI.git</developerConnection>
+    <url>https://github.com/h-thurow/Simple-JNDI</url>
+  </scm>
   <developers>
     <developer>
       <name>Henri Yandell</name>
@@ -65,7 +45,6 @@
         <role>developer</role>
       </roles>
     </contributor>
-    <!-- TODO add dynamic converter author -->
   </contributors>
   <dependencies>
     <dependency>
@@ -98,6 +77,12 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+  <distributionManagement>
+    <snapshotRepository>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
+  </distributionManagement>
   <build>
     <plugins>
       <plugin>
@@ -131,6 +116,16 @@
                 </execution>
             </executions>
         </plugin>
+      <plugin>
+        <groupId>org.sonatype.plugins</groupId>
+        <artifactId>nexus-staging-maven-plugin</artifactId>
+        <version>1.6.7</version>
+        <configuration>
+          <serverId>ossrh</serverId>
+          <nexusUrl>https://oss.sonatype.org</nexusUrl>
+          <autoReleaseAfterClose>true</autoReleaseAfterClose>
+        </configuration>
+      </plugin>
     </plugins>
     <sourceDirectory>src/java</sourceDirectory>
     <testSourceDirectory>src/test</testSourceDirectory>
@@ -150,7 +145,6 @@
         <targetPath>roots</targetPath>
       </testResource>
     </testResources>
-    <!--<nagEmailAddress>bayard@osjava.org</nagEmailAddress>-->
   </build>
 </project>
 
