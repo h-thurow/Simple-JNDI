@@ -11,9 +11,9 @@ The JNDI implementation is entirely memory based, so no server instances are sta
 
 <h3>Download</h3>
 
-<a href=https://github.com/h-thurow/Simple-JNDI/raw/master/dist/simple-jndi-1.0.0.jar>simple-jndi-1.0.0.jar</a><br>
-<a href=https://github.com/h-thurow/Simple-JNDI/raw/master/dist/simple-jndi-1.0.0-sources.jar>simple-jndi-1.0.0-sources.jar</a><br>
-<a href=https://github.com/h-thurow/Simple-JNDI/raw/master/dist/simple-jndi-1.0.0-test-sources.jar>simple-jndi-1.0.0-test-sources.jar</a><br>
+<a href=https://github.com/h-thurow/Simple-JNDI/raw/master/dist/simple-jndi-0.12.0.jar>simple-jndi-0.12.0.jar</a><br>
+<a href=https://github.com/h-thurow/Simple-JNDI/raw/master/dist/simple-jndi-0.12.0-sources.jar>simple-jndi-0.12.0-sources.jar</a><br>
+<a href=https://github.com/h-thurow/Simple-JNDI/raw/master/dist/simple-jndi-0.12.0-test-sources.jar>simple-jndi-0.12.0-test-sources.jar</a><br>
 <a href=https://github.com/h-thurow/Simple-JNDI/raw/master/dist/simple-jndi-0.11.4.1-manual.zip>simple-jndi-0.11.4.1-manual.zip</a><br>
 
 <h3>Installing Simple-JNDI</h3>
@@ -253,7 +253,7 @@ SimpleJndi
 		SharedMemoryTestSimpleContextFactory.java
 			testSjn73()
 </pre>        
-<h4>Tests in 1.0.0</h4>
+<h4>Tests in 0.12.0</h4>
 <pre>
 -------------------------------------------------------
  T E S T S
