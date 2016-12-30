@@ -6,7 +6,7 @@
   <!--<name>simple-jndi</name>-->
   <groupId>simple-jndi</groupId>
   <artifactId>simple-jndi</artifactId>
-  <version>1.0.0</version>
+  <version>0.12.0</version>
   <organization>
     <name>OSJava</name>
     <url>https://code.google.com/archive/p/osjava/</url>
