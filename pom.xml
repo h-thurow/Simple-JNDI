@@ -11,6 +11,11 @@
     A simple implementation of JNDI. It is entirely memory based, so no server instances are started. The structure of a root directory serves as a model for the contexts structure. The contexts get populated with Objects defined by .properties files, XML files or Windows-style .ini files.
   </description>
   <url>https://github.com/h-thurow/Simple-JNDI</url>
+    <licenses>
+        <license>
+            <url>https://raw.githubusercontent.com/h-thurow/Simple-JNDI/master/LICENSE.txt</url>
+        </license>
+    </licenses>
   <scm>
     <connection>>scm:git:git//github.com/h-thurow/Simple-JNDI.git</connection>
     <developerConnection>scm:git:ssh//github.com/h-thurow/Simple-JNDI.git</developerConnection>
