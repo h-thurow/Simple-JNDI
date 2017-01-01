@@ -15,7 +15,13 @@ The JNDI implementation is entirely memory based, so no server instances are sta
 <a href=https://github.com/h-thurow/Simple-JNDI/raw/master/dist/simple-jndi-0.12.0-sources.jar>simple-jndi-0.12.0-sources.jar</a><br>
 <a href=https://github.com/h-thurow/Simple-JNDI/raw/master/dist/simple-jndi-0.12.0-test-sources.jar>simple-jndi-0.12.0-test-sources.jar</a><br>
 <a href=https://github.com/h-thurow/Simple-JNDI/raw/master/dist/simple-jndi-0.11.4.1-manual.zip>simple-jndi-0.11.4.1-manual.zip</a><br>
-
+<pre>
+&lt;dependency>
+    &lt;groupId>com.github.h-thurow&lt;/groupId>
+    &lt;artifactId>simple-jndi&lt;/artifactId>
+    &lt;version>0.12.0&lt;/version>
+&lt;/dependency>
+</pre>
 <h3>Installing Simple-JNDI</h3>
 
 After download, installing Simple-JNDI is as simple as adding the simple-jndi jar to your classpath. Some of the features 
