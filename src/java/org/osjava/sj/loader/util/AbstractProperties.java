@@ -37,6 +37,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.*;
 
+/**
+ * To extract configuration from different file formats, e. g. .xml and .ini files, and not only from property files.
+ */
 public abstract class AbstractProperties extends Properties {
 
     private static final String doubleQuote = "\"";
@@ -55,6 +58,7 @@ public abstract class AbstractProperties extends Properties {
         super(props);
     }
 
+    @Override
     public abstract void load(InputStream in) throws IOException;
 
     public void setDelimiter(String delimiter) {
@@ -65,6 +69,7 @@ public abstract class AbstractProperties extends Properties {
         return this.delimiter;
     }
 
+    @Override
     public synchronized Object put(Object key, Object value) {
         if(index.contains(key)) {
             Object obj = get(key);
@@ -82,23 +87,28 @@ public abstract class AbstractProperties extends Properties {
         return super.put(key, value);
     }
 
+    @Override
     public synchronized Object setProperty(String key, String value) {
         return put(key,value);
     }
-    
+
+    @Override
     public synchronized Object remove(Object key) {
         index.remove(key);
         return super.remove(key);
     }
     
     // simple implementation that depends on keySet.
+    @Override
     public synchronized Enumeration propertyNames() {
         return Collections.enumeration( keySet() );
     }
+    @Override
     public synchronized Enumeration keys() {
         return propertyNames();
     }
-    
+
+    @Override
     public synchronized Set keySet() {
         return new OrderedSet(index);
     }
@@ -108,6 +118,7 @@ public abstract class AbstractProperties extends Properties {
      * Currently will write out defaults as well, which is not 
      * in the specification.
      */
+    @Override
     public void save(OutputStream outstrm, String header) {
         super.save(outstrm,header);
     }
@@ -115,6 +126,7 @@ public abstract class AbstractProperties extends Properties {
      * Currently will write out defaults as well, which is not 
      * in the specification.
      */
+    @Override
     public void store(OutputStream outstrm, String header) throws IOException {
         super.store(outstrm,header);
     }

@@ -38,12 +38,16 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 
+/**
+ * Adds support for multi-line statements.
+ */
 public class CustomProperties extends AbstractProperties {
 
+    @Override
     public synchronized void load(InputStream in) throws IOException {
         try {
             BufferedReader reader = new BufferedReader( new InputStreamReader(in) );
-            String line = "";
+            String line;
             String nextLine = null;
             while( (line = reader.readLine()) != null) {
 
