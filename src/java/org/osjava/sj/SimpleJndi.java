@@ -45,10 +45,10 @@ import java.util.Hashtable;
  * job is to hide the JndiLoader, apart from a jndi.properties entry.
  * Can also handle switching . to / so that the delimiter may be settable.
  */
-public class SimpleContext {
+public class SimpleJndi {
 
     public static final String SIMPLE_ROOT = "org.osjava.sj.root";
-    public static final String SIMPLE_DELEGATE = "org.osjava.sj.factory";
+    public static final String CONTEXT_FACTORY = "org.osjava.sj.factory";
     // option for top level space; ie) java:comp
     public static final String SIMPLE_SPACE = "org.osjava.sj.space";
     public static final String SIMPLE_SHARED = "org.osjava.sj.jndi.shared";
@@ -63,7 +63,7 @@ public class SimpleContext {
      * By default allow system properties to override environment. Siehe
      * {@link org.osjava.sj.jndi.AbstractContext#AbstractContext(Hashtable)}
      */
-    SimpleContext(Hashtable environment) {
+    SimpleJndi(Hashtable environment) {
         this.environment = environment;
         overwriteEnvironmentWithSystemProperties();
     }
@@ -78,7 +78,13 @@ public class SimpleContext {
         ctxt = createENC(environment, ctxt);
         try {
             final JndiLoader loader = new JndiLoader(environment);
-            loader.loadDirectory( new File(root), ctxt );
+            final File rootFile = new File(root);
+            if (rootFile.isDirectory()) {
+                loader.loadDirectory(rootFile, ctxt );
+            }
+            else if(rootFile.isFile()) {
+                loader.load(loader.toProperties(rootFile), ctxt);
+            }
         } catch(IOException ioe) {
             throw new NamingException("Unable to load data from directory: "+root+" due to error: "+ioe.getMessage());
         }
@@ -122,10 +128,10 @@ public class SimpleContext {
     }
 
     private InitialContext createInitialContext() throws NamingException {
-        if(!environment.containsKey(SIMPLE_DELEGATE)) {
-            environment.put(SIMPLE_DELEGATE, "org.osjava.sj.memory.MemoryContextFactory");
+        if(!environment.containsKey(CONTEXT_FACTORY)) {
+            environment.put(CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
         }
-        environment.put("java.naming.factory.initial", environment.get(SIMPLE_DELEGATE) );
+        environment.put("java.naming.factory.initial", environment.get(CONTEXT_FACTORY) );
         // Hier wird MemoryContextFactory#getInitialContext() gerufen!
         return new InitialContext(environment);
     }
@@ -135,7 +141,7 @@ public class SimpleContext {
         overwriteFromSystemProperty(SIMPLE_ROOT);
         overwriteFromSystemProperty(SIMPLE_SPACE);
         overwriteFromSystemProperty(JndiLoader.SIMPLE_SHARED);
-        overwriteFromSystemProperty(SIMPLE_DELEGATE);
+        overwriteFromSystemProperty(CONTEXT_FACTORY);
     }
 
     private void overwriteFromSystemProperty(String key) {

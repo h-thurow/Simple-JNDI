@@ -59,30 +59,27 @@ public class JndiLoaderTest {
     @Before
     public void setUp() {
 
+        Hashtable env = new Hashtable();
+
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
         /* The default is 'flat', which isn't hierarchial and not what I want. */
+        env.put("jndi.syntax.direction", "left_to_right");
         /* Separator is required for non-flat */
-
-        Hashtable contextEnv = new Hashtable();
-
-        /* For GenericContext */
-        contextEnv.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
-        contextEnv.put("jndi.syntax.direction", "left_to_right");
-        contextEnv.put("jndi.syntax.separator", "/");
-        /**/
+        env.put("jndi.syntax.separator", "/");
+        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
 
         /* For Directory-Naming
-        contextEnv.put(Context.INITIAL_CONTEXT_FACTORY, "org.apache.naming.java.javaURLContextFactory");
-        contextEnv.put(Context.URL_PKG_PREFIXES, "org.apache.naming");
-        contextEnv.put("jndi.syntax.direction", "left_to_right");
-        contextEnv.put("jndi.syntax.separator", "/");
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.apache.naming.java.javaURLContextFactory");
+        env.put(Context.URL_PKG_PREFIXES, "org.apache.naming");
+        env.put("jndi.syntax.direction", "left_to_right");
+        env.put("jndi.syntax.separator", "/");
         */
 
-        contextEnv.put(JndiLoader.SIMPLE_DELIMITER, "/");
-
-        loader = new JndiLoader(contextEnv);
+        loader = new JndiLoader(env);
         
         try {
-            ctxt = new InitialContext(contextEnv);
+            // Creates an empty initial MemoryContext.
+            ctxt = new InitialContext(env);
         } catch(NamingException ne) {
             ne.printStackTrace();
         }
@@ -145,6 +142,14 @@ public class JndiLoaderTest {
             ne.printStackTrace();
             fail("NamingException: "+ne.getMessage());
         }
+    }
+
+    @Test
+    public void testFileAsRoot() throws Exception {
+        loader.load(loader.toProperties(
+                new File("src/test/roots/fileAsRoot.cfg")), ctxt);
+        final String infoCmd = (String) ctxt.lookup("IMAGE_INFO_CMD");
+        assertEquals(". /.profile_opix;$OCHOME/opt/Python-2.7/bin/python $OCHOME/opt/image_processor/scripts/imageinfo.py", infoCmd);
     }
 
     @Test

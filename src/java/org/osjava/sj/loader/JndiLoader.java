@@ -79,21 +79,14 @@ public class JndiLoader {
 
     }
     
-    public void putParameter(String key, String value) {
-        table.put(key, value);
-    }
-
-    public String getParameter(String key) {
-        return (String) table.get(key);
-    }
-
     /**
      * Loads all .properties files in a directory into a context
      */
     public void loadDirectory(File directory, Context ctxt) throws NamingException, IOException {
         loadDirectory(directory, ctxt, null, "");
     }
-    public void loadDirectory(File directory, Context ctxt, Context parentCtxt, String ctxtName) throws NamingException, IOException {
+
+    private void loadDirectory(File directory, Context ctxt, Context parentCtxt, String ctxtName) throws NamingException, IOException {
 // System.err.println("Loading directory. ");
 
         if( !directory.isDirectory() ) {
@@ -106,44 +99,43 @@ public class JndiLoader {
             return;
         }
 
-        for(int i=0; i<files.length; i++) {
-            File file = files[i];
+        for (File file : files) {
             String name = file.getName();
 
             String colonReplace = (String) this.table.get(SIMPLE_COLON_REPLACE);
-            if(colonReplace != null) {
-                if(name.indexOf(colonReplace) != -1) {
-                    name = Utils.replace( name, colonReplace, ":" );
+            if (colonReplace != null) {
+                if (name.contains(colonReplace)) {
+                    name = Utils.replace(name, colonReplace, ":");
                 }
             }
 // System.err.println("Consider: "+name);
             // TODO: Replace hack with a FilenameFilter
 
-            if( file.isDirectory() ) {
+            if (file.isDirectory()) {
                 // HACK: Hack to stop it looking in .svn or CVS
-                if(name.equals(".svn") || name.equals("CVS")) {
+                if (name.equals(".svn") || name.equals("CVS")) {
                     continue;
                 }
 
 // System.err.println("Is directory. Creating subcontext: "+name);
-                Context tmpCtxt = ctxt.createSubcontext( name );
+                Context tmpCtxt = ctxt.createSubcontext(name);
                 loadDirectory(file, tmpCtxt, ctxt, name);
-            } else {
+            }
+            else {
                 // TODO: Make this a plugin system
-                String[] extensions = new String[] { ".properties", ".ini", ".xml" };
-                for(int j=0; j<extensions.length; j++) {
-                    String extension = extensions[j];
-                    if( file.getName().endsWith(extension) ) {
+                String[] extensions = new String[]{".properties", ".ini", ".xml"};
+                for (String extension : extensions) {
+                    if (file.getName().endsWith(extension)) {
 // System.err.println("Is "+extension+" file. "+name);
                         Context tmpCtxt = ctxt;
-                        if(!file.getName().equals("default"+extension)) {
+                        if (!file.getName().equals("default" + extension)) {
                             name = name.substring(0, name.length() - extension.length());
 // System.err.println("Not default, so creating subcontext: "+name);
-                            tmpCtxt = ctxt.createSubcontext( name );
+                            tmpCtxt = ctxt.createSubcontext(name);
                             parentCtxt = ctxt;
                             ctxtName = name;
                         }
-                        load( loadFile(file), tmpCtxt, parentCtxt, ctxtName );
+                        load(toProperties(file), tmpCtxt, parentCtxt, ctxtName);
                     }
                 }
             }
@@ -151,9 +143,14 @@ public class JndiLoader {
 
     }
 
-    private Properties loadFile(File file) throws IOException {
+    /**
+     * 
+     * @return xml file: {@link XmlProperties}. ini file: {@link IniProperties}. Sonst {@link CustomProperties}.
+     * @throws IOException
+     */
+    public Properties toProperties(File file) throws IOException {
 //        System.err.println("LOADING: "+file);
-        AbstractProperties p = null;
+        AbstractProperties p;
 
         if(file.getName().endsWith(".xml")) {
             p = new XmlProperties();
@@ -183,8 +180,8 @@ public class JndiLoader {
     public void load(Properties properties, Context ctxt) throws NamingException {
         load(properties, ctxt, null, "");
     }
+
     public void load(Properties properties, Context ctxt, Context parentCtxt, String ctxtName) throws NamingException {
- //       System.err.println("Loading Properties: " + properties);
 
         String delimiter = (String) this.table.get(SIMPLE_DELIMITER);
         String typePostfix = delimiter + "type";
@@ -235,7 +232,7 @@ public class JndiLoader {
                 continue;
             }
 
-            if(key.indexOf(delimiter) != -1) {
+            if(key.contains(delimiter)) {
                 String pathText = removeLastElement( key, delimiter );
                 String nodeText = getLastElement( key, delimiter );
 // System.err.println("PathText: "+pathText+" NodeText: "+nodeText);
@@ -247,26 +244,23 @@ public class JndiLoader {
                 }
             } else
             if(typeMap.containsKey("")) {
-// System.err.println("Empty Sibling: "+key);
                     ( (Properties) typeMap.get("") ).put(key, value);
                     continue;
             }
 
-// System.err.println("Putting: "+key);
             jndiPut(ctxt, key, value);
         }
 
-        Iterator typeIterator = typeMap.keySet().iterator();
-        while(typeIterator.hasNext()) {
-            String typeKey = (String) typeIterator.next();
+        for (Object key : typeMap.keySet()) {
+            String typeKey = (String) key;
             Properties typeProperties = (Properties) typeMap.get(typeKey);
 
             Object value = convert(typeProperties);
-// System.err.println("Putting typed: "+typeKey);
-            if(typeKey.equals("")) {
-                jndiPut( parentCtxt, ctxtName, value );
-            } else {
-                jndiPut( ctxt, typeKey, value );
+            if (typeKey.equals("")) {
+                jndiPut(parentCtxt, ctxtName, value);
+            }
+            else {
+                jndiPut(ctxt, typeKey, value);
             }
         }
 

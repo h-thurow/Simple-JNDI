@@ -40,7 +40,7 @@
 
 package org.osjava.sj.memory;
 
-import org.osjava.sj.SimpleContext;
+import org.osjava.sj.SimpleJndi;
 import org.osjava.sj.jndi.DelegatingContext;
 
 import javax.naming.Context;
@@ -73,12 +73,12 @@ public class MemoryContextFactory implements InitialContextFactory {
      */
     public Context getInitialContext(Hashtable environment) throws NamingException {
         final Boolean isShared = Boolean.valueOf(
-                (String) environment.get(SimpleContext.SIMPLE_SHARED));
+                (String) environment.get(SimpleJndi.SIMPLE_SHARED));
         if (!isShared) {
             return new MemoryContext(environment);
         }
         else {
-            final String root = (String) environment.get(SimpleContext.SIMPLE_ROOT);
+            final String root = (String) environment.get(SimpleJndi.SIMPLE_ROOT);
             final Context ctx = contextsByRoot.get(root);
             // ctx.listBindings("").hasMore(): Ob alle Kontexte zerstört wurden.
             if (ctx != null) {
