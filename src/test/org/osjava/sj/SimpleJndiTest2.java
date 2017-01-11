@@ -7,7 +7,9 @@ import javax.naming.InitialContext;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
+import java.io.File;
 import java.util.Hashtable;
+import java.util.List;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -678,6 +680,36 @@ public class SimpleJndiTest2 {
             ctx1 = new InitialContext(env);
             final String infoCmd = (String) ctx1.lookup("IMAGE_INFO_CMD");
             assertEquals(". /.profile_opix;$OCHOME/opt/Python-2.7/bin/python $OCHOME/opt/image_processor/scripts/imageinfo.py", infoCmd);
+        }
+        finally {
+            if (ctx1 != null) {
+                ctx1.close();
+            }
+        }
+    }
+
+    @Test
+    public void testFileListAsRoot() throws Exception {
+        InitialContext ctx1 = null;
+        try {
+            final Hashtable<String, String> env = new Hashtable<String, String>();
+            env.put("org.osjava.sj.root",
+                    "src/test/roots/fileAsRoot.cfg" + File.pathSeparator +
+                           "src/test/roots/shareContext1/directory1/directory1_file1.properties" + File.pathSeparator +
+                            // delibrately missing file. Error is logged.
+                            "doesNotExist.cfg" + File.pathSeparator +
+                    // mix files with directories
+                    "src/test/roots/multiValueAttributes");
+            env.put("org.osjava.sj.jndi.shared", "true");
+            env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
+            env.put("org.osjava.sj.delimiter", "/");
+//        env.put("org.osjava.sj.space", "java:comp/env");
+            ctx1 = new InitialContext(env);
+            final String infoCmd = (String) ctx1.lookup("IMAGE_INFO_CMD");
+            assertEquals(". /.profile_opix;$OCHOME/opt/Python-2.7/bin/python $OCHOME/opt/image_processor/scripts/imageinfo.py", infoCmd);
+            assertEquals("'quotes' \"inside\"", ctx1.lookup("quotesInside"));
+            List<Boolean> booleans = (List<Boolean>) ctx1.lookup("booleans/person/myBooleans");
+            assertEquals(true, booleans.get(0));
         }
         finally {
             if (ctx1 != null) {

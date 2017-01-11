@@ -52,6 +52,7 @@ public class IniProperties extends AbstractProperties {
      * semi-colons are comments. blocks are denoted with square brackets.
      * values are then key=value pairs, with blocks being prepended to keys.
      */
+    @Override
     public synchronized void load(InputStream in) throws IOException {
         try {
             BufferedReader reader = new BufferedReader( new InputStreamReader(in) );

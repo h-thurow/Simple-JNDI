@@ -32,20 +32,15 @@
 
 package org.osjava.sj.loader.util;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
+import org.w3c.dom.*;
+import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 
 /**
  * Loads properties using the DOM API from an InputStream containing XML
@@ -60,6 +55,7 @@ public class XmlProperties extends AbstractProperties {
         super(props);
     }
 
+    @Override
     public void load(InputStream in) throws IOException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = null;
@@ -110,15 +106,15 @@ public class XmlProperties extends AbstractProperties {
                      
         processChildren(level, node);        
     }
-        
-    private void addAttributes(String level, NamedNodeMap map) {       
+
+    private void addAttributes(String level, NamedNodeMap map) {
         for(int i=0;i<map.getLength();i++) {
             Node attribute = map.item(i);
             String attributeLevel = level + getDelimiter() + attribute.getNodeName();
             store(attributeLevel, attribute.getNodeValue());
         }          
     }
-    
+
     private void store(String name, String value) {
         if (value.trim().length() > 0) {
             setProperty(name, value);

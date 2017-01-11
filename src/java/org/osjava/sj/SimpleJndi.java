@@ -33,6 +33,8 @@ package org.osjava.sj;
 
 import org.osjava.sj.loader.JndiLoader;
 import org.osjava.sj.loader.util.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -52,6 +54,8 @@ public class SimpleJndi {
     // option for top level space; ie) java:comp
     public static final String SIMPLE_SPACE = "org.osjava.sj.space";
     public static final String SIMPLE_SHARED = "org.osjava.sj.jndi.shared";
+    private static final Logger logger = LoggerFactory.getLogger(SimpleJndi.class);
+
     private Hashtable environment;
 
     /**
@@ -71,19 +75,25 @@ public class SimpleJndi {
     InitialContext loadRoot() throws NamingException {
         initializeStandardJndiEnvironment();
 
-        String root = getRoot(environment);
-
         final InitialContext initialContext = createInitialContext();
         Context ctxt = initialContext;
         ctxt = createENC(environment, ctxt);
+        String root = getRoot(environment);
+
         try {
             final JndiLoader loader = new JndiLoader(environment);
-            final File rootFile = new File(root);
-            if (rootFile.isDirectory()) {
-                loader.loadDirectory(rootFile, ctxt );
-            }
-            else if(rootFile.isFile()) {
-                loader.load(loader.toProperties(rootFile), ctxt);
+            final String[] roots = root.split(File.pathSeparator);
+            for (String path : roots) {
+                final File rootFile = new File(path);
+                if (rootFile.isDirectory()) {
+                    loader.loadDirectory(rootFile, ctxt );
+                }
+                else if (rootFile.isFile()) {
+                    loader.load(loader.toProperties(rootFile), ctxt);
+                }
+                else {
+                    logger.error("Could not load properties from {}. Not found.", rootFile.getAbsolutePath());
+                }
             }
         } catch(IOException ioe) {
             throw new NamingException("Unable to load data from directory: "+root+" due to error: "+ioe.getMessage());

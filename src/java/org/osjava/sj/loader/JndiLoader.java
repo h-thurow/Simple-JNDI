@@ -69,10 +69,7 @@ public class JndiLoader {
         if(!env.containsKey(SIMPLE_DELIMITER)) {
             throw new IllegalArgumentException("The property "+SIMPLE_DELIMITER+" is mandatory. ");
         }
-        
-
         this.table.put(SIMPLE_DELIMITER, env.get(SIMPLE_DELIMITER));
-
         if(env.containsKey(SIMPLE_COLON_REPLACE)) {
             this.table.put(SIMPLE_COLON_REPLACE, env.get(SIMPLE_COLON_REPLACE));
         }
@@ -144,7 +141,7 @@ public class JndiLoader {
     }
 
     /**
-     * 
+     *
      * @return xml file: {@link XmlProperties}. ini file: {@link IniProperties}. Sonst {@link CustomProperties}.
      * @throws IOException
      */
