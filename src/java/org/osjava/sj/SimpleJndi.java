@@ -31,6 +31,7 @@
  */
 package org.osjava.sj;
 
+import org.apache.commons.io.FilenameUtils;
 import org.osjava.sj.loader.JndiLoader;
 import org.osjava.sj.loader.util.Utils;
 import org.slf4j.Logger;
@@ -79,24 +80,31 @@ public class SimpleJndi {
         Context ctxt = initialContext;
         ctxt = createENC(environment, ctxt);
         String root = getRoot(environment);
-
-        try {
-            final JndiLoader loader = new JndiLoader(environment);
-            final String[] roots = root.split(File.pathSeparator);
-            for (String path : roots) {
-                final File rootFile = new File(path);
+        final JndiLoader loader = new JndiLoader(environment);
+        final String[] roots = root.split(File.pathSeparator);
+        for (String path : roots) {
+            final File rootFile = new File(path);
+            try {
                 if (rootFile.isDirectory()) {
-                    loader.loadDirectory(rootFile, ctxt );
+                    loader.loadDirectory(rootFile, ctxt);
                 }
                 else if (rootFile.isFile()) {
-                    loader.load(loader.toProperties(rootFile), ctxt);
+                    Context tmpCtx = ctxt;
+                    if (environment.containsKey("org.osjava.sj.filenameToContext")) {
+                        tmpCtx = ctxt.createSubcontext(FilenameUtils.removeExtension(
+                                rootFile.getName()));
+                    }
+                    loader.load(loader.toProperties(rootFile), tmpCtx);
                 }
                 else {
-                    logger.error("Could not load properties from {}. Not found.", rootFile.getAbsolutePath());
+                    throw new NamingException("Unable to load data from " +
+                            rootFile.getAbsolutePath());
                 }
             }
-        } catch(IOException ioe) {
-            throw new NamingException("Unable to load data from directory: "+root+" due to error: "+ioe.getMessage());
+            catch (IOException e) {
+                throw new NamingException("Unable to load data from " +
+                        rootFile.getAbsolutePath()+" due to error: " + e.getMessage());
+            }
         }
         return initialContext;
     }
@@ -110,9 +118,9 @@ public class SimpleJndi {
     private Context createENC(Hashtable env, Context ctxt) throws NamingException {
         String space = (String) env.get(SIMPLE_SPACE);
         if(space != null) {
-            String[] array = Utils.split(space, (String) env.get(JndiLoader.SIMPLE_DELIMITER) );
-            for (String anArray : array) {
-                ctxt = ctxt.createSubcontext(anArray);
+            String[] contextNames = Utils.split(space, (String) env.get(JndiLoader.SIMPLE_DELIMITER) );
+            for (String name : contextNames) {
+                ctxt = ctxt.createSubcontext(name);
             }
         }
         return ctxt;
