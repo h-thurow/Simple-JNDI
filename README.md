@@ -199,6 +199,7 @@ application1/ds.properties
 <h3>Dealing with "java:comp/env" while loading</h3>
 
  <p>Windows does not like having a : in a filename, so to deal with the : you can use the <code>org.osjava.sj.colon.replace</code> property. If, for example, you choose to replace a <code>:</code> with <code>--</code> (ie <code>org.osjava.sj.colon.replace=--</code>), then you will need a file named <code>java--.properties</code>, or a directory named <code>java--</code>. Alternatively, the next section "Dealing with ENCs while loading" provides a different way of handling things. </p>
+<p>An easier way to achieve the same result is putting a default.properties direct under your root. In this file declare all your context objects that should reside under "java:comp/env" by prefixing all properties with "java:comp/env", e. g. "java:comp/env/holger/thurow=186".</p>
 
 <h3>Dealing with ENCs while loading</h3>
 
