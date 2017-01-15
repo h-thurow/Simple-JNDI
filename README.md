@@ -79,6 +79,7 @@ The easiest way to understand is to consider a few examples. Imagine a file-stru
 <pre>
 config/
 config/debug.properties
+config/default.properties
 config/ProductionDS.properties
 config/application1/default.properties
 config/application1/ds.properties
