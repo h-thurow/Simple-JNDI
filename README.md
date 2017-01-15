@@ -50,10 +50,9 @@ org.osjava.sj.root=config/
 
 # NEW in 0.13.0: Specify a list of files and/or directories. Separate them by the platform specific path separator
 org.osjava.sj.root=file1.cfg:directory1/file.properties:directory2
-
 </pre>
 <p>
-If no org.osjava.sj.root is specified, an Exception is thrown. When classpath support is re-implemented, then a classpath root will be chosen, with no package.
+If no org.osjava.sj.root is specified, an Exception is thrown.
 </p>
 <p>
 The second (optional) parameter is the delimiter used to separate elements in a lookup value. This allows code to get closer to pretending to be another JNDI implementation, such as DNS or LDAP.</p>
