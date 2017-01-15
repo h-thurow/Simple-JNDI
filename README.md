@@ -213,7 +213,7 @@ application1/ds.properties
 <li>Changed the way contexts are shared, because of ContextNotEmptyException with type=javax.sql.DataSource. 
 <li>Tests ported to JUnit 4. 
 <li>Maven 2/3 support. 
-<li>Support for additional basic datatypes (Byte, Short, Integer, Long, Float, Double, Character) in .properties/.ini/.xml files added.
+<li>Support for additional basic datatypes (Byte, Short, Integer, Long, Float, Double, Character) in type declaration.
 <li>Support for values in quotation marks (quotation marks get removed)
 </ul>
 
