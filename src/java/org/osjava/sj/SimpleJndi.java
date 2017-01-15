@@ -52,7 +52,7 @@ public class SimpleJndi {
 
     public static final String SIMPLE_ROOT = "org.osjava.sj.root";
     public static final String CONTEXT_FACTORY = "org.osjava.sj.factory";
-    // option for top level space; ie) java:comp
+    /** Option for top level space (ENC), e.g. "java:comp/env". */
     public static final String SIMPLE_SPACE = "org.osjava.sj.space";
     public static final String SIMPLE_SHARED = "org.osjava.sj.jndi.shared";
     private static final Logger logger = LoggerFactory.getLogger(SimpleJndi.class);

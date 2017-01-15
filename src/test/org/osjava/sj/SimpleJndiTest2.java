@@ -719,8 +719,6 @@ public class SimpleJndiTest2 {
         }
     }
 
-
-
     @Test
     public void testFileListAsRootTakeFileNameAsContext() throws Exception {
         InitialContext ctx1 = null;
@@ -747,6 +745,87 @@ public class SimpleJndiTest2 {
         finally {
             if (ctx1 != null) {
                 ctx1.close();
+            }
+        }
+    }
+
+    @Test
+    public void testEncPrefixedPropertiesRootFile() throws Exception {
+        InitialContext ctx = null;
+        try {
+            final Hashtable<String, String> env = new Hashtable<String, String>();
+            env.put("org.osjava.sj.root",
+                    "src/test/roots/encPrefixedProperties.properties");
+            env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
+            env.put("org.osjava.sj.delimiter", "/");
+            ctx = new InitialContext(env);
+            final String size = (String) ctx.lookup("java:comp/env/holger/thurow");
+            assertEquals("186", size);
+        }
+        finally {
+            if (ctx != null) {
+                ctx.close();
+            }
+        }
+    }
+
+    @Test
+    public void testEncPrefixedPropertiesRootDirectory() throws Exception {
+        InitialContext ctx = null;
+        try {
+            final Hashtable<String, String> env = new Hashtable<String, String>();
+            env.put("org.osjava.sj.root",
+                    "src/test/roots/enc");
+            env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
+            env.put("org.osjava.sj.delimiter", "/");
+            ctx = new InitialContext(env);
+            final String size = (String) ctx.lookup("java:comp/env/holger/thurow");
+            assertEquals("186", size);
+        }
+        finally {
+            if (ctx != null) {
+                ctx.close();
+            }
+        }
+    }
+
+    @Test
+    public void testEncPrefixedPropertiesDotSeparatedRootDirectory() throws Exception {
+        InitialContext ctx = null;
+        try {
+            final Hashtable<String, String> env = new Hashtable<String, String>();
+            env.put("org.osjava.sj.root",
+                    "src/test/roots/encDotSeparated");
+            env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
+            env.put("org.osjava.sj.delimiter", "."); // default, but to be explicit
+            ctx = new InitialContext(env);
+            final String size = (String) ctx.lookup("java:comp.env.holger.thurow");
+            assertEquals("186", size);
+        }
+        finally {
+            if (ctx != null) {
+                ctx.close();
+            }
+        }
+    }
+
+    @Test
+    public void testEncColonReplaced() throws Exception {
+        InitialContext ctx = null;
+        try {
+            final Hashtable<String, String> env = new Hashtable<String, String>();
+            env.put("org.osjava.sj.root",
+                    "src/test/roots/encColonReplacement");
+            env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
+            env.put("org.osjava.sj.delimiter", "."); // default, but to be explicit
+            env.put("org.osjava.sj.colon.replace", "--");
+            ctx = new InitialContext(env);
+            final String name = (String) ctx.lookup("java:comp.env.name");
+            assertEquals("Holger", name);
+        }
+        finally {
+            if (ctx != null) {
+                ctx.close();
             }
         }
     }
