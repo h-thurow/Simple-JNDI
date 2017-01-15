@@ -89,14 +89,14 @@ config/application1/users.properties
 <p>
 in which the files look like;
 <dl>
+<dt>debug.properties</dt>
+<dd>
+state=ERROR
+</dd>
 <dt>default.properties</dt>
 <dd>
 name=Prototype<br>
 url=http://www.generationjava.com/
-</dd>
-<dt>debug.properties</dt>
-<dd>
-state=ERROR
 </dd>
 <dt>ProductionDS.properties</dt>
 <dd>
