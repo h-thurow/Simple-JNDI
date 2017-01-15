@@ -14,7 +14,7 @@ import java.util.List;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
-public class SimpleJndiTest2 {
+public class SimpleJndiNewTest {
 
     /**
      * 0.11.4.1: javax.naming.ContextNotEmptyException
