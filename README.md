@@ -99,10 +99,10 @@ state=ERROR
 </dd>
 <dt>ProductionDS.properties</dt>
 <dd>
-type=javax.sql.DataSource
-driver=org.gjt.mm.mysql.Driver
-url=jdbc:mysql://localhost/testdb
-user=testuser
+type=javax.sql.DataSource<br>
+driver=org.gjt.mm.mysql.Driver<br>
+url=jdbc:mysql://localhost/testdb<br>
+user=testuser<br>
 password=testing
 </dd>
 <dt>application1/default.properties</dt>
@@ -128,17 +128,17 @@ enabled=true<br>
 enabled.type=java.lang.Boolean
 </dd>
 </dl>
-<p>The following pieces of Java are all legal ways in which to get values from Simple-JNDI. They assume they are preceded with a line of 'InitialContext ctxt = new InitialContext();'.</p>
+<p>The following pieces of Java are all legal ways in which to get values from Simple-JNDI. They assume that you set org.osjava.sj.root=config and that you instantiated ctxt by executing 'InitialContext ctxt = new InitialContext();'.</p>
 <ul>
-<li>Object value = ctxt.lookup("debug.state")</li>
-<li>Object value = ctxt.lookup("name")</li>
-<li>Object value = ctxt.lookup("url")</li>
-<li>Object value = ctxt.lookup("ProductionDS")</li>
-<li>Object value = ctxt.lookup("application1.name")</li>
-<li>Object value = ctxt.lookup("application1.TestDS")</li>
-<li>Object value = ctxt.lookup("application1.users.admin")</li>
-<li>Object value = ctxt.lookup("application1.users.quantity")</li>
-<li>Object value = ctxt.lookup("application1.users.enabled")</li>
+<li>String value = (String) ctxt.lookup("name")</li>
+<li>String value = (String) ctxt.lookup("url")</li>
+<li>String value = (String) ctxt.lookup("debug.state")</li>
+<li>DataSource value = (DataSource) ctxt.lookup("ProductionDS")</li>
+<li>String value = (String) ctxt.lookup("application1.name")</li>
+<li>DataSource value = (DataSource) ctxt.lookup("application1.ds.TestDS")</li>
+<li>String value = (String) ctxt.lookup("application1.users.admin")</li>
+<li>Integer value = (Integer) ctxt.lookup("application1.users.quantity")</li>
+<li>Boolean value = (Boolean) ctxt.lookup("application1.users.enabled")</li>
 </ul>
 Note that the ProductionDS and TestDS return types are objects of type javax.sql.DataSource, while application1.users.quantity is an Integer and application1.users.enabled is the Boolean true value. 
 </p>
