@@ -47,7 +47,7 @@ org.osjava.sj.root=/home/hen/gj/simple-jndi/config/
 # relative directory, using the default file protocol
 org.osjava.sj.root=config/
 
-# NEW in 0.13.0: Specify a list of files and/or directories. Separate them by the platform specific path separator
+# NEW in 0.13.0: Specify a list of files and/or directories. Separate them by the platform specific path separator.
 org.osjava.sj.root=file1.cfg:directory1/file.properties:directory2
 </pre>
 <p>
@@ -65,6 +65,7 @@ org.osjava.sj.delimiter=/
 <p>
 If no org.osjava.sj.delimiter is specified, then a '.' (dot) is chosen. 
 </p>
+<p>See also <a href="https://github.com/h-thurow/Simple-JNDI/wiki/01-Load-property-files-with-any-extension-from-any-location-(New-in-0.13.0)">Load property files with any extension from any location</a>.</p>
 
 <h3>Creating your data files</h3>
 
