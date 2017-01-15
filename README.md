@@ -7,7 +7,7 @@ Unit tests or prototype code often need to emulate the environment within which 
 common one is to get an object of type javax.sql.DataSource from JNDI so a java.sql.Connection to your database of 
 choice may be opened.
 
-The JNDI implementation is entirely memory based, so no server instances are started. The structure of a root directory serves as a model for the contexts structure. The contexts get populated with Objects defined by .properties files, XML files or Windows-style .ini files. The files may be either on the file system or in the classpath. Of course you can bind Objects programmatically to contexts too.
+The JNDI implementation is entirely memory based, so no server instances are started. The structure of a root directory serves as a model for the contexts structure. The contexts get populated with Objects defined by .properties files, XML files or Windows-style .ini files. Of course you can bind Objects programmatically to contexts too.
 
 <h3>Download</h3>
 
