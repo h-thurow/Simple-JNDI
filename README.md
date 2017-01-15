@@ -49,7 +49,7 @@ org.osjava.sj.root=/home/hen/gj/simple-jndi/config/
 org.osjava.sj.root=config/
 
 # NEW in 0.13.0: Specify a list of files and/or directories. Separate them by the platform specific path separator
-org.osjava.sj.root=file1.cfg;directory1/file.properties;directory2
+org.osjava.sj.root=file1.cfg:directory1/file.properties:directory2
 
 </pre>
 <p>
