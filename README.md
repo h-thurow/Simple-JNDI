@@ -15,7 +15,13 @@ The JNDI implementation is entirely memory based, so no server instances are sta
 <a href=https://github.com/h-thurow/Simple-JNDI/raw/master/dist/simple-jndi-0.12.0-sources.jar>simple-jndi-0.12.0-sources.jar</a><br>
 <a href=https://github.com/h-thurow/Simple-JNDI/raw/master/dist/simple-jndi-0.12.0-test-sources.jar>simple-jndi-0.12.0-test-sources.jar</a><br>
 <a href=https://github.com/h-thurow/Simple-JNDI/raw/master/dist/simple-jndi-0.11.4.1-manual.zip>simple-jndi-0.11.4.1-manual.zip</a><br>
-
+<pre>
+&lt;dependency>
+    &lt;groupId>com.github.h-thurow&lt;/groupId>
+    &lt;artifactId>simple-jndi&lt;/artifactId>
+    &lt;version>0.12.0&lt;/version>
+&lt;/dependency>
+</pre>
 <h3>Installing Simple-JNDI</h3>
 
 After download, installing Simple-JNDI is as simple as adding the simple-jndi jar to your classpath. Some of the features 
@@ -186,20 +192,19 @@ application1/ds.properties
       <tr class="b"><td>dbcpSoftMinEvictableIdleTimeMillis</td><td>See DBCP's GenericObjectPool</td><td>GenericObjectPool.DEFAULT_SOFT_MIN_EVICTABLE_IDLE_TIME_MILLIS</td></tr>
 </table>
 
-<h3>Memory implementation configuration</h3>
+<h3>Shared or unshared context?</h3>
 
-<p>Setting <code>org.osjava.sj.jndi.shared=true</code> will put the in-memory JNDI implementation into a mode whereby all InitialContext's share the same memory. By default this is not set, so two separate InitialContext's do not share the same memory and what is bound to one will not be viewable in the other. </p>
+<p>Setting <code>org.osjava.sj.jndi.shared=true</code> will put the in-memory JNDI implementation into a mode whereby all InitialContext's share the same memory. By default this is not set, so two separate InitialContext's do not share the same memory and what is bound to one will not be viewable in the other. This could be not what you want when using a DataSource or a connection pool because everytime you call new InitialContext() in your application a new DataSource or a new connection pool is created.</p>
 
-<h3>Dealing with "java:comp/env" while loading</h3>
+<h3>Dealing with "java:comp/env" (Environment Naming Context, ENC) while loading</h3>
 
- <p>Windows does not like having a : in a filename, so to deal with the : you can use the <code>org.osjava.sj.colon.replace</code> property. If, for example, you choose to replace a <code>:</code> with <code>--</code> (ie <code>org.osjava.sj.colon.replace=--</code>), then you will need a file named <code>java--.properties</code>, or a directory named <code>java--</code>. Alternatively, the next section "Dealing with ENCs while loading" provides a different way of handling things. </p>
+<p>Set the <code>org.osjava.sj.space</code> property. Whatever the property is set to will be automatically prepended to <i>every</i> value loaded into the system. Thus <code>org.osjava.sj.space=java:comp/env</code> simulates the JNDI environment of Tomcat. </p>
 
-<h3>Dealing with ENCs while loading</h3>
+<p>Another way to achieve a similar result is putting a default.properties directly under your root. In this file declare all your context objects that should reside under "java:comp/env" by prefixing all properties with "java:comp/env", e. g. "java:comp/env/my/size=186". This way you can set some context objects in "java:comp/env" and other objects in a different name space.</p>
 
-<p>To simulate an environment naming context (ENC), the <code>org.osjava.sj.space</code> property may be used. Whatever the property is set to will be automatically prepended to every value loaded into the system. Thus <code>org.osjava.sj.space=java:comp/env</code> simulates the JNDI environment of Tomcat. </p>
- <p>As <code>:</code> is usually found in an ENC, using this property to handle ENCs is a simpler way to handle the colon than using 
- the colon-replace property. </p>
- 
+ <p>You could also put a file named "java:comp.properties" in your root directory or name a directory under your root directory "java:comp". But Windows does not like having a : in a filename, so to deal with the : you can use the <code>org.osjava.sj.colon.replace</code> property. If, for example, you choose to replace a <code>:</code> with <code>--</code> (ie <code>org.osjava.sj.colon.replace=--</code>), then you will need a file named <code>java--comp.properties</code>, or a directory named <code>java--comp</code> containing a file "env.properties".</p>
+
+
  <h3>Explanatory note</h3>
  
 <p>This project is based on old https://github.com/hen/osjava/tree/master/simple-jndi .</p>
@@ -208,7 +213,7 @@ application1/ds.properties
 <li>Changed the way contexts are shared, because of ContextNotEmptyException with type=javax.sql.DataSource. 
 <li>Tests ported to JUnit 4. 
 <li>Maven 2/3 support. 
-<li>Support for additional basic datatypes (Byte, Short, Integer, Long, Float, Double, Character) in .properties/.ini/.xml files added.
+<li>Support for additional basic datatypes (Byte, Short, Integer, Long, Float, Double, Character) in type declaration.
 <li>Support for values in quotation marks (quotation marks get removed)
 </ul>
 
