@@ -662,6 +662,8 @@ public class SimpleJndiNewTest {
         finally {
             if (ctx1 != null) {
                 ctx1.close();
+                // "This method is idempotent: invoking it on a context that has already been closed has no effect. Invoking any other method on a closed context is not allowed, and results in undefined behaviour." See http://docs.oracle.com/javase/8/docs/api/javax/naming/Context.html#close.
+                ctx1.close();
             }
         }
     }
@@ -822,6 +824,30 @@ public class SimpleJndiNewTest {
             ctx = new InitialContext(env);
             final String name = (String) ctx.lookup("java:comp.env.name");
             assertEquals("Holger", name);
+        }
+        finally {
+            if (ctx != null) {
+                ctx.close();
+            }
+        }
+    }
+
+    /**
+     * TODO Support for "java:"? Just now one have to lookup contexts within "java:" as "java:/".
+     */
+    @Test
+    public void testEncColonTerminated() throws Exception {
+        InitialContext ctx = null;
+        try {
+            final Hashtable<String, String> env = new Hashtable<String, String>();
+            env.put("org.osjava.sj.root",
+                    "src/test/roots/encColonTerminated");
+            env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
+            env.put("org.osjava.sj.delimiter", "/");
+            env.put("org.osjava.sj.space", "java:");
+            ctx = new InitialContext(env);
+            final String name = (String) ctx.lookup("java:/product/name");
+            assertEquals("Simple-JNDI", name);
         }
         finally {
             if (ctx != null) {
