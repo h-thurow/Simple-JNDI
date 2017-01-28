@@ -203,7 +203,7 @@ application1/ds.properties
 
 <h3>Context.close() and Context.destroySubcontext()</h3>
 
-Either methods will recursively destroy every context and dereference all contained objects. So when writing JUnit tests, it is good practice to call close() in tearDown() and reinitialize the JNDI environment in setUp() by calling new InitialContext(). But remember to close your datasources before.
+Either methods will recursively destroy every context and dereference all contained objects. So when writing JUnit tests, it is good practice to call close() in tearDown() and reinitialize the JNDI environment in setUp() by calling new InitialContext(). But do not forget to close your datasources by yourself.
 
  <h3>Explanatory note</h3>
  
