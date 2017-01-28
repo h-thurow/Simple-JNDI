@@ -7,7 +7,7 @@ Unit tests or prototype code often need to emulate the environment within which 
 common one is to get an object of type javax.sql.DataSource from JNDI so a java.sql.Connection to your database of 
 choice may be opened.
 
-The JNDI implementation is entirely memory based, so no server instances are started. The structure of a root directory serves as a model for the contexts structure. The contexts get populated with Objects defined by .properties files, XML files or Windows-style .ini files. The files may be either on the file system or in the classpath. Of course you can bind Objects programmatically to contexts too.
+The JNDI implementation is entirely memory based, so no server instances are started. The structure of a root directory serves as a model for the contexts structure. The contexts get populated with Objects defined by .properties files, XML files or Windows-style .ini files. Of course you can bind Objects programmatically to contexts too.
 
 <h3>Download</h3>
 
@@ -38,8 +38,7 @@ java.naming.factory.initial=org.osjava.sj.SimpleContextFactory
 </pre>
 <p>This property, <i>java.naming.factory.initial</i>, is a part of the jndi specification. </p>
 <p>
-There are two simple-jndi specific parameters. <br>
-The first (required) parameter, org.osjava.sj.root, is the location of your simple-jndi root, which is the location in which simple-jndi looks for values when code asks for them. The following code block details a few examples with explanatory comments.
+There are two simple-jndi specific parameters. The first (required) parameter, org.osjava.sj.root, is the location of your simple-jndi root, which is the location in which simple-jndi looks for values when code asks for them. The following code block details a few examples with explanatory comments.
 </p>
 <pre>
 # absolute directory, using the default file protocol
@@ -48,15 +47,11 @@ org.osjava.sj.root=/home/hen/gj/simple-jndi/config/
 # relative directory, using the default file protocol
 org.osjava.sj.root=config/
 
-# specified file protocol with an absolute directory
-org.osjava.sj.root=file:///home/hen/gj/simple-jndi/config/
-
-# specified file protocol with a relative directory
-org.osjava.sj.root=file://config/
-
+# NEW in 0.13.0: Specify a list of files and/or directories. Separate them by the platform specific path separator.
+org.osjava.sj.root=file1.cfg:directory1/file.properties:directory2
 </pre>
 <p>
-If no org.osjava.sj.root is specified, an Exception is thrown. When classpath support is re-implemented, then a classpath root will be chosen, with no package.
+If no org.osjava.sj.root is specified, an Exception is thrown.
 </p>
 <p>
 The second (optional) parameter is the delimiter used to separate elements in a lookup value. This allows code to get closer to pretending to be another JNDI implementation, such as DNS or LDAP.</p>
@@ -70,6 +65,7 @@ org.osjava.sj.delimiter=/
 <p>
 If no org.osjava.sj.delimiter is specified, then a '.' (dot) is chosen. 
 </p>
+<p>See also <a href="https://github.com/h-thurow/Simple-JNDI/wiki/01-Load-property-files-with-any-extension-from-any-location-(New-in-0.13.0)">Load property files with any extension from any location</a>.</p>
 
 <h3>Creating your data files</h3>
 
@@ -84,6 +80,7 @@ The easiest way to understand is to consider a few examples. Imagine a file-stru
 <pre>
 config/
 config/debug.properties
+config/default.properties
 config/ProductionDS.properties
 config/application1/default.properties
 config/application1/ds.properties
@@ -92,21 +89,21 @@ config/application1/users.properties
 <p>
 in which the files look like;
 <dl>
+<dt>debug.properties</dt>
+<dd>
+state=ERROR
+</dd>
 <dt>default.properties</dt>
 <dd>
 name=Prototype<br>
 url=http://www.generationjava.com/
 </dd>
-<dt>debug.properties</dt>
-<dd>
-state=ERROR
-</dd>
 <dt>ProductionDS.properties</dt>
 <dd>
-type=javax.sql.DataSource
-driver=org.gjt.mm.mysql.Driver
-url=jdbc:mysql://localhost/testdb
-user=testuser
+type=javax.sql.DataSource<br>
+driver=org.gjt.mm.mysql.Driver<br>
+url=jdbc:mysql://localhost/testdb<br>
+user=testuser<br>
 password=testing
 </dd>
 <dt>application1/default.properties</dt>
@@ -132,17 +129,17 @@ enabled=true<br>
 enabled.type=java.lang.Boolean
 </dd>
 </dl>
-<p>The following pieces of Java are all legal ways in which to get values from Simple-JNDI. They assume they are preceded with a line of 'InitialContext ctxt = new InitialContext();'.</p>
+<p>The following pieces of Java are all legal ways in which to get values from Simple-JNDI. They assume that you set org.osjava.sj.root=config and that you instantiated ctxt by executing 'InitialContext ctxt = new InitialContext();'.</p>
 <ul>
-<li>Object value = ctxt.lookup("debug.state")</li>
-<li>Object value = ctxt.lookup("name")</li>
-<li>Object value = ctxt.lookup("url")</li>
-<li>Object value = ctxt.lookup("ProductionDS")</li>
-<li>Object value = ctxt.lookup("application1.name")</li>
-<li>Object value = ctxt.lookup("application1.TestDS")</li>
-<li>Object value = ctxt.lookup("application1.users.admin")</li>
-<li>Object value = ctxt.lookup("application1.users.quantity")</li>
-<li>Object value = ctxt.lookup("application1.users.enabled")</li>
+<li>String value = (String) ctxt.lookup("name")</li>
+<li>String value = (String) ctxt.lookup("url")</li>
+<li>String value = (String) ctxt.lookup("debug.state")</li>
+<li>DataSource value = (DataSource) ctxt.lookup("ProductionDS")</li>
+<li>String value = (String) ctxt.lookup("application1.name")</li>
+<li>DataSource value = (DataSource) ctxt.lookup("application1.ds.TestDS")</li>
+<li>String value = (String) ctxt.lookup("application1.users.admin")</li>
+<li>Integer value = (Integer) ctxt.lookup("application1.users.quantity")</li>
+<li>Boolean value = (Boolean) ctxt.lookup("application1.users.enabled")</li>
 </ul>
 Note that the ProductionDS and TestDS return types are objects of type javax.sql.DataSource, while application1.users.quantity is an Integer and application1.users.enabled is the Boolean true value. 
 </p>
@@ -194,16 +191,19 @@ application1/ds.properties
 
 <h3>Shared or unshared context?</h3>
 
-<p>Setting <code>org.osjava.sj.jndi.shared=true</code> will put the in-memory JNDI implementation into a mode whereby all InitialContext's share the same memory. By default this is not set, so two separate InitialContext's do not share the same memory and what is bound to one will not be viewable in the other. This could be not what you want when using a DataSource or a connection pool because everytime you call new InitialContext() in your application a new DataSource or a new connection pool is created.</p>
+<p>Setting <code>org.osjava.sj.jndi.shared=true</code> will put the in-memory JNDI implementation into a mode whereby all InitialContext's share the same memory. By default this is not set, so every new InitialContext() call will provide an independent InitialContext that does not share its memory with the other contexts. When binding an object to one of these contexts by calling Context.bind() this object is not visible in the other contexts. This could be not what you want when using a DataSource or a connection pool because everytime you call new InitialContext() in your application a new DataSource or a new connection pool is created.</p>
 
 <h3>Dealing with "java:comp/env" (Environment Naming Context, ENC) while loading</h3>
 
-<p>Set the <code>org.osjava.sj.space</code> property. Whatever the property is set to will be automatically prepended to <i>every</i> value loaded into the system. Thus <code>org.osjava.sj.space=java:comp/env</code> simulates the JNDI environment of Tomcat. </p>
+<p>Set the <code>org.osjava.sj.space</code> property. Whatever the property is set to will be automatically prepended to <i>every</i> value loaded into the system. Thus <code>org.osjava.sj.space=java:comp/env</code> simulates the JNDI environment of Tomcat. See also <a href=https://github.com/h-thurow/Simple-JNDI/issues/1>ENC problem</a>.</p>
 
 <p>Another way to achieve a similar result is putting a default.properties directly under your root. In this file declare all your context objects that should reside under "java:comp/env" by prefixing all properties with "java:comp/env", e. g. "java:comp/env/my/size=186". This way you can set some context objects in "java:comp/env" and other objects in a different name space.</p>
 
  <p>You could also put a file named "java:comp.properties" in your root directory or name a directory under your root directory "java:comp". But Windows does not like having a : in a filename, so to deal with the : you can use the <code>org.osjava.sj.colon.replace</code> property. If, for example, you choose to replace a <code>:</code> with <code>--</code> (ie <code>org.osjava.sj.colon.replace=--</code>), then you will need a file named <code>java--comp.properties</code>, or a directory named <code>java--comp</code> containing a file "env.properties".</p>
 
+<h3>Context.close() and Context.destroySubcontext()</h3>
+
+Either methods will recursively destroy every context and dereference all contained objects. So when writing JUnit tests, it is good practice to call close() in tearDown() and reinitialize the JNDI environment in setUp() by calling new InitialContext(). But do not forget to close your datasources by yourself.
 
  <h3>Explanatory note</h3>
  
