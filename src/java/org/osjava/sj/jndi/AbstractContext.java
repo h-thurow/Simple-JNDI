@@ -237,11 +237,6 @@ public abstract class AbstractContext
             }
         }
 
-        /* Lookup system properties */
-        if(System.getProperty(stringName) != null) {
-            return System.getProperty(stringName);
-        }
-
         Name objName = name.getPrefix(1);
         if(name.size() > 1) {
             /* Look in a subcontext. */
