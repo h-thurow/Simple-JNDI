@@ -217,7 +217,9 @@ public class JndiLoader {
             final String delimiter = extractDelimiter(key);
             if (!key.equals("type") && extractTypeDeclaration(key) == null) {
                 if(typeMap.containsKey(key)) {
-                    ((Properties) typeMap.get(key)).put("", value);
+                    // Reached only by basic type declarations like type=java.lang.Integer.
+                    // Gets processed by a converter.
+                    ((Properties) typeMap.get(key)).put("valueToConvert", value);
                 }
                 else if (typeMap.containsKey("datasourceOrBeanProperty")) {
                         ((Properties) typeMap.get("datasourceOrBeanProperty")).put(key, value);
@@ -347,13 +349,13 @@ public class JndiLoader {
         // TODO: Support a way to set the default converters in the jndi.properties and in the API itself
         Converter converter = convertRegistry.getConverter(type);
         if(converter != null) {
-            final Object values = properties.get("");
+            final Object values = properties.get("valueToConvert");
             if (values instanceof List) {
                 List<String> vals = (List<String>) values;
                 final LinkedList converted = new LinkedList();
                 for (String val : vals) {
                     final Properties p = new Properties();
-                    p.setProperty("", val);
+                    p.setProperty("valueToConvert", val);
                     converted.add(converter.convert(p, type));
                 }
                 return converted;
@@ -362,7 +364,7 @@ public class JndiLoader {
                 return converter.convert(properties, type);
             }
         }
-        return properties.get("");
+        return properties.get("valueToConvert");
 
     }
 

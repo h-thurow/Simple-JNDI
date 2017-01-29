@@ -10,7 +10,7 @@ public class ConstructorConverterTest {
     public void convertSingleValueAttribute() throws Exception {
         final ConstructorConverter converter = new ConstructorConverter();
         Properties props = new Properties();
-        props.setProperty("", "1");
+        props.setProperty("valueToConvert", "1");
         String type = "java.lang.Integer";
         converter.convert(props, type);
     }

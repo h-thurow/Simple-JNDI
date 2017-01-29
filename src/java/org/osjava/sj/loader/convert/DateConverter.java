@@ -32,16 +32,15 @@
 
 package org.osjava.sj.loader.convert;
 
-import java.util.Properties;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Properties;
 
 public class DateConverter implements Converter {
 
     public Object convert(Properties properties, String type) {
         String format = properties.getProperty("format");
-        String value = properties.getProperty("");
+        String value = properties.getProperty("valueToConvert");
 
         if(format == null) {
             throw new RuntimeException("Required subelement 'format'");

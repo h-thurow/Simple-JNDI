@@ -37,7 +37,7 @@ import java.util.Properties;
 public class PiConverter implements Converter {
 
     public Object convert(Properties properties, String type) {
-        Object value = properties.get("");
+        Object value = properties.get("valueToConvert");
         if("Pi".equals(value)) {
             return new Double(Math.PI);
         }

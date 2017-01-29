@@ -53,7 +53,7 @@ import java.util.Properties;
 public class ConstructorConverter implements Converter {
 
     public Object convert(Properties properties, String type) {
-        String value = properties.getProperty("");
+        String value = properties.getProperty("valueToConvert");
         if(value == null) {
             throw new RuntimeException("Missing value");
         }
