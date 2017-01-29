@@ -151,18 +151,18 @@ Note that the ProductionDS and TestDS return types are objects of type javax.sql
 <p>There are four mandatory parameters for a DataSource in Simple-JNDI, and four optional parameters (see next section). The mandatory parameters are <i>url, driver, user, password</i>. The following shows an example of a DataSource that will be available under the lookup key <i>application1/ds/TestDS</i>. </p>
 <pre>
 application1/ds.properties
-    TestDS.type=javax.sql.DataSource
-    TestDS.driver=org.gjt.mm.mysql.Driver
-    TestDS.url=jdbc:mysql://localhost/testdb
-    TestDS.user=testuser
-    TestDS.password=testing
+    TestDS/type=javax.sql.DataSource
+    TestDS/driver=org.gjt.mm.mysql.Driver
+    TestDS/url=jdbc:mysql://localhost/testdb
+    TestDS/user=testuser
+    TestDS/password=testing
 </pre>
 <p>The code to obtain it would be:</p>
 <pre>
       InitialContext ctxt = new InitialContext();
       DataSource ds = (DataSource) ctxt.lookup("application1/ds/TestDS");
 </pre>
-<p>This example uses a delimiter of '/', which must be set with the <i>org.osjava.sj.delimiter</i> property. </p>
+<p>This example uses a delimiter of '/', which must be set with the <i>org.osjava.sj.delimiter</i> property. Note that you have to use this delimiter in your configuration files too (here "TestDS/type" instead of "TestDS.type").</p>
 
 <h3>Connection pooling</h3>
 
