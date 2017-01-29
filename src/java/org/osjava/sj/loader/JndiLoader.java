@@ -197,7 +197,7 @@ public class JndiLoader {
                 Properties tmp = new Properties();
                 tmp.put("type", properties.get(key));
                 if(key.equals("type")) {
-                    // Reached only by datasource and bean declarations.
+                    // Reached only by datasource and bean declarations? Yes, but not always! Not from org.osjava.sj.memory.JndiLoaderTest.testBeanConverter(). testBeanConverter() enters the "else" branch.
                     typeMap.put("datasourceOrBeanProperty", tmp);
                 }
                 else {
@@ -245,7 +245,7 @@ public class JndiLoader {
             Properties typeProperties = (Properties) typeMap.get(typeKey);
             Object value = convert(typeProperties);
             if (typeKey.equals("datasourceOrBeanProperty")) {
-                // Reached only by datasource and bean declarations.
+                // Reached only by datasource and bean declarations? Yes, but not always! Not from org.osjava.sj.memory.JndiLoaderTest.testBeanConverter(). testBeanConverter() enters the "else" branch.
                 jndiPut(parentCtxt, ctxtName, value);
             }
             else {
