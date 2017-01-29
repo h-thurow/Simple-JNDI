@@ -196,12 +196,12 @@ public class JndiLoader {
             if(key.equals("type") || type != null) {
                 Properties tmp = new Properties();
                 tmp.put("type", properties.get(key));
-                if( key.equals("type") ) {
+                if(key.equals("type")) {
                     // Reached only by datasource and bean declarations.
-                    typeMap.put( "", tmp );
+                    typeMap.put("datasourceOrBeanProperty", tmp);
                 }
                 else {
-                    typeMap.put( key.substring(0, key.length() - type.length()), tmp );
+                    typeMap.put( key.substring(0, key.length() - type.length()), tmp);
                 }
             }
 
@@ -219,8 +219,8 @@ public class JndiLoader {
                 if(typeMap.containsKey(key)) {
                     ((Properties) typeMap.get(key)).put("", value);
                 }
-                else if (typeMap.containsKey("")) {
-                        ((Properties) typeMap.get("")).put(key, value);
+                else if (typeMap.containsKey("datasourceOrBeanProperty")) {
+                        ((Properties) typeMap.get("datasourceOrBeanProperty")).put(key, value);
                 }
                 else if(delimiter != null) {
                     String pathText = removeLastElement( key, delimiter );
@@ -241,18 +241,21 @@ public class JndiLoader {
         for (Object key : typeMap.keySet()) {
             String typeKey = (String) key;
             Properties typeProperties = (Properties) typeMap.get(typeKey);
-
             Object value = convert(typeProperties);
-            if (typeKey.equals("")) {
+            if (typeKey.equals("datasourceOrBeanProperty")) {
+                // Reached only by datasource and bean declarations.
                 jndiPut(parentCtxt, ctxtName, value);
             }
             else {
                 jndiPut(ctxt, typeKey, value);
             }
         }
-
     }
 
+    /**
+     *
+     * @return delimiter "." or "/" or whatever is found by {@link #SIMPLE_DELIMITER}.
+     */
     private String extractDelimiter(String key) {
         String delimiter = (String) this.table.get(SIMPLE_DELIMITER);
         if (delimiter.length() == 1) { // be downwards compatible
@@ -288,27 +291,22 @@ public class JndiLoader {
 
     private void jndiPut(Context ctxt, String key, Object value) throws NamingException {
         // here we need to break by the specified delimiter
-//        System.err.println("Putting "+key+"="+value);
-
+        //
         // can't use String.split as the regexp will clash with the types of chars 
         // used in the delimiters. Could use Commons Lang. Quick hack instead.
 //        String[] path = key.split( (String) this.table.get(SIMPLE_DELIMITER) );
-        String[] path = Utils.split( key, (String) this.table.get(SIMPLE_DELIMITER) );
+        String[] path = Utils.split(key, (String) this.table.get(SIMPLE_DELIMITER));
 
-// System.err.println("LN: "+path.length);
         int lastIndex = path.length - 1;
-
 
         Context tmpCtxt = ctxt;
 
         for(int i=0; i < lastIndex; i++) {
             Object obj = tmpCtxt.lookup(path[i]);
             if(obj == null) {
-// System.err.println("Creating subcontext: " + path[i] + " for " + key);
                 tmpCtxt = tmpCtxt.createSubcontext(path[i]);
             } else
             if(obj instanceof Context) {
-// System.err.println("Using subcontext: "+obj + " for " + key);
                 tmpCtxt = (Context) obj;
             } else {
                 throw new RuntimeException("Illegal node/branch clash. At branch value '"+path[i]+"' an Object was found: " +obj);
@@ -321,10 +319,8 @@ public class JndiLoader {
             obj = null;
         }
         if(obj == null) {
-// System.err.println("Binding: "+path[lastIndex]+" on "+key);
             tmpCtxt.bind( path[lastIndex], value );
         } else {
-// System.err.println("Rebinding: "+path[lastIndex]+" on "+key);
             tmpCtxt.rebind( path[lastIndex], value );
         }
     }
@@ -348,8 +344,7 @@ public class JndiLoader {
             }
         }
 
-        // TODO: Support a way to set the default converters in the jndi.properties 
-        //       and in the API itself
+        // TODO: Support a way to set the default converters in the jndi.properties and in the API itself
         Converter converter = convertRegistry.getConverter(type);
         if(converter != null) {
             final Object values = properties.get("");
@@ -371,7 +366,6 @@ public class JndiLoader {
 
     }
 
-    // String methods to make the using code more readable
     private static String getLastElement( String str, String delimiter ) {
         int idx = str.lastIndexOf(delimiter);
         return str.substring(idx + 1);
