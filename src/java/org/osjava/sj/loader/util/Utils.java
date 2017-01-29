@@ -32,26 +32,16 @@
 // Utils.java
 package org.osjava.sj.loader.util;
 
-import java.util.ArrayList;
-
 /**
  * The usual Utils class with reusable flotsam
  */
 public class Utils {
 
     public static String[] split(String str, String delimiter) {
-        ArrayList list = new ArrayList();
-        int idx = 0;
-        while( true ) {
-            idx = str.indexOf( delimiter );
-            if(idx == -1) {
-                list.add(str);
-                break;
-            }
-            list.add(str.substring(0, idx));
-            str = str.substring(idx + delimiter.length());
+        if (delimiter.length() == 1) { // be downwards compatible
+            delimiter = delimiter.replace(".", "\\.");
         }
-        return (String[]) list.toArray( new String[list.size()] );
+        return str.split(delimiter);
     }
 
     public static String replace(String str, String repl, String with) {

@@ -489,6 +489,30 @@ public class SimpleJndiNewTest {
         }
     }
 
+    @Test
+    public void typedPropertyMatchingDelimiter() throws Exception {
+        InitialContext ctx1 = null;
+        try {
+            final Hashtable<String, String> env = new Hashtable<String, String>();
+            env.put("org.osjava.sj.root",
+                    "file://src/test/roots/typedProperty");
+            env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
+            env.put("org.osjava.sj.delimiter", ".");
+            env.put("org.osjava.sj.space", "java:comp/env");
+            env.put("org.osjava.sj.jndi.shared", "true");
+            ctx1 = new InitialContext(env);
+            final Integer age = (Integer) ctx1.lookup("java:comp/env.file1.myInteger");
+            assert 123 == age;
+            final int size = (Integer) ctx1.lookup("java:comp/env.file1.parent.child1.size");
+            assert size == 186;
+        }
+        finally {
+            if (ctx1 != null) {
+                ctx1.close();
+            }
+        }
+    }
+
     /**
      * 0.11.4.1: java.lang.ClassCastException: java.lang.String cannot be cast to java.lang.Integer
      * <p>
@@ -855,4 +879,5 @@ public class SimpleJndiNewTest {
             }
         }
     }
+
 }

@@ -42,6 +42,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Loads a .properties file into a JNDI server.
@@ -180,10 +182,7 @@ public class JndiLoader {
 
     public void load(Properties properties, Context ctxt, Context parentCtxt, String ctxtName) throws NamingException {
 
-        String delimiter = (String) this.table.get(SIMPLE_DELIMITER);
-        String typePostfix = delimiter + "type";
-
-        // NOTE: "type" effectively turns on pseudo-nodes; if it 
+        // NOTE: "type" effectively turns on pseudo-nodes; if it
         //       isn't there then other pseudo-nodes will result 
         //       in re-bind errors
 
@@ -193,59 +192,50 @@ public class JndiLoader {
         Iterator iterator = properties.keySet().iterator();
         while(iterator.hasNext()) {
             String key = (String) iterator.next();
-
-            if(key.equals("type") || key.endsWith( typePostfix )) {
+            final String type = extractTypeDeclaration(key);
+            if(key.equals("type") || type != null) {
                 Properties tmp = new Properties();
-                tmp.put( "type", properties.get(key) );
-                if( key.equals( "type" ) ) {
+                tmp.put("type", properties.get(key));
+                if( key.equals("type") ) {
+                    // Reached only by datasource and bean declarations.
                     typeMap.put( "", tmp );
-                } else {
-                    typeMap.put( key.substring(0, key.length() - typePostfix.length()), tmp );
+                }
+                else {
+                    typeMap.put( key.substring(0, key.length() - type.length()), tmp );
                 }
             }
 
         }
 
-//        System.err.println("TypeMap: " + typeMap);
-
-// if it matches a type root, then it should be added to the properties
-// if not, then it should be placed in the context
-// for each type properties
-// call convert: pass a Properties in that contains everything starting with foo, but without the foo
-// put objects in context
-
+        // If it matches a type root, then it should be added to the properties. If not, then it should be placed in the context.
+        // For each type properties call convert: pass a Properties in that contains everything starting with foo, but without the foo.
+        // Put objects in context.
         iterator = properties.keySet().iterator();
         while(iterator.hasNext()) {
             String key = (String) iterator.next();
             Object value = properties.get(key);
-
-            if(key.equals("type") || key.endsWith( typePostfix )) {
-                continue;
-            }
-
-            if(typeMap.containsKey(key)) {
-// System.err.println("Typed: "+key);
-                ( (Properties) typeMap.get(key) ).put("", value);
-                continue;
-            }
-
-            if(key.contains(delimiter)) {
-                String pathText = removeLastElement( key, delimiter );
-                String nodeText = getLastElement( key, delimiter );
-// System.err.println("PathText: "+pathText+" NodeText: "+nodeText);
-
-                if(typeMap.containsKey(pathText)) {
-// System.err.println("Sibling: "+key);
-                    ( (Properties) typeMap.get(pathText) ).put(nodeText, value);
-                    continue;
+            final String delimiter = extractDelimiter(key);
+            if (!key.equals("type") && extractTypeDeclaration(key) == null) {
+                if(typeMap.containsKey(key)) {
+                    ((Properties) typeMap.get(key)).put("", value);
                 }
-            } else
-            if(typeMap.containsKey("")) {
-                    ( (Properties) typeMap.get("") ).put(key, value);
-                    continue;
+                else if (typeMap.containsKey("")) {
+                        ((Properties) typeMap.get("")).put(key, value);
+                }
+                else if(delimiter != null) {
+                    String pathText = removeLastElement( key, delimiter );
+                    String nodeText = getLastElement( key, delimiter );
+                    if(typeMap.containsKey(pathText)) {
+                        ((Properties) typeMap.get(pathText)).put(nodeText, value);
+                    }
+                    else {
+                        jndiPut(ctxt, key, value);
+                    }
+                }
+                else {
+                    jndiPut(ctxt, key, value);
+                }
             }
-
-            jndiPut(ctxt, key, value);
         }
 
         for (Object key : typeMap.keySet()) {
@@ -261,6 +251,39 @@ public class JndiLoader {
             }
         }
 
+    }
+
+    private String extractDelimiter(String key) {
+        String delimiter = (String) this.table.get(SIMPLE_DELIMITER);
+        if (delimiter.length() == 1) { // be downwards compatible
+            delimiter = delimiter.replace(".", "\\.");
+        }
+        // TODO Compile once
+        final Pattern pattern = Pattern.compile("^.+(" + delimiter + ").+");
+        final Matcher matcher = pattern.matcher(key);
+        if (matcher.find()) {
+            return matcher.group(1);
+        }
+        return null;
+    }
+
+    /**
+     *
+     * @return "type" prepended with delimiter, e. g. ".type", "/type".
+     */
+    private String extractTypeDeclaration(String key) {
+        String delimiter = (String) this.table.get(SIMPLE_DELIMITER);
+        if (delimiter.length() == 1) { // be downwards compatible
+            delimiter = delimiter.replace(".", "\\.");
+        }
+        // TODO Compile once
+        final Pattern pattern = Pattern.compile(".+((?:" + delimiter + ")type)$");
+        final Matcher matcher = pattern.matcher(key);
+        String type = null;
+        if (matcher.find()) {
+            type = matcher.group(1);
+        }
+        return type;
     }
 
     private void jndiPut(Context ctxt, String key, Object value) throws NamingException {

@@ -258,7 +258,7 @@ public abstract class AbstractContext
         if(subContexts.containsKey(name)) {
             return subContexts.get(name);
         }
-        
+        //TODO Undocumented. Remove?
         /* Look it up in the environment. */
         if(env.containsKey(name)) {
             return env.get(name.toString());
