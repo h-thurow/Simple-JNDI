@@ -85,56 +85,47 @@ public class JndiLoader {
         loadDirectory(directory, ctxt, null, "");
     }
 
-    private void loadDirectory(File directory, Context ctxt, Context parentCtxt, String ctxtName) throws NamingException, IOException {
-// System.err.println("Loading directory. ");
-
+    private void loadDirectory(File directory, Context ctxt, Context parentCtxt, String subName) throws NamingException, IOException {
         if( !directory.isDirectory() ) {
             throw new IllegalArgumentException("java.io.File parameter must be a directory. ["+directory+"]");
         }
 
         File[] files = directory.listFiles();
         if(files == null) {
-// System.err.println("Null files. ");
             return;
         }
 
         for (File file : files) {
-            String name = file.getName();
+            String parentName = file.getName();
 
             String colonReplace = (String) this.table.get(SIMPLE_COLON_REPLACE);
             if (colonReplace != null) {
-                if (name.contains(colonReplace)) {
-                    name = Utils.replace(name, colonReplace, ":");
+                if (parentName.contains(colonReplace)) {
+                    parentName = Utils.replace(parentName, colonReplace, ":");
                 }
             }
-// System.err.println("Consider: "+name);
             // TODO: Replace hack with a FilenameFilter
-
             if (file.isDirectory()) {
                 // HACK: Hack to stop it looking in .svn or CVS
-                if (name.equals(".svn") || name.equals("CVS")) {
+                if (parentName.equals(".svn") || parentName.equals("CVS")) {
                     continue;
                 }
-
-// System.err.println("Is directory. Creating subcontext: "+name);
-                Context tmpCtxt = ctxt.createSubcontext(name);
-                loadDirectory(file, tmpCtxt, ctxt, name);
+                Context tmpCtxt = ctxt.createSubcontext(parentName);
+                loadDirectory(file, tmpCtxt, ctxt, parentName);
             }
             else {
                 // TODO: Make this a plugin system
                 String[] extensions = new String[]{".properties", ".ini", ".xml"};
                 for (String extension : extensions) {
                     if (file.getName().endsWith(extension)) {
-// System.err.println("Is "+extension+" file. "+name);
-                        Context tmpCtxt = ctxt;
+                        Context subContext = ctxt;
                         if (!file.getName().equals("default" + extension)) {
-                            name = name.substring(0, name.length() - extension.length());
-// System.err.println("Not default, so creating subcontext: "+name);
-                            tmpCtxt = ctxt.createSubcontext(name);
+                            parentName = parentName.substring(0, parentName.length() - extension.length());
+                            subContext = ctxt.createSubcontext(parentName);
                             parentCtxt = ctxt;
-                            ctxtName = name;
+                            subName = parentName;
                         }
-                        load(toProperties(file), tmpCtxt, parentCtxt, ctxtName);
+                        load(toProperties(file), subContext, parentCtxt, subName);
                     }
                 }
             }
@@ -180,7 +171,7 @@ public class JndiLoader {
         load(properties, ctxt, null, "");
     }
 
-    public void load(Properties properties, Context ctxt, Context parentCtxt, String ctxtName) throws NamingException {
+    public void load(Properties properties, Context subContext, Context parentCtxt, String subName) throws NamingException {
 
         // NOTE: "type" effectively turns on pseudo-nodes; if it
         //       isn't there then other pseudo-nodes will result 
@@ -197,7 +188,7 @@ public class JndiLoader {
                 Properties tmp = new Properties();
                 tmp.put("type", properties.get(key));
                 if(key.equals("type")) {
-                    // Reached only by datasource and bean declarations? Yes, but not always! Not from org.osjava.sj.memory.JndiLoaderTest.testBeanConverter(). testBeanConverter() enters the "else" branch.
+                    // Reached only by datasource and bean declarations? Yes, but not always! Not from org.osjava.sj.memory.JndiLoaderTest.testBeanConverter(). testBeanConverter() enters the "else" branch. Not reached, when the attributes are prefixed with a namespace as in roots/datasource/ds.properties (used in SimpleJndiNewTest.sharedContextWithDataSource2MatchingDelimiter()).
                     typeMap.put("datasourceOrBeanProperty", tmp);
                 }
                 else {
@@ -231,11 +222,11 @@ public class JndiLoader {
                         ((Properties) typeMap.get(pathText)).put(nodeText, value);
                     }
                     else {
-                        jndiPut(ctxt, key, value);
+                        jndiPut(subContext, key, value);
                     }
                 }
                 else {
-                    jndiPut(ctxt, key, value);
+                    jndiPut(subContext, key, value);
                 }
             }
         }
@@ -245,11 +236,11 @@ public class JndiLoader {
             Properties typeProperties = (Properties) typeMap.get(typeKey);
             Object value = convert(typeProperties);
             if (typeKey.equals("datasourceOrBeanProperty")) {
-                // Reached only by datasource and bean declarations? Yes, but not always! Not from org.osjava.sj.memory.JndiLoaderTest.testBeanConverter(). testBeanConverter() enters the "else" branch.
-                jndiPut(parentCtxt, ctxtName, value);
+                // Reached only by datasource and bean declarations? Yes, but not always! Not from org.osjava.sj.memory.JndiLoaderTest.testBeanConverter(). testBeanConverter() enters the "else" branch.  Not reached, when the attributes are prefixed with a namespace as in roots/datasource/ds.properties (used in SimpleJndiNewTest.sharedContextWithDataSource2MatchingDelimiter()).
+                jndiPut(parentCtxt, subName, value);
             }
             else {
-                jndiPut(ctxt, typeKey, value);
+                jndiPut(subContext, typeKey, value);
             }
         }
     }
@@ -293,38 +284,43 @@ public class JndiLoader {
 
     private void jndiPut(Context ctxt, String key, Object value) throws NamingException {
         // here we need to break by the specified delimiter
-        //
-        // can't use String.split as the regexp will clash with the types of chars 
-        // used in the delimiters. Could use Commons Lang. Quick hack instead.
-//        String[] path = key.split( (String) this.table.get(SIMPLE_DELIMITER) );
         String[] path = Utils.split(key, (String) this.table.get(SIMPLE_DELIMITER));
 
+        Context deepestContext = createSubContexts(path, ctxt);
+
         int lastIndex = path.length - 1;
+        Object obj = deepestContext.lookup(path[lastIndex]);
+        if(obj == null) {
+            deepestContext.bind(path[lastIndex], value);
+        }
+        else {
+            // TODO Warum rebind? Wird nur gerufen beim Initialisieren der JNDI environment.
+            deepestContext.rebind(path[lastIndex], value);
+        }
 
-        Context tmpCtxt = ctxt;
+//        Context deepestContext = createSubContexts(path, ctxt);
+//        deepestContext.bind(path[path.length - 1], value);
+    }
 
+    /**
+     * Creates contexts defined by namespaced property names, e.g. "my/namespaced/object". The last part (here "object") is ignored.
+     * @return the deepest context
+     */
+    private Context createSubContexts(String[] path, Context parentContext) throws NamingException {
+        int lastIndex = path.length - 1;
         for(int i=0; i < lastIndex; i++) {
-            Object obj = tmpCtxt.lookup(path[i]);
+            Object obj = parentContext.lookup(path[i]);
             if(obj == null) {
-                tmpCtxt = tmpCtxt.createSubcontext(path[i]);
-            } else
-            if(obj instanceof Context) {
-                tmpCtxt = (Context) obj;
-            } else {
+                parentContext = parentContext.createSubcontext(path[i]);
+            }
+            else if (obj instanceof Context) {
+                parentContext = (Context) obj;
+            }
+            else {
                 throw new RuntimeException("Illegal node/branch clash. At branch value '"+path[i]+"' an Object was found: " +obj);
             }
         }
-        
-        Object obj = tmpCtxt.lookup(path[lastIndex]);
-        if(obj instanceof Context) {
-            tmpCtxt.destroySubcontext(path[lastIndex]);
-            obj = null;
-        }
-        if(obj == null) {
-            tmpCtxt.bind( path[lastIndex], value );
-        } else {
-            tmpCtxt.rebind( path[lastIndex], value );
-        }
+        return parentContext;
     }
 
     private static Object convert(Properties properties) {

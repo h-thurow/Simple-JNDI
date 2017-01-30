@@ -464,6 +464,28 @@ public class SimpleJndiNewTest {
         }
     }
 
+    @Test
+    public void sharedContextWithDataSource2MatchingDelimiter() throws Exception {
+        InitialContext ctx1 = null;
+        try {
+            final Hashtable<String, String> env = new Hashtable<String, String>();
+            env.put("org.osjava.sj.root",
+                    "file://src/test/roots/datasource");
+            env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
+            env.put("org.osjava.sj.delimiter", ".");
+            env.put("org.osjava.sj.space", "java:comp/env");
+            env.put("org.osjava.sj.jndi.shared", "true");
+            ctx1 = new InitialContext(env);
+            final DataSource ds = (DataSource) ctx1.lookup("java:comp/env.ds.TestDS");
+            assert ds != null;
+        }
+        finally {
+            if (ctx1 != null) {
+                ctx1.close();
+            }
+        }
+    }
+
     /**
      * Non matching delimiter ("." instead of "/") > no type casting applied.
      */
