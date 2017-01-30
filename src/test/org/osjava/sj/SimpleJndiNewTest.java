@@ -55,6 +55,36 @@ public class SimpleJndiNewTest {
     }
 
     /**
+     * You can not mix properties with and without namespace in datasource configuration files.
+     */
+    @Test(expected = RuntimeException.class)
+    public void sharedContextWithDataSourceMixedNamespaces() throws Exception {
+        InitialContext ctx1 = null;
+        try {
+            final Hashtable<String, String> env = new Hashtable<String, String>();
+//        env.put("org.osjava.sj.root", workspaceDir + "/SimpleJndi/src/test/roots/datasourcePool/");
+            env.put("org.osjava.sj.root", "src/test/roots/datasourceMixedNamespaces");
+            env.put("org.osjava.sj.jndi.shared", "true");
+            env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
+            env.put("org.osjava.sj.delimiter", ".");
+            env.put("org.osjava.sj.space", "java:comp/env");
+
+            ctx1 = new InitialContext(env);
+
+            DataSource ds = (DataSource) ctx1.lookup("java:comp/env.mixedNamespaces");
+            assert ds != null;
+
+            DataSource ds2 = (DataSource) ctx1.lookup("java:comp/env.mixedNamespaces.TestDS");
+            assert ds2 != null;
+        }
+        finally {
+            if (ctx1 != null) {
+                ctx1.close();
+            }
+        }
+    }
+
+    /**
      * From one client on an context bounded objects are also visible in other contexts
      * if shared is true.
      */

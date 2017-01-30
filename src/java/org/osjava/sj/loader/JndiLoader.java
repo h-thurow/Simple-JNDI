@@ -177,8 +177,8 @@ public class JndiLoader {
         //       isn't there then other pseudo-nodes will result 
         //       in re-bind errors
 
-        // scan for pseudo-nodes, aka "type":   foo.type
-        // store in a temporary type table:    "foo", new Properties() with type="value"
+        // scan for pseudo-nodes, aka "type": foo.type
+        // store in a temporary type table (typeMap): {foo: {type: typeValue}}
         Map typeMap = new HashMap();
         Iterator iterator = properties.keySet().iterator();
         while(iterator.hasNext()) {
@@ -192,13 +192,13 @@ public class JndiLoader {
                     typeMap.put("datasourceOrBeanProperty", tmp);
                 }
                 else {
-                    typeMap.put( key.substring(0, key.length() - type.length()), tmp);
+                    final String keyWithoutType = key.substring(0, key.length() - type.length());
+                    typeMap.put(keyWithoutType, tmp);
                 }
             }
-
         }
 
-        // If it matches a type root, then it should be added to the properties. If not, then it should be placed in the context.
+        // If it matches a type root, then it should be added to the properties. If not, then it should be placed in the context (jndiPut()).
         // For each type properties call convert: pass a Properties in that contains everything starting with foo, but without the foo.
         // Put objects in context.
         iterator = properties.keySet().iterator();
@@ -207,17 +207,18 @@ public class JndiLoader {
             Object value = properties.get(key);
             final String delimiter = extractDelimiter(key);
             if (!key.equals("type") && extractTypeDeclaration(key) == null) {
-                if(typeMap.containsKey(key)) {
-                    // Reached only by basic type declarations like type=java.lang.Integer.
+                if (typeMap.containsKey("datasourceOrBeanProperty")) {
+                    // files with a property named "type" without a namespace in the name.
+                    ((Properties) typeMap.get("datasourceOrBeanProperty")).put(key, value);
+                }
+                else if(typeMap.containsKey(key)) {
+                    // Reached only by keys with basic type declarations like type=java.lang.Integer.
                     // Gets processed by a converter.
                     ((Properties) typeMap.get(key)).put("valueToConvert", value);
                 }
-                else if (typeMap.containsKey("datasourceOrBeanProperty")) {
-                        ((Properties) typeMap.get("datasourceOrBeanProperty")).put(key, value);
-                }
                 else if(delimiter != null) {
-                    String pathText = removeLastElement( key, delimiter );
-                    String nodeText = getLastElement( key, delimiter );
+                    String pathText = removeLastElement(key, delimiter);
+                    String nodeText = getLastElement(key, delimiter);
                     if(typeMap.containsKey(pathText)) {
                         ((Properties) typeMap.get(pathText)).put(nodeText, value);
                     }
@@ -237,7 +238,8 @@ public class JndiLoader {
             Object value = convert(typeProperties);
             if (typeKey.equals("datasourceOrBeanProperty")) {
                 // Reached only by datasource and bean declarations? Yes, but not always! Not from org.osjava.sj.memory.JndiLoaderTest.testBeanConverter(). testBeanConverter() enters the "else" branch.  Not reached, when the attributes are prefixed with a namespace as in roots/datasource/ds.properties (used in SimpleJndiNewTest.sharedContextWithDataSource2MatchingDelimiter()).
-                jndiPut(parentCtxt, subName, value);
+                // rebind(): For every file there is already a context created and bound under the file's name. In case of bean or datasource declarations the binding must not be a context but the value (the bean, the datasource) itself. This is true as long as the datasource or bean properties are not namespaced. Then the "else" branch is executed.
+                parentCtxt.rebind(subName, value);
             }
             else {
                 jndiPut(subContext, typeKey, value);
@@ -282,45 +284,36 @@ public class JndiLoader {
         return type;
     }
 
+    /**
+     *
+     * @param key see {@link #createSubContexts(String[], Context)}
+     */
     private void jndiPut(Context ctxt, String key, Object value) throws NamingException {
-        // here we need to break by the specified delimiter
-        String[] path = Utils.split(key, (String) this.table.get(SIMPLE_DELIMITER));
-
-        Context deepestContext = createSubContexts(path, ctxt);
-
-        int lastIndex = path.length - 1;
-        Object obj = deepestContext.lookup(path[lastIndex]);
-        if(obj == null) {
-            deepestContext.bind(path[lastIndex], value);
-        }
-        else {
-            // TODO Warum rebind? Wird nur gerufen beim Initialisieren der JNDI environment.
-            deepestContext.rebind(path[lastIndex], value);
-        }
-
-//        Context deepestContext = createSubContexts(path, ctxt);
-//        deepestContext.bind(path[path.length - 1], value);
+        String[] pathParts = Utils.split(key, (String) this.table.get(SIMPLE_DELIMITER));
+        Context deepestContext = createSubContexts(pathParts, ctxt);
+        deepestContext.bind(pathParts[pathParts.length - 1], value);
     }
 
     /**
-     * Creates contexts defined by namespaced property names, e.g. "my/namespaced/object". The last part (here "object") is ignored.
+     * Creates contexts defined by namespaced property names, e.g. "my.namespaced.object=...". The last part (here "object") is ignored.
      * @return the deepest context
      */
     private Context createSubContexts(String[] path, Context parentContext) throws NamingException {
         int lastIndex = path.length - 1;
+        Context currentCtx = parentContext;
         for(int i=0; i < lastIndex; i++) {
-            Object obj = parentContext.lookup(path[i]);
+            Object obj = currentCtx.lookup(path[i]);
             if(obj == null) {
-                parentContext = parentContext.createSubcontext(path[i]);
+                currentCtx = currentCtx.createSubcontext(path[i]);
             }
             else if (obj instanceof Context) {
-                parentContext = (Context) obj;
+                currentCtx = (Context) obj;
             }
             else {
                 throw new RuntimeException("Illegal node/branch clash. At branch value '"+path[i]+"' an Object was found: " +obj);
             }
         }
-        return parentContext;
+        return currentCtx;
     }
 
     private static Object convert(Properties properties) {
