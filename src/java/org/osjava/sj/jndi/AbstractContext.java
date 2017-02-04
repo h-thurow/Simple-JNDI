@@ -44,10 +44,8 @@ import java.util.*;
  * @since Simple-JNDI 0.11
  * @version $Rev: 2684 $ $Date: 2008-05-24 22:19:06 -0700 (Sat, 24 May 2008) $
  */
-public abstract class AbstractContext 
-        implements Cloneable, Context  {
+public abstract class AbstractContext implements Cloneable, Context  {
 
-    private static final String SHARED = "org.osjava.sj.jndi.shared";
     // table is used as a read-write cache which sits
     // above the file-store
     private Hashtable table = new Hashtable();
@@ -59,7 +57,6 @@ public abstract class AbstractContext
      */
     private Name nameInNamespace = null;
     private boolean nameLock = false;
-    private boolean closing;
 
     /* **********************************************************************
      * Constructors.                                                        *
@@ -141,24 +138,14 @@ public abstract class AbstractContext
      * 
      * @param env a Hashtable containing the Context's environment.
      * @param systemOverride allow System Parameters to override the
-     *        environment that is passed in.
+     *        environment that is passed in. TODO Not supported. Support?
      * @param parser the NameParser being used by the Context.
      */
     protected AbstractContext(Hashtable env, boolean systemOverride, NameParser parser) {
-        String shared = null;
         if(env != null) {
             this.env = (Hashtable)env.clone();
-            shared = (String)this.env.get(SHARED);
         }
 
-        /* let System properties override the jndi.properties file, if
-         * systemOverride is true */
-        if(systemOverride) {
-            if(System.getProperty(SHARED) != null) {
-                shared = System.getProperty(SHARED);
-            }
-        }
-        
         if(parser == null) {
             try {
                 nameParser = new SimpleNameParser(this);
@@ -258,11 +245,6 @@ public abstract class AbstractContext
         if(subContexts.containsKey(name)) {
             return subContexts.get(name);
         }
-        //TODO Undocumented. Remove?
-        /* Look it up in the environment. */
-        if(env.containsKey(name)) {
-            return env.get(name.toString());
-        }
         /* Nothing could be found.  Return null. */
         /*
          * XXX: Is this right?  Should a NamingException be thrown here 
@@ -300,8 +282,7 @@ public abstract class AbstractContext
         }
         /* Determine if the name is already bound */
         if(table.containsKey(name) ||
-           subContexts.containsKey(name) ||
-           env.containsKey(name.toString())) {
+                subContexts.containsKey(name)) {
             throw new NameAlreadyBoundException("Name " + name.toString()
                 + " already bound.  Use rebind() to override");
         }
@@ -726,11 +707,6 @@ public abstract class AbstractContext
      */
     @Override
     public void close() throws NamingException {
-        /* Don't try anything if we're already in the process of closing */
-        // BUG: closing is never actually set
-        if(closing) {
-            return;
-        }
         destroySubcontexts(this);
 
         // TODO This block is never entered by current tests.

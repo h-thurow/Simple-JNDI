@@ -137,8 +137,10 @@ public class MemoryContext extends AbstractContext {
                 Context subContext = (Context)subContexts.get(name.getPrefix(1));
                 newContext = subContext.createSubcontext(name.getSuffix(1));
                 return newContext;
-            } 
-            throw new NameNotFoundException("The subcontext " + name.getPrefix(1) + " was not found.");
+            }
+            else {
+                throw new NameNotFoundException("The subcontext " + name.getPrefix(1) + " was not found.");
+            }
         }
         
         if(lookup(name) != null) {

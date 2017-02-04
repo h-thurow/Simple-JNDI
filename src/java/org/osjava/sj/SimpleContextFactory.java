@@ -40,8 +40,6 @@
 
 package org.osjava.sj;
 
-import org.osjava.sj.jndi.DelegatingContext;
-
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -58,8 +56,8 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class SimpleContextFactory implements InitialContextFactory {
 
-    private static final ConcurrentHashMap<String, DelegatingContext> contextsByRoot =
-            new ConcurrentHashMap<String, DelegatingContext>();
+    private static final ConcurrentHashMap<String, DelimiterConvertingContext> contextsByRoot =
+            new ConcurrentHashMap<String, DelimiterConvertingContext>();
 
     public SimpleContextFactory() {
         super();
@@ -72,7 +70,7 @@ public class SimpleContextFactory implements InitialContextFactory {
         final Boolean isShared = Boolean.valueOf(
                 (String) environment.get(SimpleJndi.SIMPLE_SHARED));
         if (!isShared) {
-            return new SimpleJndi(environment).loadRoot();
+            return new DelimiterConvertingContext(new SimpleJndi(environment).loadRoot());
         }
         else {
             final String root = (String) environment.get(SimpleJndi.SIMPLE_ROOT);
@@ -82,7 +80,7 @@ public class SimpleContextFactory implements InitialContextFactory {
             }
             else {
                 InitialContext context = new SimpleJndi(environment).loadRoot();
-                final DelegatingContext delegatingContext = new DelegatingContext(context) {
+                final DelimiterConvertingContext delimiterConvertingContext = new DelimiterConvertingContext(context) {
                     @Override
                     public void close() throws NamingException {
                         // first remove, so the context will be removed even when close()
@@ -90,9 +88,10 @@ public class SimpleContextFactory implements InitialContextFactory {
                         contextsByRoot.remove(root);
                         target.close();
                     }
+
                 };
-                contextsByRoot.put(root, delegatingContext);
-                return delegatingContext;
+                contextsByRoot.put(root, delimiterConvertingContext);
+                return delimiterConvertingContext;
             }
         }
     }

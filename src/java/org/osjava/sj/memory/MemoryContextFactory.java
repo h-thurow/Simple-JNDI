@@ -40,9 +40,6 @@
 
 package org.osjava.sj.memory;
 
-import org.osjava.sj.SimpleJndi;
-import org.osjava.sj.jndi.DelegatingContext;
-
 import javax.naming.Context;
 import javax.naming.NamingException;
 import javax.naming.spi.InitialContextFactory;
@@ -69,34 +66,34 @@ public class MemoryContextFactory implements InitialContextFactory {
     }
 
     /**
-     * @see javax.naming.spi.InitialContextFactory#getInitialContext(java.util.Hashtable)
+     * @see InitialContextFactory#getInitialContext(Hashtable)
      */
     public Context getInitialContext(Hashtable environment) throws NamingException {
         final Boolean isShared = Boolean.valueOf(
-                (String) environment.get(SimpleJndi.SIMPLE_SHARED));
+                (String) environment.get("org.osjava.sj.jndi.shared"));
         if (!isShared) {
             return new MemoryContext(environment);
         }
         else {
-            final String root = (String) environment.get(SimpleJndi.SIMPLE_ROOT);
+            final String root = (String) environment.get("org.osjava.sj.root");
             final Context ctx = contextsByRoot.get(root);
             // ctx.listBindings("").hasMore(): Ob alle Kontexte zerstört wurden.
             if (ctx != null) {
                 return ctx;
             }
             else {
-                MemoryContext context = new MemoryContext(environment);
-                final DelegatingContext delegatingContext = new DelegatingContext(context) {
+                MemoryContext context = new MemoryContext(environment) {
                     @Override
                     public void close() throws NamingException {
                         // first remove, so the context will be removed even when close()
                         // throws an Exception
                         contextsByRoot.remove(root);
-                        target.close();
+                        super.close();
                     }
+
                 };
-                contextsByRoot.put(root, delegatingContext);
-                return delegatingContext;
+                contextsByRoot.put(root, context);
+                return context;
             }
         }
     }

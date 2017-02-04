@@ -118,7 +118,12 @@ public class SimpleJndi {
     private Context createENC(Hashtable env, Context ctxt) throws NamingException {
         String space = (String) env.get(SIMPLE_SPACE);
         if(space != null) {
-            String[] contextNames = Utils.split(space, (String) env.get(JndiLoader.SIMPLE_DELIMITER) );
+            String delimiter = (String) env.get(JndiLoader.SIMPLE_DELIMITER);
+            final Object separator = env.get("jndi.syntax.separator");
+            if (separator != null && !separator.equals(delimiter)) {
+                delimiter = "\\" + delimiter + "|\\" + separator;
+            }
+            String[] contextNames = Utils.split(space, delimiter);
             for (String name : contextNames) {
                 ctxt = ctxt.createSubcontext(name);
             }
@@ -142,7 +147,9 @@ public class SimpleJndi {
         if(!environment.containsKey(JndiLoader.SIMPLE_DELIMITER)) {
             environment.put(JndiLoader.SIMPLE_DELIMITER, ".");
         }
-        environment.put("jndi.syntax.separator", environment.get(JndiLoader.SIMPLE_DELIMITER));
+        if (!environment.containsKey("jndi.syntax.separator")) {
+            environment.put("jndi.syntax.separator", environment.get(JndiLoader.SIMPLE_DELIMITER));
+        }
     }
 
     private InitialContext createInitialContext() throws NamingException {

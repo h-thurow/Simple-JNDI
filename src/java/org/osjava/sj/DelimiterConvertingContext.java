@@ -29,21 +29,20 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package org.osjava.sj.jndi;
+package org.osjava.sj;
 
 import javax.naming.*;
 import java.util.Hashtable;
 
 
 /**
- * Standard delegating pattern for JNDI Contexts.
- * Sub-classes of this may filter calls to the JNDI code. 
+ * Converts between org.osjava.sj.delimiter for parsing property files and jndi.syntax.separator for lookups when they are different.
  */
-public abstract class DelegatingContext implements Context {
+public class DelimiterConvertingContext implements Context {
 
     protected Context target;
 
-    public DelegatingContext(Context ctxt) {
+    public DelimiterConvertingContext(Context ctxt) {
         // ctxt ist ein MemoryContext.
         this.target = ctxt;
     }
@@ -53,7 +52,20 @@ public abstract class DelegatingContext implements Context {
     }
 
     public Object lookup(String name) throws NamingException {
+        name = normalizeSeparator(name);
         return this.target.lookup(name);
+    }
+
+    String normalizeSeparator(String name) throws NamingException {
+        final Hashtable<String, String> env = getEnvironment();
+        final String separator = env.get("jndi.syntax.separator");
+        if (separator != null) {
+            final String delimiter = env.get("org.osjava.sj.delimiter");
+            if (!separator.equals(delimiter)) {
+                name = name.replace(delimiter, separator);
+            }
+        }
+        return name;
     }
 
     public void bind(Name name, Object value) throws NamingException {
@@ -61,6 +73,7 @@ public abstract class DelegatingContext implements Context {
     }
 
     public void bind(String name, Object value) throws NamingException {
+        name = normalizeSeparator(name);
         this.target.bind(name, value);
     }
 
@@ -69,6 +82,7 @@ public abstract class DelegatingContext implements Context {
     }
 
     public void rebind(String name, Object value) throws NamingException {
+        name = normalizeSeparator(name);
         this.target.rebind(name, value);
     }
 
@@ -77,6 +91,7 @@ public abstract class DelegatingContext implements Context {
     }
 
     public void unbind(String name) throws NamingException {
+        name = normalizeSeparator(name);
         this.target.unbind(name);
     }
 
@@ -85,6 +100,8 @@ public abstract class DelegatingContext implements Context {
     }
 
     public void rename(String name, String name2) throws NamingException {
+        name = normalizeSeparator(name);
+        name2= normalizeSeparator(name2);
         this.target.rename(name, name2);
     }
 
@@ -93,6 +110,7 @@ public abstract class DelegatingContext implements Context {
     }
 
     public NamingEnumeration list(String name) throws NamingException {
+        name = normalizeSeparator(name);
         return this.target.list(name);
     }
 
@@ -101,6 +119,7 @@ public abstract class DelegatingContext implements Context {
     }
 
     public NamingEnumeration listBindings(String name) throws NamingException {
+        name = normalizeSeparator(name);
         return this.target.listBindings(name);
     }
 
@@ -109,6 +128,7 @@ public abstract class DelegatingContext implements Context {
     }
 
     public void destroySubcontext(String name) throws NamingException {
+        name = normalizeSeparator(name);
         this.target.destroySubcontext(name);
     }
 
@@ -117,6 +137,7 @@ public abstract class DelegatingContext implements Context {
     }
 
     public Context createSubcontext(String name) throws NamingException {
+        name = normalizeSeparator(name);
         return this.target.createSubcontext(name);
     }
 
@@ -125,6 +146,7 @@ public abstract class DelegatingContext implements Context {
     }
 
     public Object lookupLink(String name) throws NamingException {
+        name = normalizeSeparator(name);
         return this.target.lookupLink(name);
     }
 
@@ -133,6 +155,7 @@ public abstract class DelegatingContext implements Context {
     }
 
     public NameParser getNameParser(String name) throws NamingException {
+        name = normalizeSeparator(name);
         return this.target.getNameParser(name);
     }
 
@@ -141,6 +164,8 @@ public abstract class DelegatingContext implements Context {
     }
 
     public String composeName(String name, String name2) throws NamingException {
+        name = normalizeSeparator(name);
+        name2 = normalizeSeparator(name2);
         return this.target.composeName(name, name2);
     }
 

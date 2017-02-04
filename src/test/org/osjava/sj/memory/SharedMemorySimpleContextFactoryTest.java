@@ -40,19 +40,9 @@ import static org.junit.Assert.*;
 public class SharedMemorySimpleContextFactoryTest {
 
     private InitialContext createContext() throws NamingException {
-        /* Initial configuration voodoo for the default context. */
         Hashtable contextEnv = new Hashtable();
         contextEnv.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
-
-        /* The default is 'flat', which isn't hierarchial and not what I want. */
-        contextEnv.put("jndi.syntax.direction", "left_to_right");
-
-        /* Separator is required for non-flat */
-        contextEnv.put("jndi.syntax.separator", "/");
-
         contextEnv.put("org.osjava.sj.jndi.shared", "true");
-        
-        /* The intial context. */
         return new InitialContext(contextEnv);
     }
     
