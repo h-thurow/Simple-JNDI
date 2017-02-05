@@ -3,7 +3,6 @@ package commons.configuration;
 import org.apache.commons.configuration.JNDIConfiguration;
 import org.junit.Test;
 import org.osjava.sj.SimpleJndi;
-import org.osjava.sj.loader.JndiLoader;
 
 import javax.naming.InitialContext;
 import java.util.Properties;
@@ -13,7 +12,7 @@ import static org.junit.Assert.assertNotNull;
 
 public class JNDIConfigurationTest {
     @Test
-    public void slashDelimited() throws Exception {
+    public void slashDelimitedUnshared() throws Exception {
         InitialContext ctx = null;
         try {
             final Properties env = new Properties();
@@ -58,7 +57,7 @@ public class JNDIConfigurationTest {
      * Auch verkehrt: "java:comp\.|/env"
      */
     @Test
-    public void dotDelimited() throws Exception {
+    public void dotDelimitedShared() throws Exception {
         InitialContext ctx = null;
         try {
             final Properties env = new Properties();
@@ -83,7 +82,42 @@ public class JNDIConfigurationTest {
 //            assertNull(jndiConf.getString("java:comp/env.my.home"));
             assertEquals("/Users/hot", jndiConf.getString("java:comp/env.my.home"));
             assertEquals("/Users/hot", jndiConf.getString("java:comp.env.my.home"));
+            assertEquals("/Users/hot", jndiConf.getString("java:comp/env/my/home"));
             assertEquals("${sys:user.home}", ctx.lookup("java:comp.env.my.home"));
+            assertEquals("${sys:user.home}", ctx.lookup("java:comp/env/my/home"));
+        }
+        finally {
+            if (ctx != null) {
+                ctx.close();
+            }
+        }
+    }
+
+    @Test
+    public void dotDelimitedUnshared() throws Exception {
+        InitialContext ctx = null;
+        try {
+            final Properties env = new Properties();
+            env.put(SimpleJndi.SIMPLE_ROOT, "src/test/commons/configuration/dotDelimiter");
+            env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
+            env.put("org.osjava.sj.delimiter", "."); // to be explicit
+//            env.put("org.osjava.sj.delimiter", "\\.|/");
+            env.put("org.osjava.sj.space", "java:comp/env");
+            env.put("jndi.syntax.separator", "/");
+            ctx = new InitialContext(env);
+
+            final int size = (Integer) ctx.lookup("java:comp/env.parent.child1.size");
+            assert size == 186;
+
+            final JNDIConfiguration jndiConf = new JNDIConfiguration(ctx);
+
+            // variable interpolation (${sys:user.home})
+
+            assertEquals("/Users/hot", jndiConf.getString("java:comp/env.my.home"));
+            assertEquals("/Users/hot", jndiConf.getString("java:comp.env.my.home"));
+            assertEquals("/Users/hot", jndiConf.getString("java:comp/env/my/home"));
+            assertEquals("${sys:user.home}", ctx.lookup("java:comp.env.my.home"));
+            assertEquals("${sys:user.home}", ctx.lookup("java:comp/env/my/home"));
         }
         finally {
             if (ctx != null) {
@@ -93,26 +127,55 @@ public class JNDIConfigurationTest {
     }
 
     /**
-     * Simple-JNDI configured with "." as delimiter does not solve the problem encountered in {@link #dotDelimited()}.
+     * Chaining does not work with JNDIConfiguration.
      */
     @Test
-    public void keysWithPointDelimiterSetToPoint() throws Exception {
+    public void chained() throws Exception {
         InitialContext ctx = null;
         try {
             final Properties env = new Properties();
-            // Wird gemerged mit der config aus src/jndi.properties
-            env.put(SimpleJndi.SIMPLE_ROOT, "src/configuration/simpleJndiRootPointDelimited");
-            env.put(JndiLoader.SIMPLE_DELIMITER, ".");
+            env.put(SimpleJndi.SIMPLE_ROOT, "src/test/commons/configuration/chaining/my.properties");
+            env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
+//            env.put("org.osjava.sj.delimiter", "."); // to be explicit
+//            env.put("org.osjava.sj.delimiter", "\\.|/");
+            env.put("org.osjava.sj.space", "java:comp/env");
+            env.put("jndi.syntax.separator", "/");
+
+            ctx = new InitialContext(env);
+
+            assertEquals("next.properties", ctx.lookup("java:comp/env/include"));
+
+            final JNDIConfiguration jndiConf = new JNDIConfiguration(ctx);
+
+            // javax.naming.NamingException: Invalid subcontext 'include' in context 'java:comp/env'
+            assertEquals(null, jndiConf.getString("java:comp/env/include/string_in_chained_property_file"));
+
+            assertEquals(null, jndiConf.getString("java:comp/env/string_in_chained_property_file"));
+
+        }
+        finally {
+            if (ctx != null) {
+                ctx.close();
+            }
+        }
+    }
+
+    /**
+     * When setting ENC variables must be prefixed with ENC too, e.g. ${java:comp/env.application.name}.
+     */
+    @Test
+    public void variableInterpolationWithEnc() throws Exception {
+        InitialContext ctx = null;
+        try {
+            final Properties env = new Properties();
+            env.put(SimpleJndi.SIMPLE_ROOT, "src/test/commons/configuration/interpolation.properties");
+            env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
+            env.put("org.osjava.sj.space", "java:comp/env");
             env.put("jndi.syntax.separator", "/");
             ctx = new InitialContext(env);
             final JNDIConfiguration jndiConf = new JNDIConfiguration(ctx);
-
-            assertNotNull(ctx.lookup("java:comp/env.parent.child1.name"));
-
-            assertEquals("${sys:user.home}", ctx.lookup("java:comp/env.my.home"));
-            // ... aber diese Abfrage funktioniert trotzdem nicht, weil daraus in JNDIConfiguration java:comp/env/my/home wird, Simple-JNDI aber mit "." als delimiter konfiguriert wurde, also "java:comp/env.my.home" erwartet, um die einzelnen contexts zu extrahieren.
-            assert null == jndiConf.getString("java:comp/env.my.home");
-
+            assertEquals("${java:comp/env.application.name} ${java:comp/env.application.version}", (String) ctx.lookup("java:comp/env/application/title"));
+            assertEquals("Killer App 1.6.2", jndiConf.getString("java:comp/env/application/title"));
         }
         finally {
             if (ctx != null) {
@@ -122,23 +185,17 @@ public class JNDIConfigurationTest {
     }
 
     @Test
-    public void variableInterpolation() throws Exception {
+    public void variableInterpolationNoEnc() throws Exception {
         InitialContext ctx = null;
         try {
             final Properties env = new Properties();
-            // Wird gemerged mit der config aus src/jndi.properties
-            env.put(SimpleJndi.SIMPLE_ROOT, "src/configuration/simpleJndiRoot");
-//            env.put(JndiLoader.SIMPLE_SHARED, "true");
+            env.put(SimpleJndi.SIMPLE_ROOT, "src/test/commons/configuration/interpolationNoEnc.properties");
+            env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
+            env.put("jndi.syntax.separator", "/");
             ctx = new InitialContext(env);
             final JNDIConfiguration jndiConf = new JNDIConfiguration(ctx);
-
-            // variable interpolation
-            assertEquals("/Users/hot", jndiConf.getString("java:comp/env/my/home"));
-            // Interpolated values are visible only through JNDIConfiguration, but not per lookup on the raw context. Die Interpolation wird erst in getString() vorgenommen auf dem von lookup gelieferten Wert.
-            assertEquals("${sys:user.name}", ctx.lookup("java:comp/env/parent/interpolated"));
-            assertEquals("hot", jndiConf.getString("java:comp/env/parent/interpolated"));
-
-            assertEquals("hot", jndiConf.getString("java:comp/env/parent/interpolatedName"));
+            assertEquals("${application.name} ${application.version}", (String) ctx.lookup("application/title"));
+            assertEquals("Killer App 1.6.2", jndiConf.getString("application/title"));
 
         }
         finally {
@@ -149,33 +206,21 @@ public class JNDIConfigurationTest {
     }
 
     /**
-     * Variable expansion does not work when using JNDIConfiguration's two argument constructor.
+     * To avoid the need to prefix variables with an ENC you could use JNDIConfiguration's two argument constructor. It works but the lookup pathes differ from the ones required in an application container. TODO Write JNDIConfiguration Adapter which removes ENC from all lookups (EncEnabledJNDIConfiguration). Or see Customizing interpolation http://commons.apache.org/proper/commons-configuration/userguide/howto_basicfeatures.html#Basic_features_and_AbstractConfiguration.
      */
     @Test
-    public void variableInterpolationPrefixedContext() throws Exception {
+    public void variableInterpolationNoEnc2() throws Exception {
         InitialContext ctx = null;
         try {
             final Properties env = new Properties();
-            // Wird gemerged mit der config aus src/jndi.properties
-            env.put(SimpleJndi.SIMPLE_ROOT, "src/configuration/simpleJndiRoot");
-//            env.put(JndiLoader.SIMPLE_SHARED, "true");
+            env.put(SimpleJndi.SIMPLE_ROOT, "src/test/commons/configuration/interpolationNoEnc.properties");
+            env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
+            env.put("jndi.syntax.separator", "/");
+            env.put("org.osjava.sj.space", "java:comp/env");
             ctx = new InitialContext(env);
+            assertEquals("${application.name} ${application.version}", (String) ctx.lookup("java:comp/env/application/title"));
             final JNDIConfiguration jndiConf = new JNDIConfiguration(ctx, "java:comp/env");
-
-            // variable interpolation
-            assertEquals("/Users/hot", jndiConf.getString("my/home"));
-            // Interpolated values are visible only through JNDIConfiguration, but not per lookup on the raw context. This is different from Simple-JNDI configured to use "." as delimiter. See keysWithPointDelimiterSetToPoint(). Die Interpolation wird erst in getString() vorgenommen auf dem von lookup gelieferten Wert.
-            assertEquals("${sys:user.name}", ctx.lookup("java:comp/env/parent/interpolated"));
-            assertEquals("hot", jndiConf.getString("parent/interpolated"));
-
-            // Nicht interpoliert, da die JNDIConfiguration nur auf den Subkontexten von "java:comp/env" arbeitet.
-            // Es wird ein Fehler gelogt:
-//            Jan 08, 2017 1:55:21 PM org.apache.commons.configuration.JNDIConfiguration configurationError
-//            WARNING: Internal error
-//            javax.naming.NamingException: Invalid subcontext 'java:comp' in context 'java:comp/env'
-            assertEquals("${java:comp/env/parent/interpolated}", jndiConf.getString("parent/interpolatedName"));
-            assertEquals("hot", jndiConf.getString("parent/interpolatedNameUnprefixed"));
-
+            assertEquals("Killer App 1.6.2", jndiConf.getString("application/title"));
         }
         finally {
             if (ctx != null) {
