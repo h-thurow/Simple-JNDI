@@ -3,6 +3,7 @@ package org.osjava.sj.memory;
 import org.junit.Test;
 
 import javax.naming.Context;
+import javax.naming.InitialContext;
 import java.util.Hashtable;
 
 import static org.junit.Assert.assertEquals;
@@ -10,7 +11,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * Created by hot on 04/02/2017.
  */
-public class MemoryContextText {
+public class MemoryContextTest {
     @Test
     public void bindName() throws Exception {
         Hashtable env = new Hashtable();
@@ -24,7 +25,24 @@ public class MemoryContextText {
         final String name = (String) ctx.lookup("name");
         ctx.close();
         assertEquals("value", name);
+    }
 
+    @Test
+    public void loadViaInitialContext() throws Exception {
+        Hashtable env = new Hashtable();
+        env.put("jndi.syntax.direction", "left_to_right");
+        env.put("jndi.syntax.separator", "/");
+        env.put("java.naming.factory.initial", "org.osjava.sj.memory.MemoryContextFactory");
+        env.put("org.osjava.sj.jndi.shared", "true");
+        InitialContext ctx = new InitialContext(env);
+        final Context sub1 = ctx.createSubcontext("sub1");
+
+        sub1.bind("name", "value");
+        String name = (String) sub1.lookup("name");
+        assertEquals("value", name);
+
+        name = (String) ctx.lookup("sub1/name");
+        assertEquals("value", name);
     }
 
     @Test

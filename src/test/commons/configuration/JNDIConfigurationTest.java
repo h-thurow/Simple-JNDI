@@ -47,7 +47,7 @@ public class JNDIConfigurationTest {
     }
 
     /**
-     * property names must not contain "." when Simple-JNDI was configured with "/" as delimiter, because JNDIConfiguration replaces them with "/" when calling Simple-JNDI.
+     * Property names must not contain "." when Simple-JNDI was configured with "/" as delimiter, because JNDIConfiguration replaces them with "/" when calling Simple-JNDI. To make "." within property names work with "/" in lookup pathes set jndi.syntax.separator = "/".
      * <p>
      * java.lang.RuntimeException: Illegal node/branch clash. At branch value 'size' an Object was found: 186: Ursache liegt in:
      * org.osjava.sj.loader.JndiLoader#load(java.util.Properties, javax.naming.Context, javax.naming.Context, java.lang.String)<br>
@@ -185,7 +185,7 @@ public class JNDIConfigurationTest {
     }
 
     @Test
-    public void variableInterpolationNoEnc() throws Exception {
+    public void variableInterpolationWithOutEnc() throws Exception {
         InitialContext ctx = null;
         try {
             final Properties env = new Properties();
@@ -206,10 +206,10 @@ public class JNDIConfigurationTest {
     }
 
     /**
-     * To avoid the need to prefix variables with an ENC you could use JNDIConfiguration's two argument constructor. It works but the lookup pathes differ from the ones required in an application container. TODO Write JNDIConfiguration Adapter which removes ENC from all lookups (EncEnabledJNDIConfiguration). Or see Customizing interpolation http://commons.apache.org/proper/commons-configuration/userguide/howto_basicfeatures.html#Basic_features_and_AbstractConfiguration.
+     * To avoid the need to prefix variables with an ENC you could use JNDIConfiguration's two argument constructor. It works but you can't lookup pathes starting with "java:comp/env".
      */
     @Test
-    public void variableInterpolationNoEnc2() throws Exception {
+    public void variableInterpolationWithEnc2() throws Exception {
         InitialContext ctx = null;
         try {
             final Properties env = new Properties();
@@ -221,6 +221,38 @@ public class JNDIConfigurationTest {
             assertEquals("${application.name} ${application.version}", (String) ctx.lookup("java:comp/env/application/title"));
             final JNDIConfiguration jndiConf = new JNDIConfiguration(ctx, "java:comp/env");
             assertEquals("Killer App 1.6.2", jndiConf.getString("application/title"));
+        }
+        finally {
+            if (ctx != null) {
+                ctx.close();
+            }
+        }
+    }
+
+    /**
+     * To be able to use "java:comp/env" in lookups.
+     */
+    @Test
+    public void variableInterpolationWithEnc3() throws Exception {
+        InitialContext ctx = null;
+        try {
+            final Properties env = new Properties();
+            env.put(SimpleJndi.SIMPLE_ROOT, "src/test/commons/configuration/interpolationNoEnc.properties");
+            env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
+            env.put("jndi.syntax.separator", "/");
+            env.put("org.osjava.sj.space", "java:comp/env");
+            ctx = new InitialContext(env);
+            assertEquals("${application.name} ${application.version}", (String) ctx.lookup("java:comp/env/application/title"));
+            final JNDIConfiguration jndiConf = new JNDIConfiguration(ctx) {
+                @Override
+                protected Object interpolate(Object value) {
+                    if (value instanceof String) {
+                        value = ((String) value).replace("${", "${java:comp/env/");
+                    }
+                    return super.interpolate(value);
+                }
+            };
+            assertEquals("Killer App 1.6.2", jndiConf.getString("java:comp/env/application/title"));
         }
         finally {
             if (ctx != null) {
