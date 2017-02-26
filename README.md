@@ -94,7 +94,7 @@ in which the file looks like:</p>
 </ul>
 Note that application1.users.quantity is an Integer and application1.users.enabled is the Boolean true value. 
 </p>
-
+<p><a href=https://github.com/h-thurow/Simple-JNDI/wiki/Declarative-creation-of-contexts-and-context-objects>See more examples.</a></p>
 <h3>DataSources</h3>
 
 <p>The most popular object to get from JNDI is a object of type <i>javax.sql.DataSource</i>, allowing the developer to obtain JDBC connections to databases. Simple-JNDI supports this out of the box.</p>
