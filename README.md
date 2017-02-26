@@ -110,6 +110,9 @@ Thereafter you can call typed properties:
     Integer value = (Integer) ctxt.lookup("application1.users.quantity");
     Boolean value = (Boolean) ctxt.lookup("application1.users.enabled");
 </pre>
+<p>
+The following types are supported: Byte, Short, Integer, Long, Float, Double, Character.
+<p>
 <h3>DataSources</h3>
 <p>
 The most popular object to get from JNDI is a object of type <i>javax.sql.DataSource</i>, allowing the developer to obtain JDBC connections to databases. Simple-JNDI supports this out of the box.</p>
