@@ -67,81 +67,32 @@ If no org.osjava.sj.delimiter is specified, then a '.' (dot) is chosen.
 </p>
 <p>See also <a href="https://github.com/h-thurow/Simple-JNDI/wiki/01-Load-property-files-with-any-extension-from-any-location-(New-in-0.13.0)">Load property files with any extension from any location</a>.</p>
 
-<h3>Creating your data files</h3>
+<h3>Declarative create your contexts and context objects</h3>
 
-<p>Simple-JNDI stores values in multiple .properties, xml or ini files and are looked up using a specified name convention, such as dot or slash delimited. It is also possible to set the type of object a property represents. As already mentioned, the files are located under a root directory as specified with the <i>org.osjava.sj.root</i> property. </p>
+<p>Simple-JNDI stores values in multiple .properties, xml or ini files and are looked up using a specified name convention, such as dot or slash delimited. As already mentioned, the files are located under a root directory as specified with the <i>org.osjava.sj.root</i> property. </p>
 <p>In addition to the delimited lookup key structure, directory names and file names become part of the lookup key. Each delimited tree-node becomes a JNDI Context, while the leaves are implementations. The only exceptions are pseudo sub-values, which you will see with DataSource and other converters. </p>
-
-<h4>Examples</h4>
-
 <p>
-The easiest way to understand is to consider a few examples. Imagine a file-structure looking like,
+The easiest way to understand is to consider an example. Imagine a file-structure looking like,
 </p>
 <pre>
-config/
-config/debug.properties
-config/default.properties
-config/ProductionDS.properties
-config/application1/default.properties
-config/application1/ds.properties
-config/application1/users.properties
+    config/application1/users.properties
 </pre>
 <p>
-in which the files look like;
-<dl>
-<dt>debug.properties</dt>
-<dd>
-state=ERROR
-</dd>
-<dt>default.properties</dt>
-<dd>
-name=Prototype<br>
-url=http://www.generationjava.com/
-</dd>
-<dt>ProductionDS.properties</dt>
-<dd>
-type=javax.sql.DataSource<br>
-driver=org.gjt.mm.mysql.Driver<br>
-url=jdbc:mysql://localhost/testdb<br>
-user=testuser<br>
-password=testing
-</dd>
-<dt>application1/default.properties</dt>
-<dd>
-name=My Application<br>
-version=v3.4
-</dd>
-<dt>application1/ds.properties</dt>
-<dd>
-TestDS.type=javax.sql.DataSource<br>
-TestDS.driver=org.gjt.mm.mysql.Driver<br>
-TestDS.url=jdbc:mysql://localhost/testdb<br>
-TestDS.user=testuser<br>
-TestDS.password=testing
-</dd>
-<dt>application1/users.properties</dt>
-<dd>
-admin=fred<br>
-customer=jim<br>
-quantity=5<br>
-quantity.type=java.lang.Integer<br>
-enabled=true<br>
-enabled.type=java.lang.Boolean
-</dd>
-</dl>
+in which the file looks like:</p>
+<pre>
+    admin=fred
+    quantity=5
+    quantity.type=java.lang.Integer
+    enabled=true
+    enabled.type=java.lang.Boolean
+</pre>
 <p>The following pieces of Java are all legal ways in which to get values from Simple-JNDI. They assume that you set org.osjava.sj.root=config and that you instantiated ctxt by executing 'InitialContext ctxt = new InitialContext();'.</p>
 <ul>
-<li>String value = (String) ctxt.lookup("name")</li>
-<li>String value = (String) ctxt.lookup("url")</li>
-<li>String value = (String) ctxt.lookup("debug.state")</li>
-<li>DataSource value = (DataSource) ctxt.lookup("ProductionDS")</li>
-<li>String value = (String) ctxt.lookup("application1.name")</li>
-<li>DataSource value = (DataSource) ctxt.lookup("application1.ds.TestDS")</li>
 <li>String value = (String) ctxt.lookup("application1.users.admin")</li>
 <li>Integer value = (Integer) ctxt.lookup("application1.users.quantity")</li>
 <li>Boolean value = (Boolean) ctxt.lookup("application1.users.enabled")</li>
 </ul>
-Note that the ProductionDS and TestDS return types are objects of type javax.sql.DataSource, while application1.users.quantity is an Integer and application1.users.enabled is the Boolean true value. 
+Note that application1.users.quantity is an Integer and application1.users.enabled is the Boolean true value. 
 </p>
 
 <h3>DataSources</h3>
