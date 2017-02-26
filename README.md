@@ -91,10 +91,28 @@ in which the file looks like:</p>
 <li>String value = (String) ctxt.lookup("application1.users.enabled")</li>
 </ul>
 </p>
-<p><a href=https://github.com/h-thurow/Simple-JNDI/wiki/Declarative-creation-of-contexts-and-context-objects>See more examples.</a></p>
+<p><a href=https://github.com/h-thurow/Simple-JNDI/wiki/Declarative-creation-of-contexts-and-context-objects>See more examples.</a>
+</p>
+<h3>Lookup typed properties, not only Strings</h3>
+<p>
+In the above example it would be favourable to lookup "quantity" as Integer and "enabled" as Boolean. To achieve this you can type your properties:
+</p>
+<pre>
+    quantity=5
+    quantity.type=java.lang.Integer
+    enabled=true
+    enabled.type=java.lang.Boolean
+</pre>
+<p>
+Thereafter you can call typed properties:
+</p>
+<pre>
+    Integer value = (Integer) ctxt.lookup("application1.users.quantity");
+    Boolean value = (Boolean) ctxt.lookup("application1.users.enabled");
+</pre>
 <h3>DataSources</h3>
-
-<p>The most popular object to get from JNDI is a object of type <i>javax.sql.DataSource</i>, allowing the developer to obtain JDBC connections to databases. Simple-JNDI supports this out of the box.</p>
+<p>
+The most popular object to get from JNDI is a object of type <i>javax.sql.DataSource</i>, allowing the developer to obtain JDBC connections to databases. Simple-JNDI supports this out of the box.</p>
 
 <p>There are four mandatory parameters for a DataSource in Simple-JNDI, and four optional parameters (see next section). The mandatory parameters are <i>url, driver, user, password</i>. The following shows an example of a DataSource that will be available under the lookup key <i>application1/ds/TestDS</i>. </p>
 <pre>
