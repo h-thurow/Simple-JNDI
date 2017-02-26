@@ -169,25 +169,7 @@ application1/ds.properties
 <p>Often when using a DataSource you will want to pool the Connections the DataSource is handing out. Simple-JNDI delegates to the Jakarta Commons DBCP project for this feature so you will need commons-dbcp, commons-pool and commons-collections jars in your classpath. </p>
 <p>The feature is turned on by adding a sub-parameter of '<i>pool=&lt;pool-name&gt;</i>' in your datasource properties file. For example, <i>ApacheDS.pool=apachePool</i>, will turn DBCP Connection pooling on for the ApacheDS datasource under a name of '<i>apachePool</i>'. </p>
 <p>Note: The pool variable used to be a boolean '<i>true</i>' variable, but now a pool name is provided. This is fully backwards compatible as you'll just get a pool name of '<i>true</i>'. </p>
-<p>The following parameters are used to configure DBCP:</p>
-<table class="bodyTable">
-      <tr class="a"><th>Param</th><th>Type</th><th>Default</th></tr>
-      <tr class="b"><td>dbcpValidationQuery</td><td>String</td><td>not set</td></tr>
-      <tr class="a"><td>dbcpDefaultReadOnly</td><td>true/false</td><td>false</td></tr>
-      <tr class="b"><td>dbcpDefaultAutoCommit</td><td>true/false</td><td>true</td></tr>
-      <tr class="a"><td>dbcpMaxActive</td><td>See DBCP's GenericObjectPool</td><td>GenericObjectPool.DEFAULT_MAX_ACTIVE</td></tr>
-      <tr class="b"><td>dbcpWhenExhaustedAction</td><td>See DBCP's GenericObjectPool</td><td>GenericObjectPool.DEFAULT_WHEN_EXHAUSTED_ACTION</td></tr>
-      <tr class="a"><td>dbcpMaxWait</td><td>See DBCP's GenericObjectPool</td><td>GenericObjectPool.DEFAULT_MAX_WAIT</td></tr>
-      <tr class="b"><td>dbcpMaxIdle</td><td>See DBCP's GenericObjectPool</td><td>GenericObjectPool.DEFAULT_MAX_IDLE</td></tr>
-      <tr class="a"><td>dbcpMinIdle</td><td>See DBCP's GenericObjectPool</td><td>GenericObjectPool.DEFAULT_MIN_IDLE</td></tr>
-      <tr class="b"><td>dbcpTestOnBorrow</td><td>See DBCP's GenericObjectPool</td><td>GenericObjectPool.DEFAULT_TEST_ON_BORROW</td></tr>
-      <tr class="a"><td>dbcpTestOnReturn</td><td>See DBCP's GenericObjectPool</td><td>GenericObjectPool.DEFAULT_TEST_ON_RETURN</td></tr>
-      <tr class="b"><td>dbcpTimeBetweenEvictionRunsMillis</td><td>See DBCP's GenericObjectPool</td><td>GenericObjectPool.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS</td></tr>
-      <tr class="a"><td>dbcpNumTestsPerEvictionRun</td><td>See DBCP's GenericObjectPool</td><td>GenericObjectPool.DEFAULT_NUM_TESTS_PER_EVICTION_RUN</td></tr>
-      <tr class="b"><td>dbcpMinEvictableIdleTimeMillis</td><td>See DBCP's GenericObjectPool</td><td>GenericObjectPool.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS</td></tr>
-      <tr class="a"><td>dbcpTestWhileIdle</td><td>See DBCP's GenericObjectPool</td><td>GenericObjectPool.DEFAULT_TEST_WHILE_IDLE</td></tr>
-      <tr class="b"><td>dbcpSoftMinEvictableIdleTimeMillis</td><td>See DBCP's GenericObjectPool</td><td>GenericObjectPool.DEFAULT_SOFT_MIN_EVICTABLE_IDLE_TIME_MILLIS</td></tr>
-</table>
+<p>See also <a href=https://github.com/h-thurow/Simple-JNDI/wiki/02-Connection-pool-configuration>Connection pool configuration</a></p>
 
 <h3>Shared or unshared context?</h3>
 
