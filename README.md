@@ -65,7 +65,7 @@ org.osjava.sj.delimiter=/
 <p>
 If no org.osjava.sj.delimiter is specified, then a '.' (dot) is chosen. 
 </p>
-<p>See also <a href="https://github.com/h-thurow/Simple-JNDI/wiki/01-Load-property-files-with-any-extension-from-any-location-(New-in-0.13.0)">Load property files with any extension from any location</a>.</p>
+<p>See also <a href="https://github.com/h-thurow/Simple-JNDI/wiki/Load-property-files-with-any-extension-from-any-location-(New-in-0.13.0)">Load property files with any extension from any location</a>.</p>
 
 <h3>Declarative create your contexts and context objects</h3>
 
@@ -149,7 +149,7 @@ application1/ds/TestDS.properties
     pool=apachePool
 </pre>
 <p>Note: The pool variable used to be a boolean '<i>true</i>' variable, but now a pool name is provided. This is fully backwards compatible. </p>
-<p>See also <a href=https://github.com/h-thurow/Simple-JNDI/wiki/02-Connection-pool-configuration>Connection pool configuration</a></p>
+<p>See also <a href=https://github.com/h-thurow/Simple-JNDI/wiki/Connection-pool-configuration>Connection pool configuration</a></p>
 
 <h3>Shared or unshared context?</h3>
 
@@ -171,7 +171,7 @@ Either methods will recursively destroy every context and dereference all contai
  
 <p>This project is based on old https://github.com/hen/osjava/tree/master/simple-jndi .</p>
 <ul>
-<li>Several bugs fixed and many new tests added. <a href=https://github.com/h-thurow/Simple-JNDI/wiki/10-Failed-Tests-in-0.11.4.1>See Failed Tests in 0.11.4.1</a>
+<li>Several bugs fixed and many new tests added. <a href=https://github.com/h-thurow/Simple-JNDI/wiki/Failed-Tests-in-0.11.4.1>See Failed Tests in 0.11.4.1</a>
 <li>Changed the way contexts are shared, because of ContextNotEmptyException with type=javax.sql.DataSource. 
 <li>Tests ported to JUnit 4. 
 <li>Maven 2/3 support. 
