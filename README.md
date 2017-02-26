@@ -82,17 +82,14 @@ in which the file looks like:</p>
 <pre>
     admin=fred
     quantity=5
-    quantity.type=java.lang.Integer
     enabled=true
-    enabled.type=java.lang.Boolean
 </pre>
 <p>The following pieces of Java are all legal ways in which to get values from Simple-JNDI. They assume that you set org.osjava.sj.root=config and that you instantiated ctxt by executing 'InitialContext ctxt = new InitialContext();'.</p>
 <ul>
 <li>String value = (String) ctxt.lookup("application1.users.admin")</li>
-<li>Integer value = (Integer) ctxt.lookup("application1.users.quantity")</li>
-<li>Boolean value = (Boolean) ctxt.lookup("application1.users.enabled")</li>
+<li>String value = (String) ctxt.lookup("application1.users.quantity")</li>
+<li>String value = (String) ctxt.lookup("application1.users.enabled")</li>
 </ul>
-Note that application1.users.quantity is an Integer and application1.users.enabled is the Boolean true value. 
 </p>
 <p><a href=https://github.com/h-thurow/Simple-JNDI/wiki/Declarative-creation-of-contexts-and-context-objects>See more examples.</a></p>
 <h3>DataSources</h3>
