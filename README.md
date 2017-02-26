@@ -113,6 +113,9 @@ Thereafter you can call typed properties:
 <p>
 The following types are supported: Byte, Short, Integer, Long, Float, Double, Character.
 <p>
+<p>
+Note that you have to write "quantity/type=java.lang.Integer" and "enabled/type=java.lang.Boolean" when setting "org.osjava.sj.delimiter=/".
+</p>
 <h3>DataSources</h3>
 <p>
 The most popular object to get from JNDI is a object of type <i>javax.sql.DataSource</i>, allowing the developer to obtain JDBC connections to databases. Simple-JNDI supports this out of the box.</p>
