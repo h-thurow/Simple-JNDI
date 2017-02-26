@@ -148,7 +148,7 @@ application1/ds/TestDS.properties
     password=testing
     pool=apachePool
 </pre>
-<p>Note: The pool variable used to be a boolean '<i>true</i>' variable, but now a pool name is provided. This is fully backwards compatible as you'll just get a pool name of '<i>true</i>'. </p>
+<p>Note: The pool variable used to be a boolean '<i>true</i>' variable, but now a pool name is provided. This is fully backwards compatible. </p>
 <p>See also <a href=https://github.com/h-thurow/Simple-JNDI/wiki/02-Connection-pool-configuration>Connection pool configuration</a></p>
 
 <h3>Shared or unshared context?</h3>
