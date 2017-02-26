@@ -69,8 +69,8 @@ If no org.osjava.sj.delimiter is specified, then a '.' (dot) is chosen.
 
 <h3>Declarative create your contexts and context objects</h3>
 
-<p>Simple-JNDI stores values in multiple .properties, xml or ini files and are looked up using a specified name convention, such as dot or slash delimited. As already mentioned, the files are located under a root directory as specified with the <i>org.osjava.sj.root</i> property. </p>
-<p>In addition to the delimited lookup key structure, directory names and file names become part of the lookup key. Each delimited tree-node becomes a JNDI Context, while the leaves are implementations. The only exceptions are pseudo sub-values, which you will see with DataSource and other converters. </p>
+<p>Simple-JNDI stores values in multiple .properties, xml or ini files. The files are located under a root directory as specified with the <i>org.osjava.sj.root</i> property. </p>
+<p>Directory names and file names become part of the lookup key. Each delimited tree-node becomes a JNDI Context, while the leaves are implementations. The only exceptions are pseudo sub-values, which you will see with DataSources.</p>
 <p>
 The easiest way to understand is to consider an example. Imagine a file-structure looking like,
 </p>
