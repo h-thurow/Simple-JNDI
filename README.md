@@ -67,7 +67,7 @@ If no org.osjava.sj.delimiter is specified, then a '.' (dot) is chosen.
 </p>
 <p>See also <a href="https://github.com/h-thurow/Simple-JNDI/wiki/Load-property-files-with-any-extension-from-any-location-(New-in-0.13.0)">Load property files with any extension from any location</a>.</p>
 
-<h3>Declarative create your contexts and context objects</h3>
+<h3>Declaratively create your contexts and context objects</h3>
 
 <p>Simple-JNDI stores values in multiple .properties, xml or ini files. The files are located under a root directory as specified with the <i>org.osjava.sj.root</i> property. </p>
 <p>Directory names and file names become part of the lookup key. Each delimited tree-node becomes a JNDI Context, while the leaves are implementations. The only exceptions are pseudo sub-values, which you will see with DataSources.</p>
