@@ -43,10 +43,10 @@ There are two simple-jndi specific parameters. The first (required) parameter, o
 <pre>
 # absolute directory, using the default file protocol
 org.osjava.sj.root=/home/hen/gj/simple-jndi/config/
-
+</pre><pre>
 # relative directory, using the default file protocol
 org.osjava.sj.root=config/
-
+</pre><pre>
 # NEW in 0.13.0: Specify a list of files and/or directories. Separate them by the platform specific path separator.
 org.osjava.sj.root=file1.cfg:directory1/file.properties:directory2
 </pre>
