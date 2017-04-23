@@ -58,7 +58,7 @@ The second (optional) parameter is the delimiter used to separate elements in a 
 <pre>
 # DNS/Java like delimiters
 org.osjava.sj.delimiter=.
-
+</pre><pre>
 # LDAP/XPath like delimiters
 org.osjava.sj.delimiter=/
 </pre>
