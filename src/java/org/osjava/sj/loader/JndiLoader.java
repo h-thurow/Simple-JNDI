@@ -53,9 +53,6 @@ public class JndiLoader {
     // separator, or just put them in as contexts?
     public static final String SIMPLE_DELIMITER = "org.osjava.sj.delimiter";
 
-    // share the same InitialContext
-    public static final String SIMPLE_SHARED = "org.osjava.sj.shared";
-
     // char(s) to replace : with on the filesystem in filenames
     public static final String SIMPLE_COLON_REPLACE = "org.osjava.sj.colon.replace";
 

@@ -31,24 +31,19 @@
  */
 package org.osjava.sj.loader;
 
-import java.io.File;
-import java.io.IOException;
-
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Properties;
+import junit.framework.TestCase;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-
-import java.sql.Connection;
-import java.sql.SQLException;
 import javax.sql.DataSource;
-
-import junit.framework.TestCase;
+import java.io.File;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.*;
 
 public class JndiLoaderTest extends TestCase {
 
@@ -260,6 +255,43 @@ public class JndiLoaderTest extends TestCase {
         } catch (SQLException sqle) {
             // expected
         }
+    }
+
+    public void testPoolLive() throws IOException, NamingException, SQLException {
+        Properties props = new Properties();
+        props.put("Sybase/type", "javax.sql.DataSource");
+        props.put("Sybase/driver", "com.sybase.jdbc3.jdbc.SybDriver");
+        props.put("Sybase/pool", "myPool");
+        props.put("Sybase/url", "");
+        props.put("Sybase/user", "");
+        props.put("Sybase/password", "");
+        loader.load(props, ctxt);
+        DataSource ds = (DataSource) ctxt.lookup("Sybase");
+        assertNotNull(ds);
+
+        // creates and accesses the pool
+        Connection c = ds.getConnection();
+        Statement stmnt = c.createStatement();
+        stmnt.execute("select 1");
+        ResultSet rs = stmnt.getResultSet();
+        rs.next();
+        int result = rs.getInt(1);
+        rs.close();
+        c.close();
+
+        assertEquals(1, result);
+
+        // accesses the already created pool
+        c = ds.getConnection();
+        stmnt = c.createStatement();
+        stmnt.execute("select 1");
+        rs = stmnt.getResultSet();
+        rs.next();
+        result = rs.getInt(1);
+        rs.close();
+        c.close();
+
+        assertEquals(1, result);
     }
 
 }

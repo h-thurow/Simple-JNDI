@@ -162,11 +162,12 @@ public class SimpleJndi {
     }
 
     private void overwriteEnvironmentWithSystemProperties() {
-        overwriteFromSystemProperty(JndiLoader.SIMPLE_DELIMITER);
         overwriteFromSystemProperty(SIMPLE_ROOT);
         overwriteFromSystemProperty(SIMPLE_SPACE);
-        overwriteFromSystemProperty(JndiLoader.SIMPLE_SHARED);
         overwriteFromSystemProperty(CONTEXT_FACTORY);
+        overwriteFromSystemProperty(SIMPLE_SHARED);
+        overwriteFromSystemProperty(JndiLoader.SIMPLE_DELIMITER);
+        overwriteFromSystemProperty(JndiLoader.SIMPLE_COLON_REPLACE);
     }
 
     private void overwriteFromSystemProperty(String key) {
