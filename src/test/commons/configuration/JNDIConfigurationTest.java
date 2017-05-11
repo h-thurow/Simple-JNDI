@@ -5,12 +5,15 @@ import org.junit.Test;
 import org.osjava.sj.SimpleJndi;
 
 import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import java.util.NoSuchElementException;
 import java.util.Properties;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class JNDIConfigurationTest {
+
     @Test
     public void slashDelimitedUnshared() throws Exception {
         InitialContext ctx = null;
@@ -46,15 +49,65 @@ public class JNDIConfigurationTest {
         }
     }
 
+    @Test(expected = NamingException.class)
+    public void dotDelimitedPropertiesCombinedWithSlashDelimitedENC() throws Exception {
+        InitialContext ctx = null;
+        try {
+            final Properties env = new Properties();
+            env.put(SimpleJndi.SIMPLE_ROOT, "src/test/commons/configuration/dotDelimiter");
+            env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
+            env.put("org.osjava.sj.delimiter", "."); // to be explicit
+            env.put("org.osjava.sj.space", "java:comp/env");
+            ctx = new InitialContext(env);
+
+            int size = (Integer) ctx.lookup("java:comp/env.parent.child1.size");
+            assert size == 186;
+
+            // NamingException: Invalid subcontext 'java:comp' in context ''
+            ctx.lookup("java:comp.env.parent.child1.size");
+        }
+        finally {
+            if (ctx != null) {
+                ctx.close();
+            }
+        }
+    }
+
     /**
-     * Property names must not contain "." when Simple-JNDI was configured with "/" as delimiter, because JNDIConfiguration replaces them with "/" when calling Simple-JNDI. To make "." within property names work with "/" in lookup pathes set jndi.syntax.separator = "/".
-     * <p>
-     * java.lang.RuntimeException: Illegal node/branch clash. At branch value 'size' an Object was found: 186: Ursache liegt in:
-     * org.osjava.sj.loader.JndiLoader#load(java.util.Properties, javax.naming.Context, javax.naming.Context, java.lang.String)<br>
-     *      String typePostfix = delimiter + "type";<br>
-     * Muss geändert werden.
-     * <p>
-     * Auch verkehrt: "java:comp\.|/env"
+     * Property names must not contain ".", because JNDIConfiguration replaces them with "/" when calling Simple-JNDI.
+     */
+    @Test(expected = NoSuchElementException.class)
+    public void dotDelimitedProperties() throws Exception {
+        InitialContext ctx = null;
+        try {
+            final Properties env = new Properties();
+            env.put(SimpleJndi.SIMPLE_ROOT, "src/test/commons/configuration/dotDelimiter");
+            env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
+            env.put("org.osjava.sj.delimiter", "."); // to be explicit
+            env.put("org.osjava.sj.space", "java:comp/env");
+            ctx = new InitialContext(env);
+
+            // Simple-JNDI 0.13.0:
+            // Jan 08, 2017 10:30:22 AM org.apache.commons.configuration.JNDIConfiguration configurationError
+//            WARNING: Internal error
+//            javax.naming.NamingException: Invalid subcontext 'my' in context 'java:comp/env'
+            // JNDIConfiguration interpretiert in JNDIConfiguration.getProperty points als context divider: key = key.replaceAll("\\.", "/");
+            // Siehe keysWithPointDelimiterSetToPoint()
+//            assertNull(jndiConf.getString("java:comp/env.my.home"));
+
+            // NoSuchElementException
+            final JNDIConfiguration jndiConf = new JNDIConfiguration(ctx);
+            jndiConf.getInt("java:comp/env.parent.child1.size");
+        }
+        finally {
+            if (ctx != null) {
+                ctx.close();
+            }
+        }
+    }
+
+    /**
+     * To make "." within property names work with JNDIConfiguration set jndi.syntax.separator = "/".
      */
     @Test
     public void dotDelimitedShared() throws Exception {
@@ -73,13 +126,6 @@ public class JNDIConfigurationTest {
             assert size == 186;
             final JNDIConfiguration jndiConf = new JNDIConfiguration(ctx);
 
-            // Simple-JNDI 0.13.0:
-            // Jan 08, 2017 10:30:22 AM org.apache.commons.configuration.JNDIConfiguration configurationError
-//            WARNING: Internal error
-//            javax.naming.NamingException: Invalid subcontext 'my' in context 'java:comp/env'
-            // JNDIConfiguration interpretiert in JNDIConfiguration.getProperty points als context divider: key = key.replaceAll("\\.", "/");
-            // Siehe keysWithPointDelimiterSetToPoint()
-//            assertNull(jndiConf.getString("java:comp/env.my.home"));
             assertEquals("/Users/hot", jndiConf.getString("java:comp/env.my.home"));
             assertEquals("/Users/hot", jndiConf.getString("java:comp.env.my.home"));
             assertEquals("/Users/hot", jndiConf.getString("java:comp/env/my/home"));
