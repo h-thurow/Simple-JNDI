@@ -31,14 +31,14 @@ and commons-collections.
 <h3>Setting up Simple-JNDI</h3>
 
 <p>
-This is where all the work goes in a Simple-JNDI installation. Firstly you need a jndi.properties file, which somehow needs to go into your classpath. This jndi.properties needs one mandatory value:
+This is where all the work goes in a Simple-JNDI installation. Firstly you need a jndi.properties file, which somehow needs to go into your classpath. This jndi.properties needs two mandatory values:
 </p>
 <pre>
 java.naming.factory.initial=org.osjava.sj.SimpleContextFactory
 </pre>
 <p>This property, <i>java.naming.factory.initial</i>, is a part of the jndi specification. </p>
 <p>
-There are two simple-jndi specific parameters. The first (required) parameter, org.osjava.sj.root, is the location of your simple-jndi root, which is the location in which simple-jndi looks for values when code asks for them. The following code block details a few examples with explanatory comments.
+The second required parameter, org.osjava.sj.root, is the location of your simple-jndi root, which is the location in which simple-jndi looks for values when code asks for them. The following code block details a few examples with explanatory comments.
 </p>
 <pre>
 # absolute directory, using the default file protocol
