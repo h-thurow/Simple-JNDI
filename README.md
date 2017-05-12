@@ -53,18 +53,6 @@ org.osjava.sj.root=file1.cfg:directory1/file.properties:directory2
 <p>
 If no org.osjava.sj.root is specified, an Exception is thrown.
 </p>
-<p>
-Another optional parameter is the delimiter used to separate elements in a lookup value. This allows code to get closer to pretending to be another JNDI implementation, such as DNS or LDAP.</p>
-<pre>
-# DNS/Java like delimiters
-org.osjava.sj.delimiter=.
-</pre><pre>
-# LDAP/XPath like delimiters
-org.osjava.sj.delimiter=/
-</pre>
-<p>
-If no org.osjava.sj.delimiter is specified, then a '.' (dot) is chosen. 
-</p>
 <p>See also <a href="https://github.com/h-thurow/Simple-JNDI/wiki/Load-property-files-with-any-extension-from-any-location-(New-in-0.13.0)">Load property files with any extension from any location</a>.</p>
 
 <h3>Declaratively create your contexts and context objects</h3>
@@ -116,6 +104,27 @@ The following types are supported: Byte, Short, Integer, Long, Float, Double, Ch
 <p>
 Note that you have to write "quantity/type=java.lang.Integer" and "enabled/type=java.lang.Boolean" when setting "org.osjava.sj.delimiter=/".
 </p>
+<h3>Lookup pathes with "/" as context separator instead of "."</h3>
+<p>
+So far we used "." as context separator in lookup pathes like in
+</p>
+<pre>
+ctxt.lookup("application1.users.enabled");
+</pre>
+<p>
+But more usual in JNDI world are lookup pathes like
+</p>
+<pre>
+ctxt.lookup("application1/users/enabled");
+</pre>
+<p>
+This is what org.osjava.sj.delimiter is for. If not specified, then a '.' is chosen. To use "/" as separator in lookup pathes set
+</p>
+<pre>
+org.osjava.sj.delimiter=/
+</pre>
+<p>
+Note that you can not mix up different separators in property names and lookup pathes. When setting "org.osjava.sj.delimiter=/" and using namespaced property names you can not declare "a.b.c=123". You have to declare "a/b/c=123". See also <a href=https://github.com/h-thurow/Simple-JNDI/issues/1>ENC problem</a>.
 <h3>DataSources</h3>
 <p>
 The most popular object to get from JNDI is a object of type <i>javax.sql.DataSource</i>, allowing the developer to obtain JDBC connections to databases. Simple-JNDI supports this out of the box.</p>
