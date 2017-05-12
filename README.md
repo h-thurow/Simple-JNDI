@@ -54,7 +54,7 @@ org.osjava.sj.root=file1.cfg:directory1/file.properties:directory2
 If no org.osjava.sj.root is specified, an Exception is thrown.
 </p>
 <p>
-The second (optional) parameter is the delimiter used to separate elements in a lookup value. This allows code to get closer to pretending to be another JNDI implementation, such as DNS or LDAP.</p>
+Another optional parameter is the delimiter used to separate elements in a lookup value. This allows code to get closer to pretending to be another JNDI implementation, such as DNS or LDAP.</p>
 <pre>
 # DNS/Java like delimiters
 org.osjava.sj.delimiter=.
