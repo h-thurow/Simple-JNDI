@@ -50,9 +50,8 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Initial Context Factory for SimpleContexts
  * 
- * @author Henri Yandell
+ * @author Henri Yandell, Holger Thurow
  * @since Simple-JNDI 0.11
- * @version $Rev: 1743 $ $Date: 2005-06-24 19:56:40 -0400 (Fri, 24 Jun 2005) $
  */
 public class SimpleContextFactory implements InitialContextFactory {
 

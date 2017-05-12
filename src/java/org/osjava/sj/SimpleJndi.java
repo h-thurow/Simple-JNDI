@@ -44,10 +44,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Hashtable;
 
-/**
- * job is to hide the JndiLoader, apart from a jndi.properties entry.
- * Can also handle switching . to / so that the delimiter may be settable.
- */
 public class SimpleJndi {
 
     public static final String SIMPLE_ROOT = "org.osjava.sj.root";
@@ -55,20 +51,13 @@ public class SimpleJndi {
     /** Option for top level space (ENC), e.g. "java:comp/env". */
     public static final String SIMPLE_SPACE = "org.osjava.sj.space";
     public static final String SIMPLE_SHARED = "org.osjava.sj.jndi.shared";
+    private static final String JNDI_SYNTAX_SEPARATOR = "jndi.syntax.separator";
     private static final Logger logger = LoggerFactory.getLogger(SimpleJndi.class);
+    private static final String FILENAME_TO_CONTEXT = "org.osjava.sj.filenameToContext";
 
-    private Hashtable environment;
+    private Hashtable<String, String> environment;
 
-    /**
-     * root: {@link #SIMPLE_ROOT}<br>
-     * separator, or just put them in as contexts?: org.osjava.jndi.delimiter<br>
-     * option for top level space; ie) java:comp: {@link #SIMPLE_SPACE}<br>
-     * share the same InitialContext: {@link #SIMPLE_SHARED}
-     * <p>
-     * By default allow system properties to override environment. Siehe
-     * {@link org.osjava.sj.jndi.AbstractContext#AbstractContext(Hashtable)}
-     */
-    SimpleJndi(Hashtable environment) {
+    SimpleJndi(Hashtable<String, String> environment) {
         this.environment = environment;
         overwriteEnvironmentWithSystemProperties();
     }
@@ -90,7 +79,7 @@ public class SimpleJndi {
                 }
                 else if (rootFile.isFile()) {
                     Context tmpCtx = ctxt;
-                    if (environment.containsKey("org.osjava.sj.filenameToContext")) {
+                    if (environment.containsKey(FILENAME_TO_CONTEXT)) {
                         tmpCtx = ctxt.createSubcontext(FilenameUtils.removeExtension(
                                 rootFile.getName()));
                     }
@@ -112,14 +101,14 @@ public class SimpleJndi {
     /**
      * To simulate an environment naming context (ENC), the org.osjava.sj.space property
      * may be used. Whatever the property is set to will be automatically prepended to
-     * every value loaded into the system. Thus org.osjava.sj.space=java:/comp/env
+     * every value loaded into the system. Thus org.osjava.sj.space=java:comp/env
      * simulates the JNDI environment of Tomcat.
      */
     private Context createENC(Hashtable env, Context ctxt) throws NamingException {
         String space = (String) env.get(SIMPLE_SPACE);
         if(space != null) {
             String delimiter = (String) env.get(JndiLoader.SIMPLE_DELIMITER);
-            final Object separator = env.get("jndi.syntax.separator");
+            final Object separator = env.get(JNDI_SYNTAX_SEPARATOR);
             if (separator != null && !separator.equals(delimiter)) {
                 delimiter = "\\" + delimiter + "|\\" + separator;
             }
@@ -147,8 +136,8 @@ public class SimpleJndi {
         if(!environment.containsKey(JndiLoader.SIMPLE_DELIMITER)) {
             environment.put(JndiLoader.SIMPLE_DELIMITER, ".");
         }
-        if (!environment.containsKey("jndi.syntax.separator")) {
-            environment.put("jndi.syntax.separator", environment.get(JndiLoader.SIMPLE_DELIMITER));
+        if (!environment.containsKey(JNDI_SYNTAX_SEPARATOR)) {
+            environment.put(JNDI_SYNTAX_SEPARATOR, environment.get(JndiLoader.SIMPLE_DELIMITER));
         }
     }
 
@@ -161,11 +150,17 @@ public class SimpleJndi {
         return new InitialContext(environment);
     }
 
+    /**
+     * Allow system properties to override environment. Siehe
+     * {@link org.osjava.sj.jndi.AbstractContext#AbstractContext(Hashtable)}.
+     */
     private void overwriteEnvironmentWithSystemProperties() {
         overwriteFromSystemProperty(SIMPLE_ROOT);
         overwriteFromSystemProperty(SIMPLE_SPACE);
         overwriteFromSystemProperty(CONTEXT_FACTORY);
         overwriteFromSystemProperty(SIMPLE_SHARED);
+        overwriteFromSystemProperty(JNDI_SYNTAX_SEPARATOR);
+        overwriteFromSystemProperty(FILENAME_TO_CONTEXT);
         overwriteFromSystemProperty(JndiLoader.SIMPLE_DELIMITER);
         overwriteFromSystemProperty(JndiLoader.SIMPLE_COLON_REPLACE);
     }

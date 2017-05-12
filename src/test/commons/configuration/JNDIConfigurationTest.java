@@ -9,13 +9,12 @@ import javax.naming.NamingException;
 import java.util.NoSuchElementException;
 import java.util.Properties;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 public class JNDIConfigurationTest {
 
     @Test
-    public void slashDelimitedUnshared() throws Exception {
+    public void slashDelimitedPropertiesUnshared() throws Exception {
         InitialContext ctx = null;
         try {
             final Properties env = new Properties();
@@ -95,8 +94,8 @@ public class JNDIConfigurationTest {
             // Siehe keysWithPointDelimiterSetToPoint()
 //            assertNull(jndiConf.getString("java:comp/env.my.home"));
 
-            // NoSuchElementException
             final JNDIConfiguration jndiConf = new JNDIConfiguration(ctx);
+            // NoSuchElementException
             jndiConf.getInt("java:comp/env.parent.child1.size");
         }
         finally {
@@ -192,12 +191,10 @@ public class JNDIConfigurationTest {
             assertEquals("next.properties", ctx.lookup("java:comp/env/include"));
 
             final JNDIConfiguration jndiConf = new JNDIConfiguration(ctx);
-
+            String includedString = jndiConf.getString("java:comp/env/string_in_chained_property_file");
+            assertNull(includedString);
             // javax.naming.NamingException: Invalid subcontext 'include' in context 'java:comp/env'
-            assertEquals(null, jndiConf.getString("java:comp/env/include/string_in_chained_property_file"));
-
-            assertEquals(null, jndiConf.getString("java:comp/env/string_in_chained_property_file"));
-
+            jndiConf.getString("java:comp/env/include/string_in_chained_property_file");
         }
         finally {
             if (ctx != null) {
@@ -263,8 +260,10 @@ public class JNDIConfigurationTest {
             env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
             env.put("jndi.syntax.separator", "/");
             env.put("org.osjava.sj.space", "java:comp/env");
+
             ctx = new InitialContext(env);
             assertEquals("${application.name} ${application.version}", (String) ctx.lookup("java:comp/env/application/title"));
+
             final JNDIConfiguration jndiConf = new JNDIConfiguration(ctx, "java:comp/env");
             assertEquals("Killer App 1.6.2", jndiConf.getString("application/title"));
         }
