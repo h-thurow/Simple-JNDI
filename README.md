@@ -19,7 +19,7 @@ This JNDI implementation is entirely memory based, so no server instances are st
 &lt;dependency>
     &lt;groupId>com.github.h-thurow&lt;/groupId>
     &lt;artifactId>simple-jndi&lt;/artifactId>
-    &lt;version>0.13.0&lt;/version>
+    &lt;version>0.14.0&lt;/version>
 &lt;/dependency>
 </pre>
 <h3>Installing Simple-JNDI</h3>
