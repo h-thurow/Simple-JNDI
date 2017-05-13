@@ -191,10 +191,12 @@ public class JNDIConfigurationTest {
             assertEquals("next.properties", ctx.lookup("java:comp/env/include"));
 
             final JNDIConfiguration jndiConf = new JNDIConfiguration(ctx);
+//            jndiConf.setThrowExceptionOnMissing(true);
             String includedString = jndiConf.getString("java:comp/env/string_in_chained_property_file");
             assertNull(includedString);
             // javax.naming.NamingException: Invalid subcontext 'include' in context 'java:comp/env'
-            jndiConf.getString("java:comp/env/include/string_in_chained_property_file");
+            includedString = jndiConf.getString("java:comp/env/include/string_in_chained_property_file");
+            assertNull(includedString);
         }
         finally {
             if (ctx != null) {

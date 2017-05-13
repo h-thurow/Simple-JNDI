@@ -155,8 +155,7 @@ public abstract class AbstractContext implements Cloneable, Context  {
             if(subContexts.containsKey(objName)) {
                 return ((Context)subContexts.get(objName)).lookup(name.getSuffix(1));
             }
-            throw new NamingException("Invalid subcontext '" + objName.toString() + "' in context '" 
-                            + getNameInNamespace() + "'");
+            throw new NamingException("Invalid subcontext '" + objName.toString() + "' in context '" + getNameInNamespace() + "'");
         }
         
         /* Lookup the object in this context */
