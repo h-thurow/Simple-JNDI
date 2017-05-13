@@ -1,6 +1,8 @@
 package org.osjava.sj;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.osjava.sj.loader.JndiLoader;
 
 import javax.naming.*;
 import javax.sql.DataSource;
@@ -11,6 +13,17 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 public class SimpleJndiNewTest {
+
+    @Before
+    public void setUp() throws Exception {
+        System.clearProperty(SimpleJndi.SIMPLE_ROOT);
+        System.clearProperty(SimpleJndi.SIMPLE_SHARED);
+        System.clearProperty(SimpleJndi.SIMPLE_SPACE);
+        System.clearProperty(SimpleJndi.JNDI_SYNTAX_SEPARATOR);
+        System.clearProperty(SimpleJndi.FILENAME_TO_CONTEXT);
+        System.clearProperty(JndiLoader.SIMPLE_COLON_REPLACE);
+        System.clearProperty(JndiLoader.SIMPLE_DELIMITER);
+    }
 
     /**
      * 0.11.4.1: javax.naming.ContextNotEmptyException
@@ -50,28 +63,31 @@ public class SimpleJndiNewTest {
         }
     }
 
-    @Test
-    public void sharedContextWithPool() throws Exception {
-
-        InitialContext ctx = null;
-        try {
-            final Hashtable<String, String> env = new Hashtable<String, String>();
-//        env.put("org.osjava.sj.root", workspaceDir + "/SimpleJndi/src/test/roots/datasourcePool/");
-            env.put("org.osjava.sj.root", "file://src/test/roots/datasourcePool/");
-            env.put("org.osjava.sj.jndi.shared", "true");
-            env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
-            env.put("org.osjava.sj.delimiter", "/");
-            env.put("org.osjava.sj.space", "java:comp/env");
-
-            DataSource ds3 = (DataSource) ctx.lookup("java:comp/env/myDataSource");
-            assert ds3 != null;
-        }
-        finally {
-            if (ctx != null) {
-                ctx.close();
-            }
-        }
-    }
+//    /**
+//     * Needs reachable database.
+//     */
+//    @Test
+//    public void sharedContextWithPool() throws Exception {
+//
+//        InitialContext ctx = null;
+//        try {
+//            final Hashtable<String, String> env = new Hashtable<String, String>();
+////        env.put("org.osjava.sj.root", workspaceDir + "/SimpleJndi/src/test/roots/datasourcePool/");
+//            env.put("org.osjava.sj.root", "file://src/test/roots/datasourcePool/");
+//            env.put("org.osjava.sj.jndi.shared", "true");
+//            env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
+//            env.put("org.osjava.sj.delimiter", "/");
+//            env.put("org.osjava.sj.space", "java:comp/env");
+//
+//            DataSource ds3 = (DataSource) ctx.lookup("java:comp/env/myDataSource");
+//            assert ds3 != null;
+//        }
+//        finally {
+//            if (ctx != null) {
+//                ctx.close();
+//            }
+//        }
+//    }
 
     /**
      * You can not mix properties with and without namespace in datasource configuration files.

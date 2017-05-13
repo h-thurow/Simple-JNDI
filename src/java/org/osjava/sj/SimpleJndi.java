@@ -51,9 +51,9 @@ public class SimpleJndi {
     /** Option for top level space (ENC), e.g. "java:comp/env". */
     public static final String SIMPLE_SPACE = "org.osjava.sj.space";
     public static final String SIMPLE_SHARED = "org.osjava.sj.jndi.shared";
-    private static final String JNDI_SYNTAX_SEPARATOR = "jndi.syntax.separator";
+    public static final String JNDI_SYNTAX_SEPARATOR = "jndi.syntax.separator";
     private static final Logger logger = LoggerFactory.getLogger(SimpleJndi.class);
-    private static final String FILENAME_TO_CONTEXT = "org.osjava.sj.filenameToContext";
+    public static final String FILENAME_TO_CONTEXT = "org.osjava.sj.filenameToContext";
 
     private Hashtable<String, String> environment;
 
