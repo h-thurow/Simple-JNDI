@@ -36,18 +36,14 @@ import javax.naming.*;
 import java.util.*;
 
 /**
- * The heart of the system, the abstract implementation of context for 
- * simple-jndi.  There are no abstract methods in this class, but it is
- * not meant to be instantiated, but extended instead.
+ * The heart of the system, the abstract implementation of context for simple-jndi.  There are no abstract methods in this class, but it is not meant to be instantiated, but extended instead.
  *
  * @author Robert M. Zigweid
  * @since Simple-JNDI 0.11
- * @version $Rev: 2684 $ $Date: 2008-05-24 22:19:06 -0700 (Sat, 24 May 2008) $
  */
 public abstract class AbstractContext implements Cloneable, Context  {
 
-    // table is used as a read-write cache which sits
-    // above the file-store
+    // table is used as a read-write cache which sits above the file-store
     private Hashtable table = new Hashtable();
     private Hashtable subContexts = new Hashtable();
     private Hashtable env = new Hashtable();
@@ -58,90 +54,29 @@ public abstract class AbstractContext implements Cloneable, Context  {
     private Name nameInNamespace = null;
     private boolean nameLock = false;
 
-    /* **********************************************************************
-     * Constructors.                                                        *
-     * Even though this class cannot be instantiated, it provides default   *
-     * implemenation for doing so in hopes of making Contexts that extend   *
-     * this class easier.                                                   *
-     * **********************************************************************/
     /**
-     * Creates a AbstractContext.
-     */
-    protected AbstractContext() {
-        this((Hashtable)null);
-    }
-    
-    /**
-     * Creates a AbstractContext.<br>
-     * By default allow system properties to override.
-     * 
-     * @param env a Hashtable containing the Context's environemnt.
+     * @param env a Hashtable containing the Context's environment.
      */
     protected AbstractContext(Hashtable env) {
-        /* By default allow system properties to override. */
-        this(env, true, null);
+        this(env, null);
     }
-    
-    /**
-     * Creates a AbstractContext.
-     * 
-     * @param env a Hashtable containing the Context's environment.
-     * @param systemOverride allow System Parameters to override the
-     *        environment that is passed in.
-     */
-    protected AbstractContext(Hashtable env, boolean systemOverride) {
-        this(env, systemOverride, null);
+
+    protected AbstractContext() {
+        this(null, null);
     }
 
     /**
-     * Creates a AbstractContext.
-     * 
+     * @param parser the NameParser being used by the Context.
+     */
+    protected AbstractContext(NameParser parser) {
+        this(null, parser);
+    }
+
+    /**
      * @param env a Hashtable containing the Context's environment.
      * @param parser the NameParser being used by the Context.
      */
     protected AbstractContext(Hashtable env, NameParser parser) {
-        this(env, true, parser);
-    }
-
-    /**
-     * Creates a AbstractContext.
-     * 
-     * @param systemOverride allow System Parameters to override the
-     *        environment that is passed in.
-     */
-    protected AbstractContext(boolean systemOverride) {
-        this(null, systemOverride, null);
-    }
-
-    /**
-     * Creates a AbstractContext.
-     * 
-     * @param systemOverride allow System Parameters to override the
-     *        environment that is passed in.
-     * @param parser the NameParser being used by the Context.
-     */
-    protected AbstractContext(boolean systemOverride, NameParser parser) {
-        this(null, systemOverride, parser);
-    }
-
-    /**
-     * Creates a AbstractContext.
-     * 
-     * @param parser the NameParser being used by the Context.
-     */
-    protected AbstractContext(NameParser parser) {
-        this(null, true, parser);
-    }
-
-    /**
-     * Creates a AbstractContext.
-     * 
-     * @param env a Hashtable containing the Context's environment.
-     * @param systemOverride allow System Parameters to override the
-     *        environment that is passed in. TODO Not supported. Support?
-     * @param parser the NameParser being used by the Context.
-     */
-    protected AbstractContext(Hashtable env, boolean systemOverride, NameParser parser) {
         if(env != null) {
             this.env = (Hashtable)env.clone();
         }
@@ -171,7 +106,6 @@ public abstract class AbstractContext implements Cloneable, Context  {
 
     /**
      * Create a new context based upon the environment of the passed context.
-     * @param that
      */
     protected AbstractContext(AbstractContext that) {
         this(that.env);
@@ -181,7 +115,8 @@ public abstract class AbstractContext implements Cloneable, Context  {
     /* **********************************************************************
      * Implementation of methods specified by java.lang.naming.Context      *
      * **********************************************************************/
-    /** 
+
+    /**
      * Return the named object.  
      * This implementation looks for things in the following order:<br/>
      * <ol>
@@ -199,24 +134,14 @@ public abstract class AbstractContext implements Cloneable, Context  {
      */
     @Override
     public Object lookup(Name name) throws NamingException {
-        /* 
-         * The string form of the name will be used in several places below 
-         * if not matched in the hashtable.
-         */
-        String stringName = name.toString();
-        /*
-         * If name is empty then this context is to be cloned.  This is 
-         * required based upon the javadoc of Context.  UGH!
-         */
+        /* If name is empty then this context is to be cloned.  This is
+         * required based upon the javadoc of Context.  UGH! */
         if(name.size() == 0) {
             Object ret = null;
             try {
                 ret = (AbstractContext)this.clone();
             } catch(CloneNotSupportedException e) {
-                /* 
-                 * TODO: Improve error handling.  I'm not quite sure yet what 
-                 *       should be done, but this almost certainly isn't it.
-                 */
+                // TODO: Improve error handling. I'm not quite sure yet what should be done, but this almost certainly isn't it.
                 e.printStackTrace();
             }
             if(ret != null) {
@@ -226,7 +151,7 @@ public abstract class AbstractContext implements Cloneable, Context  {
 
         Name objName = name.getPrefix(1);
         if(name.size() > 1) {
-            /* Look in a subcontext. */
+            // Look in a subcontext.
             if(subContexts.containsKey(objName)) {
                 return ((Context)subContexts.get(objName)).lookup(name.getSuffix(1));
             }
@@ -239,17 +164,11 @@ public abstract class AbstractContext implements Cloneable, Context  {
             return table.get(objName);
         }
         
-        /* 
-         * Lookup the object from the subcontexts table and return it if found.
-         */
+        // Lookup the object from the subcontexts table and return it if found.
         if(subContexts.containsKey(name)) {
             return subContexts.get(name);
         }
-        /* Nothing could be found.  Return null. */
-        /*
-         * XXX: Is this right?  Should a NamingException be thrown here 
-         *      instead because nothing could be found?
-         */
+        // Nothing could be found.  Return null. Is this right? Should a NamingException be thrown here instead because nothing could be found?
         return null;
     }
 
@@ -266,10 +185,7 @@ public abstract class AbstractContext implements Cloneable, Context  {
      */
     @Override
     public void bind(Name name, Object object) throws NamingException {
-        /* 
-         * If the name of obj doesn't start with the name of this context, 
-         * it is an error, throw a NamingException
-         */
+        // If the name of obj doesn't start with the name of this context, it is an error, throw a NamingException
         if(name.size() > 1) {
             Name prefix = name.getPrefix(1);
             if(subContexts.containsKey(prefix)) {
@@ -385,10 +301,7 @@ public abstract class AbstractContext implements Cloneable, Context  {
         unbind(oldName);
         unbind(newName);
         bind(newName, old);
-        /* 
-         * If the object is a Thread, or a ThreadContext, give it the new 
-         * name.
-         */
+        /* If the object is a Thread, or a ThreadContext, give it the new name. */
         if(old instanceof Thread) {
             ((Thread)old).setName(newName.toString());
         }
@@ -413,12 +326,10 @@ public abstract class AbstractContext implements Cloneable, Context  {
 //      if name is a properties file, we should return the keys (?)
 //      issues: default.properties ?
         if(name == null || name.isEmpty()) {
-            /* 
-             * Because there are two mappings that need to be used here, 
+            /* Because there are two mappings that need to be used here,
              * create a new mapping and add the two maps to it.  This also 
              * adds the safety of cloning the two maps so the original is
-             * unharmed.
-             */
+             * unharmed. */
             Map enumStore = new HashMap();
             enumStore.putAll(table);
             enumStore.putAll(subContexts);
@@ -434,10 +345,8 @@ public abstract class AbstractContext implements Cloneable, Context  {
         if(subContexts.containsKey(subName)) {
             return ((Context)subContexts.get(subName)).list(name.getSuffix(1));
         }
-        /* 
-         * Couldn't find the subcontext and it wasn't pointing at us, throw
-         * an exception.
-         */
+        /* Couldn't find the subcontext and it wasn't pointing at us, throw
+         * an exception. */
         /* TODO: Give this a better message */
         throw new NamingException();
     }
@@ -457,12 +366,10 @@ public abstract class AbstractContext implements Cloneable, Context  {
     @Override
     public NamingEnumeration listBindings(Name name) throws NamingException {
         if(name == null || name.isEmpty()) {
-            /* 
-             * Because there are two mappings that need to be used here, 
+            /* Because there are two mappings that need to be used here,
              * create a new mapping and add the two maps to it.  This also 
              * adds the safety of cloning the two maps so the original is
-             * unharmed.
-             */
+             * unharmed. */
             Map enumStore = new HashMap();
             enumStore.putAll(table);
             enumStore.putAll(subContexts);
@@ -477,10 +384,8 @@ public abstract class AbstractContext implements Cloneable, Context  {
         if(subContexts.containsKey(subName)) {
             return ((Context)subContexts.get(subName)).listBindings(name.getSuffix(1));
         }
-        /* 
-         * Couldn't find the subcontext and it wasn't pointing at us, throw
-         * an exception.
-         */
+        /* Couldn't find the subcontext and it wasn't pointing at us, throw
+         * an exception. */
         throw new NamingException();
     }
 
@@ -557,13 +462,9 @@ public abstract class AbstractContext implements Cloneable, Context  {
     }
 
     /**
-     * @see javax.naming.Context#createSubcontext(javax.naming.Name)
-     */
-    @Override
-    public abstract Context createSubcontext(Name name) throws NamingException;
-    /* TODO: Put this example implemenation into the javadoc.
-    /* Example implementation 
-    public Context createSubcontext(Name name) throws NamingException {
+     * Example implementation:
+     * <pre>
+     public Context createSubcontext(Name name) throws NamingException {
         Context newContext;
         Hashtable subContexts = getSubContexts();
 
@@ -572,25 +473,26 @@ public abstract class AbstractContext implements Cloneable, Context  {
                 Context subContext = (Context)subContexts.get(name.getPrefix(1));
                 newContext = subContext.createSubcontext(name.getSuffix(1));
                 return newContext;
-            } 
+            }
             throw new NameNotFoundException("The subcontext " + name.getPrefix(1) + " was not found.");
         }
-        
+
         if(lookup(name) != null) {
             throw new NameAlreadyBoundException();
         }
 
-        Name contextName = getNameParser(getNameInNamespace())
-            .parse(getNameInNamespace());
+        Name contextName = getNameParser(getNameInNamespace()).parse(getNameInNamespace());
         contextName.addAll(name);
         newContext = new GenericContext(this);
         ((AbstractContext)newContext).setName(contextName);
         subContexts.put(name, newContext);
         return newContext;
-    }
+    }</pre>
+     * @see javax.naming.Context#createSubcontext(javax.naming.Name)
+     */
+    @Override
+    public abstract Context createSubcontext(Name name) throws NamingException;
 
-    */
-    
     /**
      * @see javax.naming.Context#createSubcontext(java.lang.String)
      */
@@ -598,7 +500,6 @@ public abstract class AbstractContext implements Cloneable, Context  {
     public Context createSubcontext(String name) throws NamingException {
         return createSubcontext(nameParser.parse(name));
     }
-    
 
     /**
      * @see javax.naming.Context#lookupLink(javax.naming.Name)
@@ -621,10 +522,7 @@ public abstract class AbstractContext implements Cloneable, Context  {
      */
     @Override
     public NameParser getNameParser(Name name) throws NamingException {
-        /* 
-         * XXX: Not sure this conditional is adequate.  It might still cause
-         *      problems with foo.foo name structures.
-         */
+        /* Not sure this conditional is adequate. It might still cause problems with foo.foo name structures. */
         if(name == null ||
            name.isEmpty() || 
            (name.size() == 1 && name.toString().equals(getNameInNamespace()))) {
@@ -759,6 +657,7 @@ public abstract class AbstractContext implements Cloneable, Context  {
     /* **********************************************************************
      * Implementation other methods used by the Context.                    *
      * **********************************************************************/
+
     /**
      * Determine whether or not the context is empty.  Objects bound directly
      * to the context or subcontexts are all that is considered.  The 
@@ -802,8 +701,7 @@ public abstract class AbstractContext implements Cloneable, Context  {
 
     /**
      * Convenience method returning the subcontexts that this context parents.
-     * @return a Hashtable of context objects that are parented by this 
-     *         context.
+     * @return a Hashtable of context objects that are parented by this context.
      */
     protected Hashtable getSubContexts() {
         return (Hashtable)subContexts.clone();

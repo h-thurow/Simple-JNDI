@@ -74,7 +74,7 @@ public class MemoryContext extends AbstractContext {
      * @param systemOverride
      */
     public MemoryContext(Hashtable env, boolean systemOverride) {
-        super(env, systemOverride);
+        super(env);
     }
 
     /**
@@ -89,7 +89,7 @@ public class MemoryContext extends AbstractContext {
      * @param systemOverride
      */
     public MemoryContext(boolean systemOverride) {
-        super(systemOverride);
+        super();
     }
 
     /**
@@ -97,7 +97,7 @@ public class MemoryContext extends AbstractContext {
      * @param parser
      */
     public MemoryContext(boolean systemOverride, NameParser parser) {
-        super(systemOverride, parser);
+        super(parser);
     }
 
     /**
@@ -113,7 +113,7 @@ public class MemoryContext extends AbstractContext {
      * @param parser
      */
     public MemoryContext(Hashtable env, boolean systemOverride, NameParser parser) {
-        super(env, systemOverride, parser);
+        super(env, parser);
     }
 
     /**
@@ -129,7 +129,7 @@ public class MemoryContext extends AbstractContext {
     @Override
     public Context createSubcontext(Name name) throws NamingException {
         Context newContext;
-        /* Get the subcontexts of /this/ subcontext. */
+        /* Get the subcontexts of this subcontext. */
         Hashtable subContexts = getSubContexts();
 
         if(name.size() > 1) {

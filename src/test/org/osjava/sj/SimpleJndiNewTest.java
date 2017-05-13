@@ -2,17 +2,13 @@ package org.osjava.sj;
 
 import org.junit.Test;
 
-import javax.naming.Binding;
-import javax.naming.InitialContext;
-import javax.naming.NamingEnumeration;
-import javax.naming.NamingException;
+import javax.naming.*;
 import javax.sql.DataSource;
 import java.io.File;
 import java.util.Hashtable;
 import java.util.List;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 public class SimpleJndiNewTest {
 
@@ -862,6 +858,11 @@ public class SimpleJndiNewTest {
             ctx = new InitialContext(env);
             final String size = (String) ctx.lookup("java:comp/env/holger/thurow");
             assertEquals("186", size);
+            Context javaCompCtx = (Context) ctx.lookup("java:comp");
+            assertNotNull(javaCompCtx);
+            Context envCtx = (Context) javaCompCtx.lookup("env");
+            assertNotNull(envCtx);
+            assertNotNull(ctx.lookup("java:comp/env"));
         }
         finally {
             if (ctx != null) {

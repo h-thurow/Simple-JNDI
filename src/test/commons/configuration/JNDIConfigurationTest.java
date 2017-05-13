@@ -204,7 +204,7 @@ public class JNDIConfigurationTest {
     }
 
     /**
-     * When setting ENC variables must be prefixed with ENC too, e.g. ${java:comp/env.application.name}.
+     * When setting ENC, variables must be prefixed with ENC too, e.g. ${java:comp/env.application.name}.
      */
     @Test
     public void variableInterpolationWithEnc() throws Exception {
@@ -249,7 +249,7 @@ public class JNDIConfigurationTest {
     }
 
     /**
-     * To avoid the need to prefix variables with an ENC you could use JNDIConfiguration's two argument constructor. It works but you can't lookup pathes starting with "java:comp/env".
+     * To avoid the need to prefix variables with an ENC you could use JNDIConfiguration's two argument constructor. It works but you must remove "java:comp/env" from the path argument, when calling one of JNDIConfiguration's getter methods.
      */
     @Test
     public void variableInterpolationWithEnc2() throws Exception {
