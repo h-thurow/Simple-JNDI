@@ -11,15 +11,15 @@ This JNDI implementation is entirely memory based, so no server instances are st
 
 <h3>Download</h3>
 
-<a href=https://github.com/h-thurow/Simple-JNDI/raw/master/dist/simple-jndi-0.13.0.jar>simple-jndi-0.13.0.jar</a><br>
-<a href=https://github.com/h-thurow/Simple-JNDI/raw/master/dist/simple-jndi-0.13.0-sources.jar>simple-jndi-0.13.0-sources.jar</a><br>
-<a href=https://github.com/h-thurow/Simple-JNDI/raw/master/dist/simple-jndi-0.13.0-test-sources.jar>simple-jndi-0.13.0-test-sources.jar</a><br>
+<a href=https://github.com/h-thurow/Simple-JNDI/raw/master/dist/simple-jndi-0.14.0.jar>simple-jndi-0.14.0.jar</a><br>
+<a href=https://github.com/h-thurow/Simple-JNDI/raw/master/dist/simple-jndi-0.14.0-sources.jar>simple-jndi-0.14.0-sources.jar</a><br>
+<a href=https://github.com/h-thurow/Simple-JNDI/raw/master/dist/simple-jndi-0.14.0-test-sources.jar>simple-jndi-0.14.0-test-sources.jar</a><br>
 <a href=https://github.com/h-thurow/Simple-JNDI/raw/master/dist/simple-jndi-0.11.4.1-manual.zip>simple-jndi-0.11.4.1-manual.zip</a><br>
 <pre>
 &lt;dependency>
     &lt;groupId>com.github.h-thurow&lt;/groupId>
     &lt;artifactId>simple-jndi&lt;/artifactId>
-    &lt;version>0.13.0&lt;/version>
+    &lt;version>0.14.0&lt;/version>
 &lt;/dependency>
 </pre>
 <h3>Installing Simple-JNDI</h3>
@@ -104,6 +104,9 @@ The following types are supported: Byte, Short, Integer, Long, Float, Double, Ch
 <p>
 Note that you have to write "quantity/type=java.lang.Integer" and "enabled/type=java.lang.Boolean" when setting "org.osjava.sj.delimiter=/".
 </p>
+<p>
+See also <a href=https://github.com/h-thurow/Simple-JNDI/wiki/A-more-elegant-way-to-lookup-typed-properties-(New-in-0.14.0)>A more elegant way to lookup typed properties (New in 0.14.0)</a>
+</p>
 <h3>Lookup pathes with "/" as context separator instead of "."</h3>
 <p>
 So far we used "." as context separator in lookup pathes like in
@@ -125,6 +128,8 @@ org.osjava.sj.delimiter=/
 </pre>
 <p>
 Note that you can not mix up different separators in property names and lookup pathes. When setting "org.osjava.sj.delimiter=/" and using namespaced property names you can not declare "a.b.c=123". You have to declare "a/b/c=123". See also <a href=https://github.com/h-thurow/Simple-JNDI/issues/1>ENC problem</a>.
+<p>
+See also <a href=https://github.com/h-thurow/Simple-JNDI/wiki/Use-slash-separated-lookup-pathes-with-dot-separated-property-names-(New-in-0.14.0)>Use slash separated lookup pathes with dot separated property names (New in 0.14.0)</a>
 <h3>DataSources</h3>
 <p>
 The most popular object to get from JNDI is a object of type <i>javax.sql.DataSource</i>, allowing the developer to obtain JDBC connections to databases. Simple-JNDI supports this out of the box.</p>
