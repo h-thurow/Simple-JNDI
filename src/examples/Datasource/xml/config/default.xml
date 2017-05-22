@@ -1,7 +1,0 @@
-<FlamefewDS>
-    <url>foofoo</url>
-    <driver>bing</driver>
-    <user>Boo</user>
-    <password>bong</password>
-    <type>javax.sql.DataSource</type>
-</FlamefewDS>
