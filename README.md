@@ -181,6 +181,10 @@ application1/ds/TestDS.properties
 
 Either methods will recursively destroy every context and dereference all contained objects. So when writing JUnit tests, it is good practice to call close() in tearDown() and reinitialize the JNDI environment in setUp() by calling new InitialContext(). But do not forget to close your datasources by yourself.
 
+<h3>Usage with Spring</h3>
+
+<a href=https://github.com/h-thurow/Simple-JNDI/wiki/Usage-with-Spring>See "Usage with Spring - Inject a DataSource into beans"</a>
+
  <h3>Explanatory note</h3>
  
 <p>This project is based on old https://github.com/hen/osjava/tree/master/simple-jndi .</p>
