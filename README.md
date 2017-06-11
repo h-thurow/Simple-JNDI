@@ -134,9 +134,9 @@ See also <a href=https://github.com/h-thurow/Simple-JNDI/wiki/Use-slash-separate
 <p>
 The most popular object to get from JNDI is a object of type <i>javax.sql.DataSource</i>, allowing the developer to obtain JDBC connections to databases. Simple-JNDI supports this out of the box.</p>
 
-<p>There are four mandatory parameters for a DataSource in Simple-JNDI, and four optional parameters (see next section). The mandatory parameters are <i>url, driver, user, password</i>. The following shows an example of a DataSource that will be available under the lookup key <i>application1/ds/TestDS</i>. </p>
+<p>There are five mandatory parameters for a DataSource in Simple-JNDI: <i>url, driver, user, password, type</i>. The following shows an example of a DataSource that will be available under the lookup key <i>application/ds/TestDS</i>. </p>
 <pre>
-application1/ds/TestDS.properties
+application/ds/TestDS.properties
     type=javax.sql.DataSource
     driver=org.gjt.mm.mysql.Driver
     url=jdbc:mysql://localhost/testdb
@@ -146,7 +146,7 @@ application1/ds/TestDS.properties
 <p>The code to obtain it would be:</p>
 <pre>
       InitialContext ctxt = new InitialContext();
-      DataSource ds = (DataSource) ctxt.lookup("application1/ds/TestDS");
+      DataSource ds = (DataSource) ctxt.lookup("application/ds/TestDS");
 </pre>
 <p>This example uses a delimiter of '/', which must be set with the <i>org.osjava.sj.delimiter</i> property.</p>
 
@@ -180,6 +180,14 @@ application1/ds/TestDS.properties
 <h3>Context.close() and Context.destroySubcontext()</h3>
 
 Either methods will recursively destroy every context and dereference all contained objects. So when writing JUnit tests, it is good practice to call close() in tearDown() and reinitialize the JNDI environment in setUp() by calling new InitialContext(). But do not forget to close your datasources by yourself.
+
+<h3>Usage with Spring</h3>
+
+<a href=https://github.com/h-thurow/Simple-JNDI/wiki/Usage-with-Spring>See "Usage with Spring - Inject a DataSource into beans"</a>
+
+<h3>References</h3>
+
+<a href="http://www.mad-computer-scientist.com/blog/2017/01/06/creating-integration-tests-with-jndi">Creating Integration Tests with JNDI</a>
 
  <h3>Explanatory note</h3>
  
