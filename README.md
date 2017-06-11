@@ -185,6 +185,10 @@ Either methods will recursively destroy every context and dereference all contai
 
 <a href=https://github.com/h-thurow/Simple-JNDI/wiki/Usage-with-Spring>See "Usage with Spring - Inject a DataSource into beans"</a>
 
+<h3>References</h3>
+
+<a href="http://www.mad-computer-scientist.com/blog/2017/01/06/creating-integration-tests-with-jndi">Creating Integration Tests with JNDI</a>
+
  <h3>Explanatory note</h3>
  
 <p>This project is based on old https://github.com/hen/osjava/tree/master/simple-jndi .</p>
