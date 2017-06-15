@@ -3,12 +3,14 @@ package org.osjava.sj;
 import org.junit.Before;
 import org.junit.Test;
 import org.osjava.sj.loader.JndiLoader;
+import org.osjava.sj.memory.MemoryContext;
 
 import javax.naming.*;
 import javax.sql.DataSource;
 import java.io.File;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Properties;
 
 import static org.junit.Assert.*;
 
@@ -972,4 +974,115 @@ public class SimpleJndiNewTest {
         }
     }
 
+    @Test
+    public void usageWithoutRoot() throws Exception {
+        InitialContext ctx = null;
+        try {
+            // Werte aus jndi.properties überschreiben
+            final Hashtable<String, String> env = new Hashtable<String, String>();
+            env.put("org.osjava.sj.root", "");
+            env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
+            env.put("jndi.syntax.separator", "/");
+            ctx = new InitialContext(env);
+            JndiLoader loader = new JndiLoader(ctx.getEnvironment());
+
+            Properties props = new Properties();
+            props.put("foo", "13");
+            props.put("bar.foo", "42");
+            props.put("bar.test.foo", "101");
+
+            loader.load(props, ctx);
+
+            assertEquals( "13", ctx.lookup("foo") );
+            assertEquals( "42", ctx.lookup("bar/foo") );
+            assertEquals( "101", ctx.lookup("bar/test/foo") );
+            assertEquals(MemoryContext.class, ctx.lookup("bar/test").getClass());
+
+        }
+        finally {
+            if (ctx != null) {
+                ctx.close();
+            }
+        }
+    }
+
+    /**
+     * You can load multiple property files one after the other. How to assign them to different context roots?
+     */
+    @Test
+    public void usageWithoutRoot2() throws Exception {
+        InitialContext ctx = null;
+        try {
+            // Werte aus jndi.properties überschreiben
+            final Hashtable<String, String> env = new Hashtable<String, String>();
+            env.put("org.osjava.sj.root", "");
+            env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
+            env.put("jndi.syntax.separator", "/");
+            ctx = new InitialContext(env);
+            JndiLoader loader = new JndiLoader(ctx.getEnvironment());
+
+            Properties props = new Properties();
+            props.put("bar.foo", "101");
+
+            loader.load(props, ctx);
+
+            props = new Properties();
+            props.put("bar.foo2", "42");
+
+            loader.load(props, ctx);
+
+            assertEquals( "101", ctx.lookup("bar/foo") );
+            assertEquals( "42", ctx.lookup("bar/foo2") );
+
+        }
+        finally {
+            if (ctx != null) {
+                ctx.close();
+            }
+        }
+    }
+
+    @Test
+    public void emptyContexts() throws Exception {
+        InitialContext ctx = null;
+        try {
+            final Hashtable<String, String> env = new Hashtable<String, String>();
+            env.put("org.osjava.sj.root", "src/test/roots/emptyContexts");
+            env.put("jndi.syntax.separator", "/");
+            ctx = new InitialContext(env);
+            Context emptyContext = (Context) ctx.lookup("java:comp/env");
+            assertTrue(emptyContext != null);
+            // TODO java:comp.env.jdbc ohne schließendes "=" als Kontextdefinition interpretieren?
+            String jdbc = (String) emptyContext.lookup("jdbc");
+            assertEquals("", jdbc);
+        }
+        finally {
+            if (ctx != null) {
+                ctx.close();
+            }
+        }
+    }
+
+    @Test
+    public void bind() throws Exception {
+        InitialContext ctx = null;
+        try {
+            final Hashtable<String, String> env = new Hashtable<String, String>();
+            env.put("org.osjava.sj.root", "");
+            env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
+            env.put("org.osjava.sj.jndi.shared", "true");
+            env.put("org.osjava.sj.delimiter", "/");
+            env.put("jndi.syntax.separator", "/");
+            ctx = new InitialContext(env);
+            // bind() presumes the contexts already exists.
+            ctx.bind("holger/thurow", 1);
+            Context holgerCtx = (Context) ctx.lookup("holger");
+            assertNotNull(holgerCtx);
+        }
+        finally {
+            if (ctx != null) {
+                ctx.close();
+            }
+        }
+    }
 }

@@ -32,9 +32,11 @@
 package org.osjava.sj.loader;
 
 
-import org.osjava.sj.loader.convert.ConvertRegistry;
 import org.osjava.sj.loader.convert.Converter;
+import org.osjava.sj.loader.convert.ConverterRegistry;
 import org.osjava.sj.loader.util.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.naming.Context;
 import javax.naming.NamingException;
@@ -56,23 +58,23 @@ public class JndiLoader {
     // char(s) to replace : with on the filesystem in filenames
     public static final String SIMPLE_COLON_REPLACE = "org.osjava.sj.colon.replace";
 
-    private static ConvertRegistry convertRegistry = new ConvertRegistry();
+    private static ConverterRegistry converterRegistry = new ConverterRegistry();
 
-    private Hashtable table = new Hashtable();
+    private Hashtable environment = new Hashtable();
+    private Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
     public JndiLoader() {
-        this.table.put(SIMPLE_DELIMITER, "/");
+        this.environment.put(SIMPLE_DELIMITER, "/");
     }
     
     public JndiLoader(Hashtable env) {
         if(!env.containsKey(SIMPLE_DELIMITER)) {
-            throw new IllegalArgumentException("The property "+SIMPLE_DELIMITER+" is mandatory. ");
+            throw new IllegalArgumentException("The property " + SIMPLE_DELIMITER + " is mandatory. ");
         }
-        this.table.put(SIMPLE_DELIMITER, env.get(SIMPLE_DELIMITER));
+        this.environment.put(SIMPLE_DELIMITER, env.get(SIMPLE_DELIMITER));
         if(env.containsKey(SIMPLE_COLON_REPLACE)) {
-            this.table.put(SIMPLE_COLON_REPLACE, env.get(SIMPLE_COLON_REPLACE));
+            this.environment.put(SIMPLE_COLON_REPLACE, env.get(SIMPLE_COLON_REPLACE));
         }
-
     }
     
     /**
@@ -83,6 +85,7 @@ public class JndiLoader {
     }
 
     private void loadDirectory(File directory, Context ctxt, Context parentCtxt, String subName) throws NamingException, IOException {
+
         if( !directory.isDirectory() ) {
             throw new IllegalArgumentException("java.io.File parameter must be a directory. ["+directory+"]");
         }
@@ -95,7 +98,7 @@ public class JndiLoader {
         for (File file : files) {
             String parentName = file.getName();
 
-            String colonReplace = (String) this.table.get(SIMPLE_COLON_REPLACE);
+            String colonReplace = (String) this.environment.get(SIMPLE_COLON_REPLACE);
             if (colonReplace != null) {
                 if (parentName.contains(colonReplace)) {
                     parentName = Utils.replace(parentName, colonReplace, ":");
@@ -148,7 +151,7 @@ public class JndiLoader {
             p = new CustomProperties();
         }
 
-        p.setDelimiter( (String) this.table.get(SIMPLE_DELIMITER) );
+        p.setDelimiter( (String) this.environment.get(SIMPLE_DELIMITER) );
 
         FileInputStream fin = null;
         try {
@@ -249,7 +252,7 @@ public class JndiLoader {
      * @return delimiter "." or "/" or whatever is found by {@link #SIMPLE_DELIMITER}.
      */
     private String extractDelimiter(String key) {
-        String delimiter = (String) this.table.get(SIMPLE_DELIMITER);
+        String delimiter = (String) this.environment.get(SIMPLE_DELIMITER);
         if (delimiter.length() == 1) { // be downwards compatible
             delimiter = delimiter.replace(".", "\\.");
         }
@@ -267,7 +270,7 @@ public class JndiLoader {
      * @return "type" prepended with delimiter, e. g. ".type", "/type".
      */
     private String extractTypeDeclaration(String key) {
-        String delimiter = (String) this.table.get(SIMPLE_DELIMITER);
+        String delimiter = (String) this.environment.get(SIMPLE_DELIMITER);
         if (delimiter.length() == 1) { // be downwards compatible
             delimiter = delimiter.replace(".", "\\.");
         }
@@ -286,7 +289,7 @@ public class JndiLoader {
      * @param key see {@link #createSubContexts(String[], Context)}
      */
     private void jndiPut(Context ctxt, String key, Object value) throws NamingException {
-        String[] pathParts = Utils.split(key, (String) this.table.get(SIMPLE_DELIMITER));
+        String[] pathParts = Utils.split(key, (String) this.environment.get(SIMPLE_DELIMITER));
         Context deepestContext = createSubContexts(pathParts, ctxt);
         deepestContext.bind(pathParts[pathParts.length - 1], value);
     }
@@ -333,7 +336,7 @@ public class JndiLoader {
         }
 
         // TODO: Support a way to set the default converters in the jndi.properties and in the API itself
-        Converter converter = convertRegistry.getConverter(type);
+        Converter converter = converterRegistry.getConverter(type);
         if(converter != null) {
             final Object values = properties.get("valueToConvert");
             if (values instanceof List) {

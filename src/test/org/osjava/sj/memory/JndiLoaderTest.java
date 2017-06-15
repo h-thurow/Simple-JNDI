@@ -61,6 +61,7 @@ public class JndiLoaderTest {
 
         Hashtable env = new Hashtable();
 
+        // Werte aus jndi.properties überschreiben
         env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
         /* The default is 'flat', which isn't hierarchial and not what I want. */
         env.put("jndi.syntax.direction", "left_to_right");

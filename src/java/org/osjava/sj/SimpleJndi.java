@@ -32,6 +32,7 @@
 package org.osjava.sj;
 
 import org.apache.commons.io.FilenameUtils;
+import org.jetbrains.annotations.Nullable;
 import org.osjava.sj.loader.JndiLoader;
 import org.osjava.sj.loader.util.Utils;
 import org.slf4j.Logger;
@@ -54,6 +55,7 @@ public class SimpleJndi {
     public static final String JNDI_SYNTAX_SEPARATOR = "jndi.syntax.separator";
     private static final Logger logger = LoggerFactory.getLogger(SimpleJndi.class);
     public static final String FILENAME_TO_CONTEXT = "org.osjava.sj.filenameToContext";
+    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleJndi.class);
 
     private Hashtable<String, String> environment;
 
@@ -68,32 +70,38 @@ public class SimpleJndi {
         final InitialContext initialContext = createInitialContext();
         Context ctxt = initialContext;
         ctxt = createENC(environment, ctxt);
+        JndiLoader loader = new JndiLoader(environment);
         String root = getRoot(environment);
-        final JndiLoader loader = new JndiLoader(environment);
-        final String[] roots = root.split(File.pathSeparator);
-        for (String path : roots) {
-            final File rootFile = new File(path);
-            try {
-                if (rootFile.isDirectory()) {
-                    loader.loadDirectory(rootFile, ctxt);
-                }
-                else if (rootFile.isFile()) {
-                    Context tmpCtx = ctxt;
-                    if (environment.containsKey(FILENAME_TO_CONTEXT)) {
-                        tmpCtx = ctxt.createSubcontext(FilenameUtils.removeExtension(
-                                rootFile.getName()));
+        if (root != null && !root.isEmpty()) {
+            final String[] roots = root.split(File.pathSeparator);
+            for (String path : roots) {
+                final File rootFile = new File(path);
+                LOGGER.debug("Loading {}", rootFile.getAbsolutePath());
+                try {
+                    if (rootFile.isDirectory()) {
+                        loader.loadDirectory(rootFile, ctxt);
                     }
-                    loader.load(loader.toProperties(rootFile), tmpCtx);
+                    else if (rootFile.isFile()) {
+                        Context tmpCtx = ctxt;
+                        if (environment.containsKey(FILENAME_TO_CONTEXT)) {
+                            tmpCtx = ctxt.createSubcontext(FilenameUtils.removeExtension(
+                                    rootFile.getName()));
+                        }
+                        loader.load(loader.toProperties(rootFile), tmpCtx);
+                    }
+                    else {
+                        throw new NamingException("Unable to load data from " +
+                                rootFile.getAbsolutePath());
+                    }
                 }
-                else {
+                catch (IOException e) {
                     throw new NamingException("Unable to load data from " +
-                            rootFile.getAbsolutePath());
+                            rootFile.getAbsolutePath()+" due to error: " + e.getMessage());
                 }
             }
-            catch (IOException e) {
-                throw new NamingException("Unable to load data from " +
-                        rootFile.getAbsolutePath()+" due to error: " + e.getMessage());
-            }
+        }
+        else {
+            logger.warn("Mistakenly no root provided?");
         }
         return initialContext;
     }
@@ -120,12 +128,13 @@ public class SimpleJndi {
         return ctxt;
     }
 
+    @Nullable
     private String getRoot(Hashtable env) {
         String root = (String) env.get(SIMPLE_ROOT);
-        if(root == null) {
-            throw new IllegalStateException("Property "+SIMPLE_ROOT+" is mandatory. ");
-        }
-        if(root.startsWith("file://")) {
+//        if(root == null) {
+//            throw new IllegalStateException("Property "+SIMPLE_ROOT+" is mandatory. ");
+//        }
+        if(root != null && root.startsWith("file://")) {
             root = root.substring("file://".length());
         }
         return root;

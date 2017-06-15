@@ -35,7 +35,7 @@ package org.osjava.sj.loader.convert;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ConvertRegistry {
+public class ConverterRegistry {
 
     private static Converter NULL_CONVERTER = new NullConverter();
 
@@ -43,7 +43,7 @@ public class ConvertRegistry {
 
     // TODO: Support inheritence; ie) key on Class not String?
     //       Use gj-core ClassMap code?
-    public ConvertRegistry() {
+    public ConverterRegistry() {
         this.converters.put( "javax.sql.DataSource", new DataSourceConverter());
         this.converters.put( "java.util.Date", new DateConverter());
         this.converters.put( "java.lang.Boolean", new ConstructorConverter());

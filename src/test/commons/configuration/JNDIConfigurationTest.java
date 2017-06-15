@@ -1,9 +1,14 @@
 package commons.configuration;
 
 import org.apache.commons.configuration.JNDIConfiguration;
+import org.junit.Before;
 import org.junit.Test;
 import org.osjava.sj.SimpleJndi;
+import org.osjava.sj.loader.JndiLoader;
+import org.osjava.sj.memory.MemoryContext;
+import org.slf4j.LoggerFactory;
 
+import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.util.NoSuchElementException;
@@ -12,6 +17,17 @@ import java.util.Properties;
 import static org.junit.Assert.*;
 
 public class JNDIConfigurationTest {
+
+    @Before
+    public void setUp() throws Exception {
+        System.clearProperty(SimpleJndi.SIMPLE_ROOT);
+        System.clearProperty(SimpleJndi.SIMPLE_SHARED);
+        System.clearProperty(SimpleJndi.SIMPLE_SPACE);
+        System.clearProperty(SimpleJndi.JNDI_SYNTAX_SEPARATOR);
+        System.clearProperty(SimpleJndi.FILENAME_TO_CONTEXT);
+        System.clearProperty(JndiLoader.SIMPLE_COLON_REPLACE);
+        System.clearProperty(JndiLoader.SIMPLE_DELIMITER);
+    }
 
     @Test
     public void slashDelimitedPropertiesUnshared() throws Exception {
@@ -29,6 +45,7 @@ public class JNDIConfigurationTest {
             assertEquals(true, jndiConf.getBoolean("java:comp/env/boolean_true"));
             int age = jndiConf.getInt("java:comp/env/parent/child1/size");
             assertEquals(186, age);
+            assertEquals(MemoryContext.class, jndiConf.getProperty("java:comp/env/parent").getClass());
 
             assertNotNull(ctx.lookup("java:comp"));
             assertNotNull(ctx.lookup("java:comp/env"));
@@ -48,6 +65,9 @@ public class JNDIConfigurationTest {
         }
     }
 
+    /**
+     * The org.osjava.sj.space property is not subject to delimiter parsing, so even when org.osjava.sj.delimiter is set to ".", you have to lookup "java:comp/env", not "java:comp.env"
+     */
     @Test(expected = NamingException.class)
     public void dotDelimitedPropertiesCombinedWithSlashDelimitedENC() throws Exception {
         InitialContext ctx = null;
@@ -106,10 +126,48 @@ public class JNDIConfigurationTest {
     }
 
     /**
+     * Delimiters can not be mixed up in property files with jndi.syntax.separator set. They can only be mixed up in lookups.
+     */
+    @Test
+    public void mixedDelimitedPropertiesWithJndiSyntaxSeparator() throws Exception {
+        InitialContext ctx = null;
+        try {
+            final Properties env = new Properties();
+            env.put(SimpleJndi.SIMPLE_ROOT, "src/test/commons/configuration/mixedDelimiter");
+            env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
+//            env.put("org.osjava.sj.delimiter", ".");
+            env.put("jndi.syntax.separator", "/");
+            ctx = new InitialContext(env);
+
+            Context dotCtx = (Context) ctx.lookup("dot");
+            assertEquals(MemoryContext.class, dotCtx.getClass());
+            assertEquals("dot separated", ctx.lookup("dot/separated"));
+            assertEquals("dot separated", ctx.lookup("dot.separated"));
+
+            Context slashCtx = (Context) ctx.lookup("slash");
+            assertEquals(null, slashCtx);
+
+            try {
+                // ERROR org.osjava.sj.memory.MemoryContext - AbstractContext#lookup("slash/separated"): Invalid subcontext 'slash' in context '': AbstractContext{table={slash/separated=slash separated}, subContexts={dot=AbstractContext{table={separated=dot separated}
+                ctx.lookup("slash/separated");
+                throw new AssertionError("We should not have arrived here!");
+            }
+            catch (NamingException e) {
+                LoggerFactory.getLogger(this.getClass()).error("Expected Exception!!!", e);
+            }
+        }
+        finally {
+            if (ctx != null) {
+                ctx.close();
+            }
+        }
+    }
+
+    /**
      * To make "." within property names work with JNDIConfiguration set jndi.syntax.separator = "/".
      */
     @Test
-    public void dotDelimitedShared() throws Exception {
+    public void dotDelimitedSharedAndVariableInterpolation() throws Exception {
         InitialContext ctx = null;
         try {
             final Properties env = new Properties();
@@ -139,7 +197,7 @@ public class JNDIConfigurationTest {
     }
 
     @Test
-    public void dotDelimitedUnshared() throws Exception {
+    public void dotDelimitedUnsharedAndVariableInterpolation() throws Exception {
         InitialContext ctx = null;
         try {
             final Properties env = new Properties();
@@ -219,7 +277,7 @@ public class JNDIConfigurationTest {
             env.put("jndi.syntax.separator", "/");
             ctx = new InitialContext(env);
             final JNDIConfiguration jndiConf = new JNDIConfiguration(ctx);
-            assertEquals("${java:comp/env.application.name} ${java:comp/env.application.version}", (String) ctx.lookup("java:comp/env/application/title"));
+            assertEquals("${java:comp/env.application.name} ${java:comp/env.application.version}", ctx.lookup("java:comp/env/application/title"));
             assertEquals("Killer App 1.6.2", jndiConf.getString("java:comp/env/application/title"));
         }
         finally {
@@ -239,7 +297,7 @@ public class JNDIConfigurationTest {
             env.put("jndi.syntax.separator", "/");
             ctx = new InitialContext(env);
             final JNDIConfiguration jndiConf = new JNDIConfiguration(ctx);
-            assertEquals("${application.name} ${application.version}", (String) ctx.lookup("application/title"));
+            assertEquals("${application.name} ${application.version}", ctx.lookup("application/title"));
             assertEquals("Killer App 1.6.2", jndiConf.getString("application/title"));
 
         }
@@ -264,7 +322,7 @@ public class JNDIConfigurationTest {
             env.put("org.osjava.sj.space", "java:comp/env");
 
             ctx = new InitialContext(env);
-            assertEquals("${application.name} ${application.version}", (String) ctx.lookup("java:comp/env/application/title"));
+            assertEquals("${application.name} ${application.version}", ctx.lookup("java:comp/env/application/title"));
 
             final JNDIConfiguration jndiConf = new JNDIConfiguration(ctx, "java:comp/env");
             assertEquals("Killer App 1.6.2", jndiConf.getString("application/title"));
@@ -289,7 +347,7 @@ public class JNDIConfigurationTest {
             env.put("jndi.syntax.separator", "/");
             env.put("org.osjava.sj.space", "java:comp/env");
             ctx = new InitialContext(env);
-            assertEquals("${application.name} ${application.version}", (String) ctx.lookup("java:comp/env/application/title"));
+            assertEquals("${application.name} ${application.version}", ctx.lookup("java:comp/env/application/title"));
             final JNDIConfiguration jndiConf = new JNDIConfiguration(ctx) {
                 @Override
                 protected Object interpolate(Object value) {
