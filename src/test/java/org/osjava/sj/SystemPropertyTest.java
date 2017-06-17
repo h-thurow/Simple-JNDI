@@ -53,7 +53,7 @@ public class SystemPropertyTest {
     @Before
     public void setUp() {
         System.setProperty("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
-        System.setProperty("org.osjava.sj.root", "file://src/test/resources/config/system-test");
+        System.setProperty("org.osjava.sj.root", "file://src/test/resources/roots/system-test");
         System.setProperty("org.osjava.sj.delimiter", "::::");
         try {
             ctxt = new InitialContext();

@@ -115,7 +115,7 @@ public class JndiLoaderTest {
     @Test
     public void testDirectory() {
         try {
-            File file = new File("src/test/resources/config");
+            File file = new File("src/test/resources/roots");
             loader.loadDirectory( file, ctxt );
             assertEquals( "13", ctxt.lookup("test/value") );
         } catch(IOException ioe) {
@@ -130,7 +130,7 @@ public class JndiLoaderTest {
     @Test
     public void testDefaultFile() {
         try {
-            File file = new File("src/test/resources/config");
+            File file = new File("src/test/resources/roots");
             loader.loadDirectory( file, ctxt );
             List list = (List) ctxt.lookup("name");
             assertEquals( "Henri", list.get(0) );
@@ -157,7 +157,7 @@ public class JndiLoaderTest {
     public void testSubContext() {
         String dsString = "bing::::foofoo::::Boo";
         try {
-            File file = new File("src/test/resources/config");
+            File file = new File("src/test/resources/roots");
             loader.loadDirectory( file, ctxt );
             Context subctxt = (Context) ctxt.lookup("java");
             assertEquals( dsString, subctxt.lookup("TestDS").toString() );
@@ -176,7 +176,7 @@ public class JndiLoaderTest {
     public void testTopLevelDataSource() {
         String dsString = "org.gjt.mm.mysql.Driver::::jdbc:mysql://127.0.0.1/tmp::::sa";
         try {
-            File file = new File("src/test/resources/config");
+            File file = new File("src/test/resources/roots");
             loader.loadDirectory( file, ctxt );
             DataSource ds = (DataSource) ctxt.lookup("TopLevelDS");
             assertEquals( dsString, ds.toString() );
@@ -266,7 +266,7 @@ public class JndiLoaderTest {
 
     @Test
     public void testDbcp() throws IOException, NamingException {
-        File file = new File("src/test/resources/config");
+        File file = new File("src/test/resources/roots");
         loader.loadDirectory( file, ctxt );
         DataSource ds = (DataSource) ctxt.lookup("pooltest/TestDS");
         DataSource ds1 = (DataSource) ctxt.lookup("pooltest/OneDS");
@@ -283,7 +283,7 @@ public class JndiLoaderTest {
 
     @Test
     public void testDbcpPooltest() throws IOException, NamingException {
-        File file = new File("src/test/resources/config/pooltest");
+        File file = new File("src/test/resources/roots/pooltest");
         loader.loadDirectory( file, ctxt );
         DataSource ds = (DataSource) ctxt.lookup("TestDS");
         DataSource ds1 = (DataSource) ctxt.lookup("OneDS");
@@ -300,7 +300,7 @@ public class JndiLoaderTest {
 
     @Test
     public void testDbcp1() throws IOException, NamingException {
-        File file = new File("src/test/resources/config/pooltest1");
+        File file = new File("src/test/resources/roots/pooltest1");
         loader.loadDirectory( file, ctxt );
         DataSource ds = (DataSource) ctxt.lookup("OneDS");
         try {
@@ -313,7 +313,7 @@ public class JndiLoaderTest {
 
     @Test
     public void testDbcp2() throws IOException, NamingException {
-        File file = new File("src/test/resources/config/pooltest2");
+        File file = new File("src/test/resources/roots/pooltest2");
         loader.loadDirectory( file, ctxt );
         DataSource ds = (DataSource) ctxt.lookup("TestDS");
         try {
@@ -326,7 +326,7 @@ public class JndiLoaderTest {
 
     @Test
     public void testDbcp3() throws IOException, NamingException {
-        File file = new File("src/test/resources/config/pooltest3");
+        File file = new File("src/test/resources/roots/pooltest3");
         loader.loadDirectory( file, ctxt );
         DataSource ds = (DataSource) ctxt.lookup("ThreeDS");
         try {
@@ -339,7 +339,7 @@ public class JndiLoaderTest {
 
     @Test
     public void testDbcp4() throws IOException, NamingException {
-        File file = new File("src/test/resources/config/pooltest4");
+        File file = new File("src/test/resources/roots/pooltest4");
         loader.loadDirectory( file, ctxt );
         DataSource ds = (DataSource) ctxt.lookup("TwoDS");
         try {

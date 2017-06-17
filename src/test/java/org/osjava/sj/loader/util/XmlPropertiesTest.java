@@ -46,7 +46,7 @@ public class XmlPropertiesTest {
 
     @Test
     public void testLoad() throws IOException {
-        InputStream is = new FileInputStream("src/test/resources/config/xmltest.xml");
+        InputStream is = new FileInputStream("src/test/resources/roots/xmltest.xml");
         XmlProperties xmlProperties = new XmlProperties();
         xmlProperties.load(is);
         is.close();

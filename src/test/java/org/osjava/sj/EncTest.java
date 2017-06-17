@@ -49,7 +49,7 @@ public class EncTest {
     @Before
     public void setUp() {
         System.setProperty("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
-        System.setProperty("org.osjava.sj.root", "file://src/test/resources/config/enc-test");
+        System.setProperty("org.osjava.sj.root", "file://src/test/resources/roots/enc-test");
         System.setProperty("org.osjava.sj.delimiter", "/");
         System.setProperty("org.osjava.sj.space", "java:/comp/env");
         try {

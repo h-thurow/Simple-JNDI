@@ -107,7 +107,7 @@ public class JndiLoaderTest extends TestCase {
 
     public void testDirectory() {
         try {
-            File file = new File("src/test/resources/config/");
+            File file = new File("src/test/resources/roots/");
             loader.loadDirectory( file, ctxt );
             assertEquals( "13", ctxt.lookup("test/value") );
         } catch(IOException ioe) {
@@ -121,7 +121,7 @@ public class JndiLoaderTest extends TestCase {
 
     public void testDefaultFile() {
         try {
-            File file = new File("src/test/resources/config/");
+            File file = new File("src/test/resources/roots/");
             loader.loadDirectory( file, ctxt );
             List list = (List) ctxt.lookup("name");
             assertEquals( "Henri", list.get(0) );
@@ -139,7 +139,7 @@ public class JndiLoaderTest extends TestCase {
     public void testSubContext() {
         String dsString = "bing::::foofoo::::Boo";
         try {
-            File file = new File("src/test/resources/config/");
+            File file = new File("src/test/resources/roots/");
             loader.loadDirectory( file, ctxt );
             Context subctxt = (Context) ctxt.lookup("java");
             assertEquals( dsString, subctxt.lookup("TestDS").toString() );
@@ -157,7 +157,7 @@ public class JndiLoaderTest extends TestCase {
     public void testTopLevelDataSource() {
         String dsString = "org.gjt.mm.mysql.Driver::::jdbc:mysql://127.0.0.1/tmp::::sa";
         try {
-            File file = new File("src/test/resources/config/");
+            File file = new File("src/test/resources/roots/");
             loader.loadDirectory( file, ctxt );
             DataSource ds = (DataSource) ctxt.lookup("TopLevelDS");
             assertEquals( dsString, ds.toString() );
@@ -242,7 +242,7 @@ public class JndiLoaderTest extends TestCase {
     }
 
     public void testDbcp() throws IOException, NamingException {
-        File file = new File("src/test/resources/config/");
+        File file = new File("src/test/resources/roots/");
         loader.loadDirectory( file, ctxt );
         DataSource ds = (DataSource) ctxt.lookup("pooltest/TestDS");
         DataSource ds1 = (DataSource) ctxt.lookup("pooltest/OneDS");
