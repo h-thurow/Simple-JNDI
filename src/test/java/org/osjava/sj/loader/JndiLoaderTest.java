@@ -59,27 +59,24 @@ public class JndiLoaderTest extends TestCase {
         /* The default is 'flat', which isn't hierarchial and not what I want. */
         /* Separator is required for non-flat */
 
-        Hashtable contextEnv = new Hashtable();
-
-        /* For GenericContext */
-        contextEnv.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
-        contextEnv.put("jndi.syntax.direction", "left_to_right");
-        contextEnv.put("jndi.syntax.separator", "/");
-        /**/
+        Hashtable env = new Hashtable();
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        env.put("jndi.syntax.direction", "left_to_right");
+        env.put("jndi.syntax.separator", "/");
+        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
 
         /* For Directory-Naming
-        contextEnv.put(Context.INITIAL_CONTEXT_FACTORY, "org.apache.naming.java.javaURLContextFactory");
-        contextEnv.put(Context.URL_PKG_PREFIXES, "org.apache.naming");
-        contextEnv.put("jndi.syntax.direction", "left_to_right");
-        contextEnv.put("jndi.syntax.separator", "/");
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.apache.naming.java.javaURLContextFactory");
+        env.put(Context.URL_PKG_PREFIXES, "org.apache.naming");
+        env.put("jndi.syntax.direction", "left_to_right");
+        env.put("jndi.syntax.separator", "/");
         */
 
-        contextEnv.put(JndiLoader.SIMPLE_DELIMITER, "/");
 
-        loader = new JndiLoader(contextEnv);
+        loader = new JndiLoader(env);
         
         try {
-            ctxt = new InitialContext(contextEnv);
+            ctxt = new InitialContext(env);
         } catch(NamingException ne) {
             ne.printStackTrace();
         }
@@ -108,7 +105,7 @@ public class JndiLoaderTest extends TestCase {
     public void testDirectory() {
         try {
             File file = new File("src/test/resources/roots/");
-            loader.loadDirectory( file, ctxt );
+            loader.load( file, ctxt );
             assertEquals( "13", ctxt.lookup("test/value") );
         } catch(IOException ioe) {
             ioe.printStackTrace();
@@ -122,7 +119,7 @@ public class JndiLoaderTest extends TestCase {
     public void testDefaultFile() {
         try {
             File file = new File("src/test/resources/roots/");
-            loader.loadDirectory( file, ctxt );
+            loader.load( file, ctxt );
             List list = (List) ctxt.lookup("name");
             assertEquals( "Henri", list.get(0) );
             assertEquals( "Fred", list.get(1) );
@@ -140,7 +137,7 @@ public class JndiLoaderTest extends TestCase {
         String dsString = "bing::::foofoo::::Boo";
         try {
             File file = new File("src/test/resources/roots/");
-            loader.loadDirectory( file, ctxt );
+            loader.load( file, ctxt );
             Context subctxt = (Context) ctxt.lookup("java");
             assertEquals( dsString, subctxt.lookup("TestDS").toString() );
             DataSource ds = (DataSource) ctxt.lookup("java/TestDS");
@@ -158,7 +155,7 @@ public class JndiLoaderTest extends TestCase {
         String dsString = "org.gjt.mm.mysql.Driver::::jdbc:mysql://127.0.0.1/tmp::::sa";
         try {
             File file = new File("src/test/resources/roots/");
-            loader.loadDirectory( file, ctxt );
+            loader.load( file, ctxt );
             DataSource ds = (DataSource) ctxt.lookup("TopLevelDS");
             assertEquals( dsString, ds.toString() );
         } catch(IOException ioe) {
@@ -181,6 +178,14 @@ public class JndiLoaderTest extends TestCase {
             ne.printStackTrace();
             fail("NamingException: "+ne.getMessage());
         }
+    }
+
+    public void testSlashSeparatedNamespacedProperty() throws NamingException {
+        Properties props = new Properties();
+        props.put("my/name", "holger");
+        loader.load( props, ctxt );
+        String obj = (String) ctxt.lookup("my/name");
+        assertEquals("holger", obj);
     }
 
     public void testDate() {
@@ -243,7 +248,7 @@ public class JndiLoaderTest extends TestCase {
 
     public void testDbcp() throws IOException, NamingException {
         File file = new File("src/test/resources/roots/");
-        loader.loadDirectory( file, ctxt );
+        loader.load( file, ctxt );
         DataSource ds = (DataSource) ctxt.lookup("pooltest/TestDS");
         DataSource ds1 = (DataSource) ctxt.lookup("pooltest/OneDS");
         DataSource ds2 = (DataSource) ctxt.lookup("pooltest/TwoDS");
@@ -293,5 +298,4 @@ public class JndiLoaderTest extends TestCase {
 
         assertEquals(1, result);
     }
-
 }

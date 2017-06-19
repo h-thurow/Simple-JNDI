@@ -48,28 +48,27 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.*;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
-public class JndiLoaderSharedTest {
+public class MemoryContextFactorySharedTest {
 
     private Context ctxt;
     private JndiLoader loader;
+    private Hashtable contextEnv;
 
     @Before
-    public void setUp() {
+    public void setUp() throws NamingException {
 
-        /* The default is 'flat', which isn't hierarchial and not what I want. */
-        /* Separator is required for non-flat */
-
-        Hashtable contextEnv = new Hashtable();
-
-        /* For GenericContext */
+        contextEnv = new Hashtable();
+        // To be explicit. Not used here.
+        contextEnv.put("org.osjava.sj.root", "");
         contextEnv.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        /* The default is 'flat', which isn't hierarchial and not what I want. */
         contextEnv.put("jndi.syntax.direction", "left_to_right");
+        /* Separator is required for non-flat */
         contextEnv.put("jndi.syntax.separator", "/");
         contextEnv.put("org.osjava.sj.jndi.shared", "true");
-        /**/
+        contextEnv.put(JndiLoader.SIMPLE_DELIMITER, "/");
 
         /* For Directory-Naming
         contextEnv.put(Context.INITIAL_CONTEXT_FACTORY, "org.apache.naming.java.javaURLContextFactory");
@@ -78,15 +77,6 @@ public class JndiLoaderSharedTest {
         contextEnv.put("jndi.syntax.separator", "/");
         */
 
-        contextEnv.put(JndiLoader.SIMPLE_DELIMITER, "/");
-
-        loader = new JndiLoader(contextEnv);
-        
-        try {
-            ctxt = new InitialContext(contextEnv);
-        } catch(NamingException ne) {
-            ne.printStackTrace();
-        }
     }
 
     @After
@@ -105,7 +95,10 @@ public class JndiLoaderSharedTest {
      Actual   :13
      */
     @Test
-    public void testProperties() {
+    public void testProperties() throws NamingException {
+
+        loader = new JndiLoader(contextEnv);
+        ctxt = new InitialContext(contextEnv);
         try {
             Properties props = new Properties();
             props.put("foo", "13");
@@ -125,10 +118,12 @@ public class JndiLoaderSharedTest {
      * 0.11.4.1 javax.naming.ContextNotEmptyException
      */
     @Test
-    public void testDirectory() {
+    public void testDirectory() throws NamingException {
+        loader = new JndiLoader(contextEnv);
+        ctxt = new InitialContext(contextEnv);
         try {
             File file = new File("src/test/resources/roots");
-            loader.loadDirectory( file, ctxt );
+            loader.load( file, ctxt );
             assertEquals( "13", ctxt.lookup("test/value") );
         } catch(IOException ioe) {
             ioe.printStackTrace();
@@ -143,14 +138,16 @@ public class JndiLoaderSharedTest {
      * 0.11.4.1 javax.naming.ContextNotEmptyException
      */
     @Test
-    public void testDefaultFile() {
+    public void testDefaultFile() throws NamingException {
+        loader = new JndiLoader(contextEnv);
+        ctxt = new InitialContext(contextEnv);
         try {
-            File file = new File("src/test/resources/roots");
-            loader.loadDirectory( file, ctxt );
+            File file = new File("src/test/resources/roots/default.properties");
+            loader.load( file, ctxt );
+            assertEquals( "Foo", ctxt.lookup("com.genjava") );
             List list = (List) ctxt.lookup("name");
             assertEquals( "Henri", list.get(0) );
             assertEquals( "Fred", list.get(1) );
-            assertEquals( "Foo", ctxt.lookup("com.genjava") );
         } catch(IOException ioe) {
             ioe.printStackTrace();
             fail("IOException: "+ioe.getMessage());
@@ -164,13 +161,19 @@ public class JndiLoaderSharedTest {
      * javax.naming.ContextNotEmptyException
      */
     @Test
-    public void testSubContext() {
+    public void testSubContext() throws NamingException {
+        contextEnv.put("org.osjava.sj.filenameToContext", "true");
+        loader = new JndiLoader(contextEnv);
+        ctxt = new InitialContext(contextEnv);
         String dsString = "bing::::foofoo::::Boo";
         try {
-            File file = new File("src/test/resources/roots");
-            loader.loadDirectory( file, ctxt );
+            File file = new File("src/test/resources/roots/java.properties");
+            loader.load(file, ctxt);
             Context subctxt = (Context) ctxt.lookup("java");
-            assertEquals( dsString, subctxt.lookup("TestDS").toString() );
+            assertNotNull(subctxt);
+            DataSource testDS = (DataSource) subctxt.lookup("TestDS");
+            assertNotNull(testDS);
+            assertEquals( dsString, testDS.toString() );
             DataSource ds = (DataSource) ctxt.lookup("java/TestDS");
             assertEquals( dsString, ds.toString() );
         } catch(IOException ioe) {
@@ -186,11 +189,13 @@ public class JndiLoaderSharedTest {
      * 0.11.4.1 javax.naming.ContextNotEmptyException
      */
     @Test
-    public void testTopLevelDataSource() {
+    public void testTopLevelDataSource() throws NamingException {
+        loader = new JndiLoader(contextEnv);
+        ctxt = new InitialContext(contextEnv);
         String dsString = "org.gjt.mm.mysql.Driver::::jdbc:mysql://127.0.0.1/tmp::::sa";
         try {
             File file = new File("src/test/resources/roots");
-            loader.loadDirectory( file, ctxt );
+            loader.load( file, ctxt );
             DataSource ds = (DataSource) ctxt.lookup("TopLevelDS");
             assertEquals( dsString, ds.toString() );
         } catch(IOException ioe) {
@@ -203,13 +208,15 @@ public class JndiLoaderSharedTest {
     }
 
     @Test
-    public void testBoolean() {
+    public void testBoolean() throws NamingException {
+        loader = new JndiLoader(contextEnv);
+        ctxt = new InitialContext(contextEnv);
         try {
             Properties props = new Properties();
             props.put("foo", "true");
             props.put("foo/type", "java.lang.Boolean");
             loader.load( props, ctxt );
-            assertEquals( new Boolean(true), ctxt.lookup("foo") );
+            assertEquals(Boolean.TRUE, ctxt.lookup("foo") );
         } catch(NamingException ne) {
             ne.printStackTrace();
             fail("NamingException: "+ne.getMessage());
@@ -217,7 +224,9 @@ public class JndiLoaderSharedTest {
     }
 
     @Test
-    public void testDate() {
+    public void testDate() throws NamingException {
+        loader = new JndiLoader(contextEnv);
+        ctxt = new InitialContext(contextEnv);
         try {
             Properties props = new Properties();
             props.put("birthday", "2004-10-22");
@@ -240,7 +249,9 @@ public class JndiLoaderSharedTest {
     }
 
     @Test
-    public void testConverterPlugin() {
+    public void testConverterPlugin() throws NamingException {
+        loader = new JndiLoader(contextEnv);
+        ctxt = new InitialContext(contextEnv);
         try {
             Properties props = new Properties();
             props.put("math", "Pi");
@@ -258,7 +269,9 @@ public class JndiLoaderSharedTest {
     }
 
     @Test
-    public void testBeanConverter() {
+    public void testBeanConverter() throws NamingException {
+        loader = new JndiLoader(contextEnv);
+        ctxt = new InitialContext(contextEnv);
         try {
             Properties props = new Properties();
             props.put("bean/type", "org.osjava.sj.loader.TestBean");
@@ -282,13 +295,18 @@ public class JndiLoaderSharedTest {
      */
     @Test
     public void testDbcp() throws IOException, NamingException {
-        File file = new File("src/test/resources/roots");
-        loader.loadDirectory( file, ctxt );
-        DataSource ds = (DataSource) ctxt.lookup("pooltest/TestDS");
-        DataSource ds1 = (DataSource) ctxt.lookup("pooltest/OneDS");
-        DataSource ds2 = (DataSource) ctxt.lookup("pooltest/TwoDS");
-        DataSource ds3 = (DataSource) ctxt.lookup("pooltest/ThreeDS");
-
+        loader = new JndiLoader(contextEnv);
+        ctxt = new InitialContext(contextEnv);
+        File file = new File("src/test/resources/roots/pooltest");
+        loader.load( file, ctxt );
+        DataSource ds = (DataSource) ctxt.lookup("TestDS");
+        assertNotNull(ds);
+        DataSource ds1 = (DataSource) ctxt.lookup("OneDS");
+        assertNotNull(ds1);
+        DataSource ds2 = (DataSource) ctxt.lookup("TwoDS");
+        assertNotNull(ds2);
+        DataSource ds3 = (DataSource) ctxt.lookup("ThreeDS");
+        assertNotNull(ds3);
         try {
             Connection conn = ds.getConnection();
             fail("No database is hooked up, so this should have failed");
@@ -302,8 +320,10 @@ public class JndiLoaderSharedTest {
      */
     @Test
     public void testDbcpPooltest() throws IOException, NamingException {
+        loader = new JndiLoader(contextEnv);
+        ctxt = new InitialContext(contextEnv);
         File file = new File("src/test/resources/roots/pooltest");
-        loader.loadDirectory( file, ctxt );
+        loader.load( file, ctxt );
         DataSource ds = (DataSource) ctxt.lookup("TestDS");
         DataSource ds1 = (DataSource) ctxt.lookup("OneDS");
         DataSource ds2 = (DataSource) ctxt.lookup("TwoDS");
@@ -322,8 +342,10 @@ public class JndiLoaderSharedTest {
      */
     @Test
     public void testDbcp1() throws IOException, NamingException {
+        loader = new JndiLoader(contextEnv);
+        ctxt = new InitialContext(contextEnv);
         File file = new File("src/test/resources/roots/pooltest1");
-        loader.loadDirectory( file, ctxt );
+        loader.load( file, ctxt );
         DataSource ds = (DataSource) ctxt.lookup("OneDS");
         try {
             Connection conn = ds.getConnection();
@@ -338,8 +360,10 @@ public class JndiLoaderSharedTest {
      */
     @Test
     public void testDbcp2() throws IOException, NamingException {
+        loader = new JndiLoader(contextEnv);
+        ctxt = new InitialContext(contextEnv);
         File file = new File("src/test/resources/roots/pooltest2");
-        loader.loadDirectory( file, ctxt );
+        loader.load( file, ctxt );
         DataSource ds = (DataSource) ctxt.lookup("TestDS");
         try {
             Connection conn = ds.getConnection();
@@ -354,8 +378,10 @@ public class JndiLoaderSharedTest {
      */
     @Test
     public void testDbcp3() throws IOException, NamingException {
+        loader = new JndiLoader(contextEnv);
+        ctxt = new InitialContext(contextEnv);
         File file = new File("src/test/resources/roots/pooltest3");
-        loader.loadDirectory( file, ctxt );
+        loader.load( file, ctxt );
         DataSource ds = (DataSource) ctxt.lookup("ThreeDS");
         try {
             Connection conn = ds.getConnection();
@@ -370,8 +396,10 @@ public class JndiLoaderSharedTest {
      */
     @Test
     public void testDbcp4() throws IOException, NamingException {
+        loader = new JndiLoader(contextEnv);
+        ctxt = new InitialContext(contextEnv);
         File file = new File("src/test/resources/roots/pooltest4");
-        loader.loadDirectory( file, ctxt );
+        loader.load( file, ctxt );
         DataSource ds = (DataSource) ctxt.lookup("TwoDS");
         try {
             Connection conn = ds.getConnection();
@@ -383,16 +411,20 @@ public class JndiLoaderSharedTest {
 
     @Test
     public void testMultiValueAttributeIntegers() throws Exception {
+        loader = new JndiLoader(contextEnv);
+        ctxt = new InitialContext(contextEnv);
         File file = new File("src/test/resources/roots/multiValueAttributes/integers");
-        loader.loadDirectory( file, ctxt );
+        loader.load( file, ctxt );
         final LinkedList<Integer> ints = (LinkedList<Integer>) ctxt.lookup("person/age");
         assert ints.size() == 3;
     }
 
     @Test
     public void testMultiValueAttributeNoType() throws Exception {
+        loader = new JndiLoader(contextEnv);
+        ctxt = new InitialContext(contextEnv);
         File file = new File("src/test/resources/roots/multiValueAttributes/noType");
-        loader.loadDirectory( file, ctxt );
+        loader.load( file, ctxt );
         final LinkedList<String> ages = (LinkedList<String>) ctxt.lookup("person/name");
         assert ages.size() == 3;
     }
@@ -402,8 +434,10 @@ public class JndiLoaderSharedTest {
      */
     @Test
     public void testMultiValueAttributeBooleans() throws Exception {
+        loader = new JndiLoader(contextEnv);
+        ctxt = new InitialContext(contextEnv);
         File file = new File("src/test/resources/roots/multiValueAttributes/booleans");
-        loader.loadDirectory( file, ctxt );
+        loader.load( file, ctxt );
         final LinkedList<Boolean> booleans = (LinkedList<Boolean>) ctxt.lookup("person/myBooleans");
         assert booleans.size() == 3;
     }
@@ -414,8 +448,10 @@ public class JndiLoaderSharedTest {
      */
     @Test
     public void testMultiValueAttributeCharacters() throws Exception {
+        loader = new JndiLoader(contextEnv);
+        ctxt = new InitialContext(contextEnv);
         File file = new File("src/test/resources/roots/multiValueAttributes/characters");
-        loader.loadDirectory( file, ctxt );
+        loader.load( file, ctxt );
         final LinkedList<Character> characters = (LinkedList<Character>) ctxt.lookup("person/spelledName");
         final StringWriter writer = new StringWriter(characters.size());
         for (Character character : characters) {
@@ -430,8 +466,10 @@ public class JndiLoaderSharedTest {
      */
     @Test
     public void testMultiValueAttributeShorts() throws Exception {
+        loader = new JndiLoader(contextEnv);
+        ctxt = new InitialContext(contextEnv);
         File file = new File("src/test/resources/roots/multiValueAttributes/shorts");
-        loader.loadDirectory( file, ctxt );
+        loader.load( file, ctxt );
         final LinkedList<Short> shorts = (LinkedList<Short>) ctxt.lookup("person/myShort");
         assert shorts.size() == 2;
         assert shorts.get(0) == (short) -32768;
@@ -439,8 +477,10 @@ public class JndiLoaderSharedTest {
 
     @Test
     public void testMultiValueAttributeDoubles() throws Exception {
+        loader = new JndiLoader(contextEnv);
+        ctxt = new InitialContext(contextEnv);
         File file = new File("src/test/resources/roots/multiValueAttributes/doubles");
-        loader.loadDirectory( file, ctxt );
+        loader.load( file, ctxt );
         final LinkedList<Double> doubles = (LinkedList<Double>) ctxt.lookup("person/myDouble");
         assert doubles.size() == 3;
     }
@@ -450,8 +490,10 @@ public class JndiLoaderSharedTest {
      */
     @Test
     public void testMultiValueAttributeMultipleContexts() throws Exception {
+        loader = new JndiLoader(contextEnv);
+        ctxt = new InitialContext(contextEnv);
         File file = new File("src/test/resources/roots/multiValueAttributes");
-        loader.loadDirectory( file, ctxt );
+        loader.load( file, ctxt );
         final LinkedList<Integer> ints = (LinkedList<Integer>) ctxt.lookup("integers/person/age");
         assert ints.size() == 3;
         final LinkedList<String> ages = (LinkedList<String>) ctxt.lookup("noType/person/name");

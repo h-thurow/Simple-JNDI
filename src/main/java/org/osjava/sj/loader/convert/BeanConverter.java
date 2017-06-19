@@ -32,6 +32,9 @@
 
 package org.osjava.sj.loader.convert;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Iterator;
@@ -39,10 +42,10 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- * Create an object using its empty constructor, then 
- * call setXxx for each pseudo property. Only String 
+ * Create an object using its empty constructor, then
+ * call setXxx for each pseudo property. Only String
  * properties are supported.
- *
+ * <p>
  * <pre>
  * Foo.name=Arthur
  * Foo.answer=42
@@ -52,10 +55,12 @@ import java.util.Properties;
  */
 public class BeanConverter implements Converter {
 
+    private static Logger LOGGER = LoggerFactory.getLogger(BeanConverter.class);
+
     public Object convert(Properties properties, String type) {
         String value = properties.getProperty("");
 
-        if(value != null) {
+        if (value != null) {
             throw new RuntimeException("Specify the value as a pseudo property as Beans have empty constructors");
         }
 
@@ -65,47 +70,57 @@ public class BeanConverter implements Converter {
             Class c = Class.forName(type);
             Object bean = c.newInstance();
             Iterator itr = properties.keySet().iterator();
-            while(itr.hasNext()) {
+            while (itr.hasNext()) {
                 String key = (String) itr.next();
-                if("converter".equals(key) || "type".equals(key)) {
+                if ("converter".equals(key) || "type".equals(key)) {
                     continue;
                 }
                 Object property = properties.get(key);
-                if(property instanceof String) {
+                if (property instanceof String) {
                     methodName = "set" + Character.toTitleCase(key.charAt(0)) + key.substring(1);
                     Method m = c.getMethod(methodName, String.class);
                     m.invoke(bean, property);
-                } else
-                if(property instanceof List) {
+                }
+                else if (property instanceof List) {
                     List list = (List) property;
                     int sz = list.size();
                     key = "add" + Character.toTitleCase(key.charAt(0)) + key.substring(1);
                     Method m = c.getMethod(key, Integer.TYPE, String.class);
-                    for(int i=0; i<sz; i++) {
+                    for (int i = 0; i < sz; i++) {
                         Object item = list.get(i);
-                        if(item instanceof String) {
+                        if (item instanceof String) {
                             m.invoke(bean, new Integer(i), item);
-                        } else {
+                        }
+                        else {
+                            LOGGER.error("Processing List: properties={} type={} property={} key={} item={}", properties, type, property, key, item);
                             throw new RuntimeException("Only Strings and Lists of String are supported");
                         }
                     }
-                } else {
+                }
+                else {
+                    LOGGER.error("Processing List: properties={} type={} methodName={} property={} key={}", properties, type, methodName, property, key);
                     throw new RuntimeException("Only Strings and Lists of Strings are supported");
                 }
             }
             return bean;
-        } catch(ClassNotFoundException cnfe) {
-            throw new RuntimeException("Unable to find class: "+type, cnfe);
-        } catch(NoSuchMethodException nsme) {
-            throw new RuntimeException("Unable to find method " + methodName + " on class: "+type, nsme);
-        } catch(InstantiationException ie) {
-            throw new RuntimeException("Unable to instantiate class: "+type, ie);
-        } catch(IllegalAccessException ie) {
-            throw new RuntimeException("Unable to access class: "+type, ie);
-        } catch(IllegalArgumentException iae) {
-            throw new RuntimeException("Unable to pass argument to class: "+type, iae);
-        } catch(InvocationTargetException ite) {
-            throw new RuntimeException("Unable to invoke (String) constructor on class: "+type, ite);
+        }
+        catch (ClassNotFoundException e) {
+            throw new RuntimeException("Unable to find class: " + type, e);
+        }
+        catch (NoSuchMethodException e) {
+            throw new RuntimeException("Unable to find method " + methodName + " on class: " + type, e);
+        }
+        catch (InstantiationException e) {
+            throw new RuntimeException("Unable to instantiate class: " + type, e);
+        }
+        catch (IllegalAccessException e) {
+            throw new RuntimeException("Unable to access class: " + type, e);
+        }
+        catch (IllegalArgumentException e) {
+            throw new RuntimeException("Unable to pass argument to class: " + type, e);
+        }
+        catch (InvocationTargetException e) {
+            throw new RuntimeException("Unable to invoke (String) constructor on class: " + type, e);
         }
 
     }

@@ -41,6 +41,8 @@
 package org.osjava.sj.memory;
 
 import org.osjava.sj.jndi.AbstractContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.naming.*;
 import java.util.Hashtable;
@@ -55,9 +57,8 @@ import java.util.Hashtable;
  */
 public class MemoryContext extends AbstractContext {
 
-    /**
-     * 
-     */
+    private static Logger LOGGER = LoggerFactory.getLogger(MemoryContext.class);
+
     public MemoryContext() {
         super();
     }
@@ -71,14 +72,6 @@ public class MemoryContext extends AbstractContext {
 
     /**
      * @param env
-     * @param systemOverride
-     */
-    public MemoryContext(Hashtable env, boolean systemOverride) {
-        super(env);
-    }
-
-    /**
-     * @param env
      * @param parser
      */
     public MemoryContext(Hashtable env, NameParser parser) {
@@ -86,34 +79,10 @@ public class MemoryContext extends AbstractContext {
     }
 
     /**
-     * @param systemOverride
-     */
-    public MemoryContext(boolean systemOverride) {
-        super();
-    }
-
-    /**
-     * @param systemOverride
-     * @param parser
-     */
-    public MemoryContext(boolean systemOverride, NameParser parser) {
-        super(parser);
-    }
-
-    /**
      * @param parser
      */
     public MemoryContext(NameParser parser) {
         super(parser);
-    }
-
-    /**
-     * @param env
-     * @param systemOverride
-     * @param parser
-     */
-    public MemoryContext(Hashtable env, boolean systemOverride, NameParser parser) {
-        super(env, parser);
     }
 
     /**
@@ -139,11 +108,12 @@ public class MemoryContext extends AbstractContext {
                 return newContext;
             }
             else {
-                throw new NameNotFoundException("The subcontext " + name.getPrefix(1) + " was not found.");
+                throw new NameNotFoundException("The subcontext " + name.getPrefix(1) + " was not found (" + name + ").");
             }
         }
         
         if(lookup(name) != null) {
+            LOGGER.error("createSubcontext() '{}' already bound in {}", name, this);
             throw new NameAlreadyBoundException();
         }
 

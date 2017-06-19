@@ -32,48 +32,59 @@
 
 package org.osjava.sj.loader.convert;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Properties;
 
 /**
- * Convert a text value to any object whose constructor 
- * takes a single String object. 
- *
- * For example, to get an Integer object for the lookup key 
- * <i>com.example.Foo</i> you would have a com/example.properties 
- * file containing the following three lines. 
- *
+ * Convert a text value to any object whose constructor
+ * takes a single String object.
+ * <p>
+ * For example, to get an Integer object for the lookup key
+ * <i>com.example.Foo</i> you would have a com/example.properties
+ * file containing the following lines.
+ * <p>
  * <pre>
  * Foo=42
  * Foo.type=java.lang.Integer
- * Foo.converter=org.osjava.sj.loader.convert.Constructor
  * </pre>
  */
 public class ConstructorConverter implements Converter {
 
+    Logger LOGGER = LoggerFactory.getLogger(ConstructorConverter.class);
+
     public Object convert(Properties properties, String type) {
         String value = properties.getProperty("valueToConvert");
-        if(value == null) {
+        if (value == null) {
+            LOGGER.error("properties={} type={}", properties, type);
             throw new RuntimeException("Missing value");
         }
 
         try {
-            Class c = Class.forName(type);
-            Constructor con = c.getConstructor(String.class);
-            return con.newInstance(value);
-        } catch(ClassNotFoundException cnfe) {
-            throw new RuntimeException("Unable to find class: "+type, cnfe);
-        } catch(NoSuchMethodException nsme) {
-            throw new RuntimeException("Unable to find (String) constructor on class: "+type, nsme);
-        } catch(InstantiationException ie) {
-            throw new RuntimeException("Unable to instantiate class: "+type, ie);
-        } catch(IllegalAccessException ie) {
-            throw new RuntimeException("Unable to access class: "+type, ie);
-        } catch(IllegalArgumentException iae) {
-            throw new RuntimeException("Unable to pass argument "+value+" to class: "+type, iae);
-        } catch(InvocationTargetException ite) {
-            throw new RuntimeException("Unable to invoke (String) constructor on class: "+type, ite);
+            Class clazz = Class.forName(type);
+            Constructor constructor = clazz.getConstructor(String.class);
+            return constructor.newInstance(value);
+        }
+        catch (ClassNotFoundException e) {
+            throw new RuntimeException("Unable to find class: " + type, e);
+        }
+        catch (NoSuchMethodException e) {
+            throw new RuntimeException("Unable to find (String) constructor on class: " + type, e);
+        }
+        catch (InstantiationException e) {
+            throw new RuntimeException("Unable to instantiate class: " + type, e);
+        }
+        catch (IllegalAccessException e) {
+            throw new RuntimeException("Unable to access class: " + type, e);
+        }
+        catch (IllegalArgumentException e) {
+            throw new RuntimeException("Unable to pass argument " + value + " to class: " + type, e);
+        }
+        catch (InvocationTargetException e) {
+            throw new RuntimeException("Unable to invoke (String) constructor on class: " + type, e);
         }
 
     }

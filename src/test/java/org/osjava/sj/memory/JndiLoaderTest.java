@@ -116,7 +116,7 @@ public class JndiLoaderTest {
     public void testDirectory() {
         try {
             File file = new File("src/test/resources/roots");
-            loader.loadDirectory( file, ctxt );
+            loader.load( file, ctxt );
             assertEquals( "13", ctxt.lookup("test/value") );
         } catch(IOException ioe) {
             ioe.printStackTrace();
@@ -131,7 +131,7 @@ public class JndiLoaderTest {
     public void testDefaultFile() {
         try {
             File file = new File("src/test/resources/roots");
-            loader.loadDirectory( file, ctxt );
+            loader.load( file, ctxt );
             List list = (List) ctxt.lookup("name");
             assertEquals( "Henri", list.get(0) );
             assertEquals( "Fred", list.get(1) );
@@ -158,7 +158,7 @@ public class JndiLoaderTest {
         String dsString = "bing::::foofoo::::Boo";
         try {
             File file = new File("src/test/resources/roots");
-            loader.loadDirectory( file, ctxt );
+            loader.load( file, ctxt );
             Context subctxt = (Context) ctxt.lookup("java");
             assertEquals( dsString, subctxt.lookup("TestDS").toString() );
             DataSource ds = (DataSource) ctxt.lookup("java/TestDS");
@@ -177,7 +177,7 @@ public class JndiLoaderTest {
         String dsString = "org.gjt.mm.mysql.Driver::::jdbc:mysql://127.0.0.1/tmp::::sa";
         try {
             File file = new File("src/test/resources/roots");
-            loader.loadDirectory( file, ctxt );
+            loader.load( file, ctxt );
             DataSource ds = (DataSource) ctxt.lookup("TopLevelDS");
             assertEquals( dsString, ds.toString() );
         } catch(IOException ioe) {
@@ -267,7 +267,7 @@ public class JndiLoaderTest {
     @Test
     public void testDbcp() throws IOException, NamingException {
         File file = new File("src/test/resources/roots");
-        loader.loadDirectory( file, ctxt );
+        loader.load( file, ctxt );
         DataSource ds = (DataSource) ctxt.lookup("pooltest/TestDS");
         DataSource ds1 = (DataSource) ctxt.lookup("pooltest/OneDS");
         DataSource ds2 = (DataSource) ctxt.lookup("pooltest/TwoDS");
@@ -284,7 +284,7 @@ public class JndiLoaderTest {
     @Test
     public void testDbcpPooltest() throws IOException, NamingException {
         File file = new File("src/test/resources/roots/pooltest");
-        loader.loadDirectory( file, ctxt );
+        loader.load( file, ctxt );
         DataSource ds = (DataSource) ctxt.lookup("TestDS");
         DataSource ds1 = (DataSource) ctxt.lookup("OneDS");
         DataSource ds2 = (DataSource) ctxt.lookup("TwoDS");
@@ -301,7 +301,7 @@ public class JndiLoaderTest {
     @Test
     public void testDbcp1() throws IOException, NamingException {
         File file = new File("src/test/resources/roots/pooltest1");
-        loader.loadDirectory( file, ctxt );
+        loader.load( file, ctxt );
         DataSource ds = (DataSource) ctxt.lookup("OneDS");
         try {
             Connection conn = ds.getConnection();
@@ -314,7 +314,7 @@ public class JndiLoaderTest {
     @Test
     public void testDbcp2() throws IOException, NamingException {
         File file = new File("src/test/resources/roots/pooltest2");
-        loader.loadDirectory( file, ctxt );
+        loader.load( file, ctxt );
         DataSource ds = (DataSource) ctxt.lookup("TestDS");
         try {
             Connection conn = ds.getConnection();
@@ -327,7 +327,7 @@ public class JndiLoaderTest {
     @Test
     public void testDbcp3() throws IOException, NamingException {
         File file = new File("src/test/resources/roots/pooltest3");
-        loader.loadDirectory( file, ctxt );
+        loader.load( file, ctxt );
         DataSource ds = (DataSource) ctxt.lookup("ThreeDS");
         try {
             Connection conn = ds.getConnection();
@@ -340,7 +340,7 @@ public class JndiLoaderTest {
     @Test
     public void testDbcp4() throws IOException, NamingException {
         File file = new File("src/test/resources/roots/pooltest4");
-        loader.loadDirectory( file, ctxt );
+        loader.load( file, ctxt );
         DataSource ds = (DataSource) ctxt.lookup("TwoDS");
         try {
             Connection conn = ds.getConnection();
@@ -353,7 +353,7 @@ public class JndiLoaderTest {
     @Test
     public void testMultiValueAttributeIntegers() throws Exception {
         File file = new File("src/test/resources/roots/multiValueAttributes/integers");
-        loader.loadDirectory( file, ctxt );
+        loader.load( file, ctxt );
         final LinkedList<Integer> ints = (LinkedList<Integer>) ctxt.lookup("person/age");
         assert ints.size() == 3;
     }
@@ -361,7 +361,7 @@ public class JndiLoaderTest {
     @Test
     public void testMultiValueAttributeNoType() throws Exception {
         File file = new File("src/test/resources/roots/multiValueAttributes/noType");
-        loader.loadDirectory( file, ctxt );
+        loader.load( file, ctxt );
         final LinkedList<String> ages = (LinkedList<String>) ctxt.lookup("person/name");
         assert ages.size() == 3;
     }
@@ -372,7 +372,7 @@ public class JndiLoaderTest {
     @Test
     public void testMultiValueAttributeBooleans() throws Exception {
         File file = new File("src/test/resources/roots/multiValueAttributes/booleans");
-        loader.loadDirectory( file, ctxt );
+        loader.load( file, ctxt );
         final LinkedList<Boolean> booleans = (LinkedList<Boolean>) ctxt.lookup("person/myBooleans");
         assert booleans.size() == 3;
     }
@@ -384,7 +384,7 @@ public class JndiLoaderTest {
     @Test
     public void testMultiValueAttributeCharacters() throws Exception {
         File file = new File("src/test/resources/roots/multiValueAttributes/characters");
-        loader.loadDirectory( file, ctxt );
+        loader.load( file, ctxt );
         final LinkedList<Character> characters = (LinkedList<Character>) ctxt.lookup("person/spelledName");
         final StringWriter writer = new StringWriter(characters.size());
         for (Character character : characters) {
@@ -400,7 +400,7 @@ public class JndiLoaderTest {
     @Test
     public void testMultiValueAttributeShorts() throws Exception {
         File file = new File("src/test/resources/roots/multiValueAttributes/shorts");
-        loader.loadDirectory( file, ctxt );
+        loader.load( file, ctxt );
         final LinkedList<Short> shorts = (LinkedList<Short>) ctxt.lookup("person/myShort");
         assert shorts.size() == 2;
         assert shorts.get(0) == (short) -32768;
@@ -409,7 +409,7 @@ public class JndiLoaderTest {
     @Test
     public void testMultiValueAttributeDoubles() throws Exception {
         File file = new File("src/test/resources/roots/multiValueAttributes/doubles");
-        loader.loadDirectory( file, ctxt );
+        loader.load( file, ctxt );
         final LinkedList<Double> doubles = (LinkedList<Double>) ctxt.lookup("person/myDouble");
         assert doubles.size() == 3;
     }
@@ -420,7 +420,7 @@ public class JndiLoaderTest {
     @Test
     public void testMultiValueAttributeMultipleContexts() throws Exception {
         File file = new File("src/test/resources/roots/multiValueAttributes");
-        loader.loadDirectory( file, ctxt );
+        loader.load( file, ctxt );
         final LinkedList<Integer> ints = (LinkedList<Integer>) ctxt.lookup("integers/person/age");
         assert ints.size() == 3;
         final LinkedList<String> ages = (LinkedList<String>) ctxt.lookup("noType/person/name");

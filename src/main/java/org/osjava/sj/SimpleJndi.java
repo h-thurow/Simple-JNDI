@@ -31,7 +31,6 @@
  */
 package org.osjava.sj;
 
-import org.apache.commons.io.FilenameUtils;
 import org.jetbrains.annotations.Nullable;
 import org.osjava.sj.loader.JndiLoader;
 import org.osjava.sj.loader.util.Utils;
@@ -78,21 +77,7 @@ public class SimpleJndi {
                 final File rootFile = new File(path);
                 LOGGER.debug("Loading {}", rootFile.getAbsolutePath());
                 try {
-                    if (rootFile.isDirectory()) {
-                        loader.loadDirectory(rootFile, ctxt);
-                    }
-                    else if (rootFile.isFile()) {
-                        Context tmpCtx = ctxt;
-                        if (environment.containsKey(FILENAME_TO_CONTEXT)) {
-                            tmpCtx = ctxt.createSubcontext(FilenameUtils.removeExtension(
-                                    rootFile.getName()));
-                        }
-                        loader.load(loader.toProperties(rootFile), tmpCtx);
-                    }
-                    else {
-                        throw new NamingException("Unable to load data from " +
-                                rootFile.getAbsolutePath());
-                    }
+                    loader.load(rootFile, ctxt);
                 }
                 catch (IOException e) {
                     throw new NamingException("Unable to load data from " +

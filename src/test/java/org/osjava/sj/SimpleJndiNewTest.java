@@ -1064,20 +1064,16 @@ public class SimpleJndiNewTest {
     }
 
     @Test
-    public void bind() throws Exception {
+    public void contextWithContextsAndObjects() throws Exception {
         InitialContext ctx = null;
         try {
             final Hashtable<String, String> env = new Hashtable<String, String>();
-            env.put("org.osjava.sj.root", "");
+            env.put("org.osjava.sj.root", "src/test/resources/roots/contextWithContextsAndObjects");
             env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
             env.put("org.osjava.sj.jndi.shared", "true");
-            env.put("org.osjava.sj.delimiter", "/");
-            env.put("jndi.syntax.separator", "/");
+            env.put("org.osjava.sj.delimiter", ".");
+//            env.put("jndi.syntax.separator", "/");
             ctx = new InitialContext(env);
-            // bind() presumes the contexts already exists.
-            ctx.bind("holger/thurow", 1);
-            Context holgerCtx = (Context) ctx.lookup("holger");
-            assertNotNull(holgerCtx);
         }
         finally {
             if (ctx != null) {

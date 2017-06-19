@@ -144,8 +144,14 @@ public class JNDIConfigurationTest {
             assertEquals("dot separated", ctx.lookup("dot/separated"));
             assertEquals("dot separated", ctx.lookup("dot.separated"));
 
-            Context slashCtx = (Context) ctx.lookup("slash");
-            assertEquals(null, slashCtx);
+            try {
+                // ERROR org.osjava.sj.memory.MemoryContext - AbstractContext#lookup("slash/separated"): Invalid subcontext 'slash' in context '': AbstractContext{table={slash/separated=slash separated}, subContexts={dot=AbstractContext{table={separated=dot separated}
+                ctx.lookup("slash");
+                throw new AssertionError("We should not have arrived here!");
+            }
+            catch (NamingException e) {
+                LoggerFactory.getLogger(this.getClass()).error("Expected Exception!!!", e);
+            }
 
             try {
                 // ERROR org.osjava.sj.memory.MemoryContext - AbstractContext#lookup("slash/separated"): Invalid subcontext 'slash' in context '': AbstractContext{table={slash/separated=slash separated}, subContexts={dot=AbstractContext{table={separated=dot separated}

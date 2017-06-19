@@ -63,8 +63,12 @@ public abstract class AbstractContext implements Cloneable, Context  {
         this(env, null);
     }
 
+    /**
+     * TODO Mandatory: Read jndi configuration from system properties otherwise it will not work correctly.
+     */
     protected AbstractContext() {
         this(null, null);
+        throw new RuntimeException("Not fully implemented");
     }
 
     /**
@@ -200,32 +204,33 @@ public abstract class AbstractContext implements Cloneable, Context  {
      */
     @Override
     public void bind(Name name, Object object) throws NamingException {
-        // If the name of obj doesn't start with the name of this context, it is an error, throw a NamingException
-        if(name.size() > 1) {
+        if(name.size() == 0) {
+            throw new InvalidNameException("Cannot bind to an empty name.");
+        }
+        else if(name.size() > 1) {
             Name prefix = name.getPrefix(1);
             if(subContexts.containsKey(prefix)) {
                 ((Context)subContexts.get(prefix)).bind(name.getSuffix(1), object);
-                return;
             }
             else {
                 LOGGER.error("No such subcontext: {} in {}", prefix, this);
                 throw new NameNotFoundException(prefix + "");
             }
         }
-        if(name.size() == 0) {
-            throw new InvalidNameException("Cannot bind to an empty name");
-        }
-        /* Determine if the name is already bound */
-        if(namesToObjects.containsKey(name) ||
-                subContexts.containsKey(name)) {
-            throw new NameAlreadyBoundException("Name " + name.toString()
-                + " already bound.  Use rebind() to override");
-        }
-        
-        if(object instanceof Context) {
-            subContexts.put(name, object);
-        } else {
-            namesToObjects.put(name, object);
+        else {
+            /* Determine if the name is already bound */
+            if(namesToObjects.containsKey(name) ||
+                    subContexts.containsKey(name)) {
+                LOGGER.error("bind() {} already bound in {}", name, this);
+                throw new NameAlreadyBoundException("Name " + name.toString()
+                    + " already bound.  Use rebind() to override");
+            }
+            if (object instanceof Context) {
+                subContexts.put(name, object);
+            }
+            else {
+                namesToObjects.put(name, object);
+            }
         }
     }
 
@@ -270,23 +275,26 @@ public abstract class AbstractContext implements Cloneable, Context  {
         if(name.isEmpty()) {
             throw new InvalidNameException("Cannot unbind to empty name");
         }
-
-        if(name.size() == 1) {
+        else if(name.size() == 1) {
             if(namesToObjects.containsKey(name)) {
                 namesToObjects.remove(name);
             }
             if (subContexts.containsKey(name)) {
                 subContexts.remove(name);
             }
-            return;
         }
-        
-        /* Look up the target context first. */
-        Object targetContext = lookup(name.getPrefix(name.size() - 1));
-        if(targetContext == null || !(targetContext instanceof Context)) {
-            throw new NamingException("Cannot unbind object.  Target context does not exist.");
+        else {
+            Object targetContext = lookup(name.getPrefix(name.size() - 1));
+            if(targetContext == null || !(targetContext instanceof Context)) {
+                NamingException e = new NamingException("Cannot unbind object.");
+                LOGGER.error("Can not unbind object with name={} from targetContext={}.", name, targetContext);
+                LOGGER.error("", e);
+                throw e;
+            }
+            ((Context)targetContext).unbind(name.getSuffix(name.size() - 1));
         }
-        ((Context)targetContext).unbind(name.getSuffix(name.size() - 1));
+
+
     }
 
     /**
@@ -396,11 +404,7 @@ public abstract class AbstractContext implements Cloneable, Context  {
         }
         /* Look for a subcontext */
         Name subName = name.getPrefix(1);
-        if(namesToObjects.containsKey(subName)) {
-            /* Nope, actual object */
-            throw new NotContextException(name + " cannot be listed");
-        }
-        else if(subContexts.containsKey(subName)) {
+        if(subContexts.containsKey(subName)) {
             return ((Context)subContexts.get(subName)).listBindings(name.getSuffix(1));
         }
         else {
@@ -453,33 +457,17 @@ public abstract class AbstractContext implements Cloneable, Context  {
         syntax.setProperty("jndi.syntax.direction", env.get("jndi.syntax.direction").toString());
         while (bindings.hasMore()) {
             final Binding binding = bindings.next();
-            CompoundName compoundName = new CompoundName(binding.getName(), syntax);
             // Context.listBindings() may only be called with subcontexts.
-            if (namesToObjects.get(compoundName) == null) {
-                try {
-                    final NamingEnumeration<Binding> enumeration
-                            = context.listBindings(binding.getName());
-                    if (enumeration.hasMore()) {
-                        destroySubcontexts((Context) context.lookup(binding.getName()));
-                    }
-                }
-                catch (NotContextException e) {
-                    context.unbind(binding.getName());
-                }
+            String name = binding.getName();
+            if (binding.getObject() instanceof Context) {
+                Context subContext = (Context) binding.getObject();
+                destroySubcontexts(subContext);
+                context.destroySubcontext(name);
             }
-        }
-        bindings = context.listBindings("");
-        while (bindings.hasMore()) {
-            final Binding binding = bindings.next();
-            CompoundName compoundName = new CompoundName(binding.getName(), syntax);
-            // Context.listBindings() may only be called with subcontexts.
-            if (namesToObjects.get(compoundName) == null) {
-                final NamingEnumeration<Binding> enumeration
-                        = context.listBindings(binding.getName());
-                if (enumeration.hasMore()) {
-                    destroySubcontexts((Context) context.lookup(binding.getName()));
-                }
-                context.destroySubcontext(binding.getName());
+            else {
+                // CompoundName compoundName = new CompoundName(binding.getName(), new Properties());
+                LOGGER.debug("Unbind {}", name);
+                context.unbind(name);
             }
         }
     }
@@ -673,8 +661,9 @@ public abstract class AbstractContext implements Cloneable, Context  {
                 subContexts.remove(it.next());
             }
         }
-        this.env = null;
-        this.namesToObjects = null;
+        env = null;
+        namesToObjects = null;
+        subContexts = null;
     }
 
     /**
