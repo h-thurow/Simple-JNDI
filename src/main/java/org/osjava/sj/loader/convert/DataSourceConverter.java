@@ -33,10 +33,14 @@
 package org.osjava.sj.loader.convert;
 
 import org.osjava.sj.loader.SJDataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Properties;
 
 public class DataSourceConverter implements Converter {
+
+    private static Logger LOGGER = LoggerFactory.getLogger(DataSourceConverter.class);
 
     public Object convert(Properties properties, String type) {
         String driver = properties.getProperty("driver");
@@ -44,17 +48,21 @@ public class DataSourceConverter implements Converter {
         String user = properties.getProperty("user");
         String password = properties.getProperty("password");
 
-        if(driver == null) {
-            throw new RuntimeException("Required subelement 'driver'");
+        if (driver == null) {
+            LOGGER.error("Incomplete arguments provided: properties={} type={}", properties, type);
+            throw new IllegalArgumentException("Required subelement 'driver'");
         }
-        if(url == null) {
-            throw new RuntimeException("Required subelement 'url'");
+        if (url == null) {
+            LOGGER.error("Incomplete arguments provided: properties={} type={}", properties, type);
+            throw new IllegalArgumentException("Required subelement 'url'");
         }
-        if(user == null) {
-            throw new RuntimeException("Required subelement 'user'");
+        if (user == null) {
+            LOGGER.error("Incomplete arguments provided: properties={} type={}", properties, type);
+            throw new IllegalArgumentException("Required subelement 'user'");
         }
-        if(password == null) {
-            throw new RuntimeException("Required subelement 'password'");
+        if (password == null) {
+            LOGGER.error("Incomplete arguments provided: properties={} type={}", properties, type);
+            throw new IllegalArgumentException("Required subelement 'password'");
         }
 
         return new SJDataSource(driver, url, user, password, properties);

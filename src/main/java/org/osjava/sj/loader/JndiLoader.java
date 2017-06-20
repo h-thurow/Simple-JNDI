@@ -32,6 +32,8 @@
 package org.osjava.sj.loader;
 
 
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.BooleanUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.osjava.sj.loader.convert.Converter;
@@ -85,64 +87,99 @@ public class JndiLoader {
             loadDirectory(fileOrDirectory, ctxt, null, "");
         }
         else if (fileOrDirectory.isFile()) {
-            Context tmpCtx = ctxt;
-//            if (environment.containsKey(FILENAME_TO_CONTEXT)) {
-//                String name = FilenameUtils.removeExtension(fileOrDirectory.getName());
-//                name = handleColonReplacement(name);
-//                tmpCtx = ctxt.createSubcontext(name);
-//            }
-            loadFile(fileOrDirectory, tmpCtx, null, "");
+            boolean preserveFileNameAsContextName = BooleanUtils.toBoolean(
+                    (String) environment.get(FILENAME_TO_CONTEXT));
+            if (isSupportedFile(fileOrDirectory)) {
+                loadFile(fileOrDirectory, ctxt, null, "", preserveFileNameAsContextName);
+            }
         }
     }
 
+    /**
+     *
+     * @param preserveFileNameAsContextName If fileOrDirectory is a file, the file's name is taken as context name.
+     * @param ignoreFileExtension true: If fileOrDirectory is a file, it will be processed as property file whatever its extension is.
+     */
+    public void load(File fileOrDirectory, Context ctxt, boolean preserveFileNameAsContextName, boolean ignoreFileExtension) throws NamingException, IOException {
+        if (fileOrDirectory.isDirectory()) {
+            loadDirectory(fileOrDirectory, ctxt, null, "");
+        }
+        else if (fileOrDirectory.isFile()) {
+            if (!ignoreFileExtension) {
+                if (isSupportedFile(fileOrDirectory)) {
+                    loadFile(fileOrDirectory, ctxt, null, "", preserveFileNameAsContextName);
+                }
+            }
+            else {
+                loadFile(fileOrDirectory, ctxt, null, "", preserveFileNameAsContextName);
+            }
+        }
+    }
+
+    /**
+     * Loads all .properties", .ini, .xml files in a directory into a context.
+     */
     private void loadDirectory(File directory, Context ctxt, Context parentCtxt, String subName) throws NamingException, IOException {
         File[] files = directory.listFiles();
         if (files != null) {
             for (File file : files) {
                 if (file.isDirectory()) {
-                    String parentName = file.getName();
-                    // HACK: Hack to stop it looking in .svn or CVS
-                    if (parentName.equals(".svn") || parentName.equals("CVS")) {
-                        return;
+                    String dirName = file.getName();
+                    if (!dirName.equals(".svn") && !dirName.equals("CVS")) {
+                        dirName = handleColonReplacement(dirName);
+                        Context tmpCtxt = ctxt.createSubcontext(dirName);
+                        loadDirectory(file, tmpCtxt, ctxt, dirName);
                     }
-                    parentName = handleColonReplacement(parentName);
-                    Context tmpCtxt = ctxt.createSubcontext(parentName);
-                    loadDirectory(file, tmpCtxt, ctxt, parentName);
                 }
                 else {
-                    loadFile(file, ctxt, parentCtxt, subName);
+                    String baseName = FilenameUtils.getBaseName(file.getName());
+                    boolean preserveFileNameAsContextName = !baseName.equals("default");
+                    if (isSupportedFile(file)) {
+                        loadFile(file, ctxt, parentCtxt, subName, preserveFileNameAsContextName);
+                    }
                 }
             }
         }
     }
 
     /**
-     * Handles only .properties, .ini", .xml files.
+     * Loads any file, not only those files {@link #isSupportedFile(File)} returns true for.
      *
      * @param file Not a directory
      */
-    private void loadFile(File file, Context ctxt, Context parentCtxt, String subName) throws NamingException, IOException {
+    private void loadFile(File file, Context ctxt, Context parentCtxt, String subName, boolean preserveFileNameAsContextName) throws NamingException, IOException {
         String parentName = file.getName();
         parentName = handleColonReplacement(parentName);
-        String[] extensions = new String[]{".properties", ".ini", ".xml"};
-        for (String extension : extensions) {
-            if (file.getName().endsWith(extension)) {
-                Context subContext = ctxt;
-                Properties properties = toProperties(file);
-                if (isNotNamespacedTypeDefinition(properties)) {
-                    // preserve the file name as object name.
-                    subName = parentName.substring(0, parentName.length() - extension.length());
-                    parentCtxt = subContext;
-                }
-                else if (!file.getName().equals("default" + extension)) {
-                    parentName = parentName.substring(0, parentName.length() - extension.length());
-                    subContext = ctxt.createSubcontext(parentName);
-                    parentCtxt = ctxt;
-                    subName = parentName;
-                }
-                load(properties, subContext, parentCtxt, subName);
+        Context subContext = ctxt;
+        Properties properties = toProperties(file);
+        if (isNotNamespacedTypeDefinition(properties)) {
+            // preserve the file name as object name.
+            subName = FilenameUtils.getBaseName(parentName);
+            parentCtxt = subContext;
+        }
+        else if (!FilenameUtils.getBaseName(parentName).equals("default")) {
+            parentName = FilenameUtils.getBaseName(parentName);
+            if (preserveFileNameAsContextName) {
+                subContext = ctxt.createSubcontext(parentName);
+                parentCtxt = ctxt;
+            }
+            subName = parentName;
+        }
+        load(properties, subContext, parentCtxt, subName);
+    }
+
+    /**
+     * @return true: .properties, .ini, .xml file.
+     */
+    private boolean isSupportedFile(@NotNull File file) {
+        String[] extensionsToProcess = new String[]{"properties", "ini", "xml"};
+        String ext = FilenameUtils.getExtension(file.getName());
+        for (String extToProcess : extensionsToProcess) {
+            if (extToProcess.equals(ext)) {
+                return true;
             }
         }
+        return false;
     }
 
     /**
@@ -207,74 +244,67 @@ public class JndiLoader {
 
     private void load(Properties properties, Context subContext, Context parentCtxt, String subName) throws NamingException {
 
-        String typeDefinition = getTypeDefinition(properties);
-        if (false && typeDefinition != null) {
-            processTypedProperty(properties, subContext, subName);
-        }
-        else {
-            // NOTE: "type" effectively turns on pseudo-nodes; if it
-            //       isn't there then other pseudo-nodes will result
-            //       in re-bind errors
+        // NOTE: "type" effectively turns on pseudo-nodes; if it isn't there then other pseudo-nodes will result in re-bind errors.
 
-            // scan for pseudo-nodes, aka "type": foo.type
-            // store in a temporary type table (typeMap): {foo: {type: typeValue}}
-            Map typeMap = extractTypedProperties(properties);
-            Iterator iterator;
+        Map typeMap = extractTypedProperties(properties);
+        Iterator iterator;
 
-            // If it matches a type root, then it should be added to the properties. If not, then it should be placed in the context (jndiPut()).
-            // For each type properties call convert: pass a Properties in that contains everything starting with foo, but without the foo.
-            // Put objects in context.
-            iterator = properties.keySet().iterator();
-            while(iterator.hasNext()) {
-                String key = (String) iterator.next();
-                Object value = properties.get(key);
-                final String delimiter = extractDelimiter(key);
-                if (!key.equals("type") && extractTypeDeclaration(key) == null) {
-                    if (typeMap.containsKey("datasourceOrBeanProperty")) {
-                        // files with a property named "type" without a namespace in the name.
-                        ((Properties) typeMap.get("datasourceOrBeanProperty")).put(key, value);
-                    }
-                    else if(typeMap.containsKey(key)) {
-                        // Reached only by keys with basic type declarations like type=java.lang.Integer.
-                        // Gets processed by a converter.
-                        ((Properties) typeMap.get(key)).put("valueToConvert", value);
-                    }
-                    else if(delimiter != null) {
-                        String pathText = removeLastElement(key, delimiter);
-                        String nodeText = getLastElement(key, delimiter);
-                        if(typeMap.containsKey(pathText)) {
-                            ((Properties) typeMap.get(pathText)).put(nodeText, value);
-                        }
-                        else {
-                            jndiPut(subContext, key, value);
-                        }
+        // If it matches a type root, then it should be added to the properties. If not, then it should be placed in the context (jndiPut()).
+        // For each type properties call convert: pass a Properties in that contains everything starting with foo, but without the foo.
+        // Put objects in context.
+        iterator = properties.keySet().iterator();
+        while(iterator.hasNext()) {
+            String key = (String) iterator.next();
+            Object value = properties.get(key);
+            final String delimiter = extractDelimiter(key);
+            if (!key.equals("type") && extractTypeDeclaration(key) == null) {
+                if (typeMap.containsKey("datasourceOrBeanProperty")) {
+                    // files with a property named "type" without a namespace in the name.
+                    ((Properties) typeMap.get("datasourceOrBeanProperty")).put(key, value);
+                }
+                else if(typeMap.containsKey(key)) {
+                    // Reached only by keys with basic type declarations like type=java.lang.Integer.
+                    // Gets processed by a converter.
+                    ((Properties) typeMap.get(key)).put("valueToConvert", value);
+                }
+                else if(delimiter != null) {
+                    String pathText = removeLastElement(key, delimiter);
+                    String nodeText = getLastElement(key, delimiter);
+                    if(typeMap.containsKey(pathText)) {
+                        ((Properties) typeMap.get(pathText)).put(nodeText, value);
                     }
                     else {
                         jndiPut(subContext, key, value);
                     }
                 }
-            }
-
-            for (Object key : typeMap.keySet()) {
-                String typeKey = (String) key;
-                Properties typeProperties = (Properties) typeMap.get(typeKey);
-                Object value = convert(typeProperties);
-                if (typeKey.equals("datasourceOrBeanProperty")) {
-                    // Reached only by datasource and bean declarations? Yes, but not always! Not from org.osjava.sj.memory.JndiLoaderTest.testBeanConverter(). testBeanConverter() enters the "else" branch.  Not reached, when the attributes are prefixed with a namespace as in roots/datasource/ds.properties (used in SimpleJndiNewTest.sharedContextWithDataSource2MatchingDelimiter()).
-                    // rebind(): For every file there is already a context created and bound under the file's name. In case of bean or datasource declarations the binding must not be a context but the value (the bean, the datasource) itself. This is true as long as the datasource or bean properties are not namespaced. Then the "else" branch is executed.
-                    parentCtxt.rebind(subName, value);
-                }
                 else {
-                    jndiPut(subContext, typeKey, value);
+                    jndiPut(subContext, key, value);
                 }
+            }
+        }
+
+        for (Object key : typeMap.keySet()) {
+            String typeKey = (String) key;
+            Properties typeProperties = (Properties) typeMap.get(typeKey);
+            Object value = convert(typeProperties);
+            if (typeKey.equals("datasourceOrBeanProperty")) {
+                // Reached only by datasource and bean declarations? Yes, but not always! Not from org.osjava.sj.memory.JndiLoaderTest.testBeanConverter(). testBeanConverter() enters the "else" branch.  Not reached, when the attributes are prefixed with a namespace as in roots/datasource/ds.properties (used in SimpleJndiNewTest.sharedContextWithDataSource2MatchingDelimiter()).
+                // rebind(): For every file there is already a context created and bound under the file's name. In case of bean or datasource declarations the binding must not be a context but the value (the bean, the datasource) itself. This is true as long as the datasource or bean properties are not namespaced. Then the "else" branch is executed.
+                parentCtxt.rebind(subName, value);
+            }
+            else {
+                jndiPut(subContext, typeKey, value);
             }
         }
 
 
     }
 
+    /**
+     * Scan for pseudo-nodes, aka "type" in foo.type. Store in a temporary map (typeMap): {foo: {type: typeValue}}
+     */
     @NotNull
-    Map<String, Properties> extractTypedProperties(Properties properties) {
+    Map<String, Properties> extractTypedProperties(Properties properties) throws InvalidNameException {
         Map typeMap = new HashMap<String, Properties>();
         Iterator iterator = properties.keySet().iterator();
         while(iterator.hasNext()) {
@@ -383,24 +413,36 @@ public class JndiLoader {
      */
     @Nullable
     Name extractContextName(String path) throws InvalidNameException {
-        Properties envCopy = new Properties(envAsProperties);
-        envCopy.setProperty("jndi.syntax.separator", envAsProperties.getProperty(SIMPLE_DELIMITER));
-        CompoundName name = new CompoundName(path, envCopy);
+        CompoundName name = toCompoundName(path);
         Name nameWithoutObjectName = name.size() > 1
                 ? name.getPrefix(name.size() - 1)
                 : null;
         return nameWithoutObjectName;
     }
 
+    /**
+     *
+     * @param path one component ("object") or several components ("my/ctx/object").
+     * @return Either the single component or the last component in a several component path.
+     */
+    @NotNull
     String extractObjectName(String path) throws InvalidNameException {
-        Properties envCopy = new Properties(envAsProperties);
-        envCopy.setProperty("jndi.syntax.separator", envAsProperties.getProperty(SIMPLE_DELIMITER));
-        CompoundName name = new CompoundName(path, envCopy);
+        CompoundName name = toCompoundName(path);
         return name.getSuffix(name.size() > 1 ? name.size() - 1 : 0).toString();
     }
 
     /**
-     * Experimental: Let SIMPLE_DELIMITER be a regular expression, e.g. "\.|\/".
+     * @return  The CompoundName for path with respect to {@link JndiLoader#SIMPLE_DELIMITER}.
+     */
+    @NotNull
+    private CompoundName toCompoundName(@NotNull String path) throws InvalidNameException {
+        Properties envCopy = new Properties(envAsProperties);
+        envCopy.setProperty("jndi.syntax.separator", envAsProperties.getProperty(SIMPLE_DELIMITER));
+        return new CompoundName(path, envCopy);
+    }
+
+    /**
+     * Incompletely implemented: Let SIMPLE_DELIMITER be a regular expression, e.g. "\.|\/".
      *
      * @return delimiter "." or "/" or whatever is found by {@link #SIMPLE_DELIMITER}.
      */
@@ -422,63 +464,24 @@ public class JndiLoader {
      *
      * @return "type" | null
      */
-    private String extractTypeDeclaration(String key) {
-        String delimiter = (String) environment.get(SIMPLE_DELIMITER);
-        if (delimiter.length() == 1) { // be downwards compatible
-            delimiter = delimiter.replace(".", "\\.");
-        }
-        // TODO Compile once
-        final Pattern pattern = Pattern.compile(".+[/." + delimiter + "]type$");
-        final Matcher matcher = pattern.matcher(key);
-        String type = null;
-        if (matcher.find()) {
-            type = "type";
-        }
-        return type;
+    @Nullable
+    private String extractTypeDeclaration(@NotNull String key) throws InvalidNameException {
+        String objName = extractObjectName(key);
+        return objName.equals("type") ? objName : null;
     }
 
     /**
-     *
-     * @param key see {@link #createSubContexts(String[], Context)}
+     * Creates contexts defined by namespaced property names, e.g. "my.namespaced.object=...". The last part (here "object") is the name under which the value is bound.
      */
     private void jndiPut(Context ctxt, String key, Object value) throws NamingException {
-        String[] pathParts = Utils.split(key, (String) environment.get(SIMPLE_DELIMITER));
-        Context deepestContext = ctxt;
-        if (pathParts.length > 1) { // 1: No subcontexts need to be created.
-            deepestContext = createSubContexts(pathParts, ctxt);
+        Name name = extractContextName(key);
+        if (name != null) {
+            Context deepestCtx = createSubContexts(name, ctxt);
+            deepestCtx.bind(extractObjectName(key), value);
         }
-        String name = pathParts[pathParts.length - 1];
-        deepestContext.bind(new CompoundName(name, EMPTY_PROPERTIES), value);
-    }
-
-    /**
-     * Creates contexts defined by namespaced property names, e.g. "my.namespaced.object=...". The last part (here "object") is ignored as name of the object to be bound to "my.namespaced".
-     *
-     * @return the deepest context
-     */
-    private Context createSubContexts(String[] path, Context parentContext) throws NamingException {
-        int lastIndex = path.length - 1;
-        Context currentCtx = parentContext;
-        // Not <=: lastIndex is the name of the object to bind.
-        for(int i=0; i < lastIndex; i++) {
-            Object obj = null;
-            try {
-                obj = currentCtx.lookup(path[i]);
-            }
-            catch (NamingException ignore) {
-                // If jndi.syntax.separator is "/" and org.osjava.sj.delimiter is "." a Exception is thrown here, when a CompoundName of size > 1 is looked up.
-            }
-            if(obj == null) {
-                currentCtx = currentCtx.createSubcontext(path[i]);
-            }
-            else if (obj instanceof Context) {
-                currentCtx = (Context) obj;
-            }
-            else {
-                throw new RuntimeException("Illegal node/branch clash. At branch value '"+path[i]+"' an Object was found: " +obj);
-            }
+        else {
+            ctxt.bind(toCompoundName(key), value);
         }
-        return currentCtx;
     }
 
     /**
@@ -488,15 +491,20 @@ public class JndiLoader {
     Context createSubContexts(Name name, Context parentContext) throws NamingException {
         Context currentCtx = parentContext;
         for(int i=0; i < name.size(); i++) {
-            Object obj = currentCtx.lookup(name.get(i));
-            if(obj == null) {
+            Object obj;
+            try {
+                obj = currentCtx.lookup(name.get(i));
+                if (obj instanceof Context) {
+                    currentCtx = (Context) obj;
+                }
+                else {
+                    LOGGER.error("createSubContexts() CompoundName={} Name '{}' already occupied by '{}'.", name, name.get(i), obj);
+                    throw new NotContextException(name.get(i) + " already occupied by " + obj);
+                }
+            }
+            catch (NameNotFoundException e) {
+                // component does not exist
                 currentCtx = currentCtx.createSubcontext(name.get(i));
-            }
-            else if (obj instanceof Context) {
-                currentCtx = (Context) obj;
-            }
-            else {
-                throw new RuntimeException("Illegal node/branch clash. At branch value '" + name.get(i) + "' an Object was found: " +obj);
             }
         }
         return currentCtx;

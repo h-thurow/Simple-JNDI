@@ -118,7 +118,7 @@ public class JndiLoaderTest extends TestCase {
 
     public void testDefaultFile() {
         try {
-            File file = new File("src/test/resources/roots/");
+            File file = new File("src/test/resources/roots/default.properties");
             loader.load( file, ctxt );
             List list = (List) ctxt.lookup("name");
             assertEquals( "Henri", list.get(0) );
@@ -136,7 +136,7 @@ public class JndiLoaderTest extends TestCase {
     public void testSubContext() {
         String dsString = "bing::::foofoo::::Boo";
         try {
-            File file = new File("src/test/resources/roots/");
+            File file = new File("src/test/resources/roots/java.properties");
             loader.load( file, ctxt );
             Context subctxt = (Context) ctxt.lookup("java");
             assertEquals( dsString, subctxt.lookup("TestDS").toString() );
@@ -154,7 +154,7 @@ public class JndiLoaderTest extends TestCase {
     public void testTopLevelDataSource() {
         String dsString = "org.gjt.mm.mysql.Driver::::jdbc:mysql://127.0.0.1/tmp::::sa";
         try {
-            File file = new File("src/test/resources/roots/");
+            File file = new File("src/test/resources/roots/TopLevelDS.properties");
             loader.load( file, ctxt );
             DataSource ds = (DataSource) ctxt.lookup("TopLevelDS");
             assertEquals( dsString, ds.toString() );
@@ -247,13 +247,16 @@ public class JndiLoaderTest extends TestCase {
     }
 
     public void testDbcp() throws IOException, NamingException {
-        File file = new File("src/test/resources/roots/");
+        File file = new File("src/test/resources/roots/pooltest");
         loader.load( file, ctxt );
-        DataSource ds = (DataSource) ctxt.lookup("pooltest/TestDS");
-        DataSource ds1 = (DataSource) ctxt.lookup("pooltest/OneDS");
-        DataSource ds2 = (DataSource) ctxt.lookup("pooltest/TwoDS");
-        DataSource ds3 = (DataSource) ctxt.lookup("pooltest/ThreeDS");
-
+        DataSource ds = (DataSource) ctxt.lookup("TestDS");
+        assertNotNull(ds);
+        DataSource ds1 = (DataSource) ctxt.lookup("OneDS");
+        assertNotNull(ds1);
+        DataSource ds2 = (DataSource) ctxt.lookup("TwoDS");
+        assertNotNull(ds2);
+        DataSource ds3 = (DataSource) ctxt.lookup("ThreeDS");
+        assertNotNull(ds3);
         try {
             Connection conn = ds.getConnection();
             fail("No database is hooked up, so this should have failed");

@@ -54,7 +54,7 @@ public abstract class AbstractContext implements Cloneable, Context  {
     /* The full name of this context. */
     private Name nameInNamespace = null;
     private boolean nameLock = false;
-    private Logger LOGGER = LoggerFactory.getLogger(this.getClass());
+    private static Logger LOGGER = LoggerFactory.getLogger(AbstractContext.class);
 
     /**
      * @param env a Hashtable containing the Context's environment.
@@ -188,7 +188,8 @@ public abstract class AbstractContext implements Cloneable, Context  {
             return subContexts.get(name);
         }
         // Nothing could be found.  Return null. Is this right? Should a NamingException be thrown here instead because nothing could be found?
-        return null;
+        LOGGER.debug("AbstractContext#lookup() {} not found in {}", name, this);
+        throw new NameNotFoundException(name.toString());
     }
 
     /**
@@ -452,9 +453,6 @@ public abstract class AbstractContext implements Cloneable, Context  {
 
     private void destroySubcontexts(Context context) throws NamingException {
         NamingEnumeration<Binding> bindings = context.listBindings("");
-        Properties syntax = new Properties();
-        syntax.setProperty("jndi.syntax.separator", env.get("jndi.syntax.separator").toString());
-        syntax.setProperty("jndi.syntax.direction", env.get("jndi.syntax.direction").toString());
         while (bindings.hasMore()) {
             final Binding binding = bindings.next();
             // Context.listBindings() may only be called with subcontexts.
@@ -466,8 +464,11 @@ public abstract class AbstractContext implements Cloneable, Context  {
             }
             else {
                 // CompoundName compoundName = new CompoundName(binding.getName(), new Properties());
-                LOGGER.debug("Unbind {}", name);
-                context.unbind(name);
+                LOGGER.trace("Unbind {}", name);
+                // Here name is always a single component name. To force handling as such:
+                Properties syntax = new Properties();
+                syntax.setProperty("jndi.syntax.direction", "flat");
+                context.unbind(new CompoundName(name, syntax));
             }
         }
     }

@@ -111,11 +111,10 @@ public class MemoryContext extends AbstractContext {
                 throw new NameNotFoundException("The subcontext " + name.getPrefix(1) + " was not found (" + name + ").");
             }
         }
-        
-        if(lookup(name) != null) {
-            LOGGER.error("createSubcontext() '{}' already bound in {}", name, this);
-            throw new NameAlreadyBoundException();
+        try {
+            lookup(name);
         }
+        catch (NameNotFoundException ignore) { }
 
         Name contextName = getNameParser((Name)null).parse(getNameInNamespace());
         contextName.addAll(name);

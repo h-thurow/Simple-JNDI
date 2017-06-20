@@ -54,13 +54,10 @@ import static org.junit.Assert.fail;
 public class JndiLoaderTest {
 
     private Context ctxt;
-    private JndiLoader loader;
 
     @Before
     public void setUp() {
-
         Hashtable env = new Hashtable();
-
         // Werte aus jndi.properties überschreiben
         env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
         /* The default is 'flat', which isn't hierarchial and not what I want. */
@@ -76,8 +73,6 @@ public class JndiLoaderTest {
         env.put("jndi.syntax.separator", "/");
         */
 
-        loader = new JndiLoader(env);
-        
         try {
             // Creates an empty initial MemoryContext.
             ctxt = new InitialContext(env);
@@ -97,11 +92,20 @@ public class JndiLoaderTest {
 
     @Test
     public void testProperties() {
+        Hashtable env = new Hashtable();
+        // Werte aus jndi.properties überschreiben
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        /* The default is 'flat', which isn't hierarchial and not what I want. */
+        env.put("jndi.syntax.direction", "left_to_right");
+        /* Separator is required for non-flat */
+        env.put("jndi.syntax.separator", "/");
+        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
         try {
             Properties props = new Properties();
             props.put("foo", "13");
             props.put("bar/foo", "42");
             props.put("bar/test/foo", "101");
+            JndiLoader loader = new JndiLoader(env);
             loader.load( props, ctxt );
             assertEquals( "13", ctxt.lookup("foo") );
             assertEquals( "42", ctxt.lookup("bar/foo") );
@@ -114,8 +118,18 @@ public class JndiLoaderTest {
 
     @Test
     public void testDirectory() {
+        Hashtable env = new Hashtable();
+        // Werte aus jndi.properties überschreiben
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        /* The default is 'flat', which isn't hierarchial and not what I want. */
+        env.put("jndi.syntax.direction", "left_to_right");
+        /* Separator is required for non-flat */
+        env.put("jndi.syntax.separator", "/");
+        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
+        env.put("org.osjava.sj.filenameToContext", "true");
         try {
-            File file = new File("src/test/resources/roots");
+            File file = new File("src/test/resources/roots/test.properties");
+            JndiLoader loader = new JndiLoader(env);
             loader.load( file, ctxt );
             assertEquals( "13", ctxt.lookup("test/value") );
         } catch(IOException ioe) {
@@ -129,8 +143,17 @@ public class JndiLoaderTest {
 
     @Test
     public void testDefaultFile() {
+        Hashtable env = new Hashtable();
+        // Werte aus jndi.properties überschreiben
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        /* The default is 'flat', which isn't hierarchial and not what I want. */
+        env.put("jndi.syntax.direction", "left_to_right");
+        /* Separator is required for non-flat */
+        env.put("jndi.syntax.separator", "/");
+        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
         try {
-            File file = new File("src/test/resources/roots");
+            File file = new File("src/test/resources/roots/default.properties");
+            JndiLoader loader = new JndiLoader(env);
             loader.load( file, ctxt );
             List list = (List) ctxt.lookup("name");
             assertEquals( "Henri", list.get(0) );
@@ -147,6 +170,15 @@ public class JndiLoaderTest {
 
     @Test
     public void testFileAsRoot() throws Exception {
+        Hashtable env = new Hashtable();
+        // Werte aus jndi.properties überschreiben
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        /* The default is 'flat', which isn't hierarchial and not what I want. */
+        env.put("jndi.syntax.direction", "left_to_right");
+        /* Separator is required for non-flat */
+        env.put("jndi.syntax.separator", "/");
+        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
+        JndiLoader loader = new JndiLoader(env);
         loader.load(loader.toProperties(
                 new File("src/test/resources/roots/fileAsRoot.cfg")), ctxt);
         final String infoCmd = (String) ctxt.lookup("IMAGE_INFO_CMD");
@@ -156,8 +188,19 @@ public class JndiLoaderTest {
     @Test
     public void testSubContext() {
         String dsString = "bing::::foofoo::::Boo";
+        Hashtable env = new Hashtable();
+        // Werte aus jndi.properties überschreiben
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        /* The default is 'flat', which isn't hierarchial and not what I want. */
+        env.put("jndi.syntax.direction", "left_to_right");
+        /* Separator is required for non-flat */
+        env.put("jndi.syntax.separator", "/");
+        env.put("org.osjava.sj.filenameToContext", "true");
+        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
         try {
-            File file = new File("src/test/resources/roots");
+            File file = new File("src/test/resources/roots/java.properties");
+
+            JndiLoader loader = new JndiLoader(env);
             loader.load( file, ctxt );
             Context subctxt = (Context) ctxt.lookup("java");
             assertEquals( dsString, subctxt.lookup("TestDS").toString() );
@@ -175,8 +218,17 @@ public class JndiLoaderTest {
     @Test
     public void testTopLevelDataSource() {
         String dsString = "org.gjt.mm.mysql.Driver::::jdbc:mysql://127.0.0.1/tmp::::sa";
+        Hashtable env = new Hashtable();
+        // Werte aus jndi.properties überschreiben
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        /* The default is 'flat', which isn't hierarchial and not what I want. */
+        env.put("jndi.syntax.direction", "left_to_right");
+        /* Separator is required for non-flat */
+        env.put("jndi.syntax.separator", "/");
+        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
         try {
-            File file = new File("src/test/resources/roots");
+            File file = new File("src/test/resources/roots/TopLevelDS.properties");
+            JndiLoader loader = new JndiLoader(env);
             loader.load( file, ctxt );
             DataSource ds = (DataSource) ctxt.lookup("TopLevelDS");
             assertEquals( dsString, ds.toString() );
@@ -191,10 +243,19 @@ public class JndiLoaderTest {
 
     @Test
     public void testBoolean() {
+        Hashtable env = new Hashtable();
+        // Werte aus jndi.properties überschreiben
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        /* The default is 'flat', which isn't hierarchial and not what I want. */
+        env.put("jndi.syntax.direction", "left_to_right");
+        /* Separator is required for non-flat */
+        env.put("jndi.syntax.separator", "/");
+        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
         try {
             Properties props = new Properties();
             props.put("foo", "true");
             props.put("foo/type", "java.lang.Boolean");
+            JndiLoader loader = new JndiLoader(env);
             loader.load( props, ctxt );
             assertEquals( new Boolean(true), ctxt.lookup("foo") );
         } catch(NamingException ne) {
@@ -205,12 +266,21 @@ public class JndiLoaderTest {
 
     @Test
     public void testDate() {
+        Hashtable env = new Hashtable();
+        // Werte aus jndi.properties überschreiben
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        /* The default is 'flat', which isn't hierarchial and not what I want. */
+        env.put("jndi.syntax.direction", "left_to_right");
+        /* Separator is required for non-flat */
+        env.put("jndi.syntax.separator", "/");
+        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
         try {
             Properties props = new Properties();
             props.put("birthday", "2004-10-22");
             props.put("birthday/type", "java.util.Date");
             props.put("birthday/format", "yyyy-MM-dd");
 
+            JndiLoader loader = new JndiLoader(env);
             loader.load( props, ctxt );
 
             Date d = (Date) ctxt.lookup("birthday");
@@ -228,6 +298,14 @@ public class JndiLoaderTest {
 
     @Test
     public void testConverterPlugin() {
+        Hashtable env = new Hashtable();
+        // Werte aus jndi.properties überschreiben
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        /* The default is 'flat', which isn't hierarchial and not what I want. */
+        env.put("jndi.syntax.direction", "left_to_right");
+        /* Separator is required for non-flat */
+        env.put("jndi.syntax.separator", "/");
+        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
         try {
             Properties props = new Properties();
             props.put("math", "Pi");
@@ -235,6 +313,7 @@ public class JndiLoaderTest {
             props.put("math/type", "magic number");
             props.put("math/converter", "org.osjava.sj.loader.convert.PiConverter");
 
+            JndiLoader loader = new JndiLoader(env);
             loader.load( props, ctxt );
 
             assertEquals( new Double(Math.PI), ctxt.lookup("math") );
@@ -246,12 +325,21 @@ public class JndiLoaderTest {
 
     @Test
     public void testBeanConverter() {
+        Hashtable env = new Hashtable();
+        // Werte aus jndi.properties überschreiben
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        /* The default is 'flat', which isn't hierarchial and not what I want. */
+        env.put("jndi.syntax.direction", "left_to_right");
+        /* Separator is required for non-flat */
+        env.put("jndi.syntax.separator", "/");
+        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
         try {
             Properties props = new Properties();
             props.put("bean/type", "org.osjava.sj.loader.TestBean");
             props.put("bean/converter", "org.osjava.sj.loader.convert.BeanConverter");
             props.put("bean/text", "Example");
 
+            JndiLoader loader = new JndiLoader(env);
             loader.load( props, ctxt );
 
             TestBean testBean = new TestBean();
@@ -266,12 +354,21 @@ public class JndiLoaderTest {
 
     @Test
     public void testDbcp() throws IOException, NamingException {
-        File file = new File("src/test/resources/roots");
+        Hashtable env = new Hashtable();
+        // Werte aus jndi.properties überschreiben
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        /* The default is 'flat', which isn't hierarchial and not what I want. */
+        env.put("jndi.syntax.direction", "left_to_right");
+        /* Separator is required for non-flat */
+        env.put("jndi.syntax.separator", "/");
+        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
+        File file = new File("src/test/resources/roots/pooltest");
+        JndiLoader loader = new JndiLoader(env);
         loader.load( file, ctxt );
-        DataSource ds = (DataSource) ctxt.lookup("pooltest/TestDS");
-        DataSource ds1 = (DataSource) ctxt.lookup("pooltest/OneDS");
-        DataSource ds2 = (DataSource) ctxt.lookup("pooltest/TwoDS");
-        DataSource ds3 = (DataSource) ctxt.lookup("pooltest/ThreeDS");
+        DataSource ds = (DataSource) ctxt.lookup("TestDS");
+        DataSource ds1 = (DataSource) ctxt.lookup("OneDS");
+        DataSource ds2 = (DataSource) ctxt.lookup("TwoDS");
+        DataSource ds3 = (DataSource) ctxt.lookup("ThreeDS");
 
         try {
             Connection conn = ds.getConnection();
@@ -283,7 +380,16 @@ public class JndiLoaderTest {
 
     @Test
     public void testDbcpPooltest() throws IOException, NamingException {
+        Hashtable env = new Hashtable();
+        // Werte aus jndi.properties überschreiben
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        /* The default is 'flat', which isn't hierarchial and not what I want. */
+        env.put("jndi.syntax.direction", "left_to_right");
+        /* Separator is required for non-flat */
+        env.put("jndi.syntax.separator", "/");
+        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
         File file = new File("src/test/resources/roots/pooltest");
+        JndiLoader loader = new JndiLoader(env);
         loader.load( file, ctxt );
         DataSource ds = (DataSource) ctxt.lookup("TestDS");
         DataSource ds1 = (DataSource) ctxt.lookup("OneDS");
@@ -300,7 +406,16 @@ public class JndiLoaderTest {
 
     @Test
     public void testDbcp1() throws IOException, NamingException {
+        Hashtable env = new Hashtable();
+        // Werte aus jndi.properties überschreiben
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        /* The default is 'flat', which isn't hierarchial and not what I want. */
+        env.put("jndi.syntax.direction", "left_to_right");
+        /* Separator is required for non-flat */
+        env.put("jndi.syntax.separator", "/");
+        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
         File file = new File("src/test/resources/roots/pooltest1");
+        JndiLoader loader = new JndiLoader(env);
         loader.load( file, ctxt );
         DataSource ds = (DataSource) ctxt.lookup("OneDS");
         try {
@@ -313,7 +428,16 @@ public class JndiLoaderTest {
 
     @Test
     public void testDbcp2() throws IOException, NamingException {
+        Hashtable env = new Hashtable();
+        // Werte aus jndi.properties überschreiben
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        /* The default is 'flat', which isn't hierarchial and not what I want. */
+        env.put("jndi.syntax.direction", "left_to_right");
+        /* Separator is required for non-flat */
+        env.put("jndi.syntax.separator", "/");
+        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
         File file = new File("src/test/resources/roots/pooltest2");
+        JndiLoader loader = new JndiLoader(env);
         loader.load( file, ctxt );
         DataSource ds = (DataSource) ctxt.lookup("TestDS");
         try {
@@ -326,7 +450,16 @@ public class JndiLoaderTest {
 
     @Test
     public void testDbcp3() throws IOException, NamingException {
+        Hashtable env = new Hashtable();
+        // Werte aus jndi.properties überschreiben
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        /* The default is 'flat', which isn't hierarchial and not what I want. */
+        env.put("jndi.syntax.direction", "left_to_right");
+        /* Separator is required for non-flat */
+        env.put("jndi.syntax.separator", "/");
+        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
         File file = new File("src/test/resources/roots/pooltest3");
+        JndiLoader loader = new JndiLoader(env);
         loader.load( file, ctxt );
         DataSource ds = (DataSource) ctxt.lookup("ThreeDS");
         try {
@@ -339,7 +472,16 @@ public class JndiLoaderTest {
 
     @Test
     public void testDbcp4() throws IOException, NamingException {
+        Hashtable env = new Hashtable();
+        // Werte aus jndi.properties überschreiben
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        /* The default is 'flat', which isn't hierarchial and not what I want. */
+        env.put("jndi.syntax.direction", "left_to_right");
+        /* Separator is required for non-flat */
+        env.put("jndi.syntax.separator", "/");
+        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
         File file = new File("src/test/resources/roots/pooltest4");
+        JndiLoader loader = new JndiLoader(env);
         loader.load( file, ctxt );
         DataSource ds = (DataSource) ctxt.lookup("TwoDS");
         try {
@@ -352,7 +494,16 @@ public class JndiLoaderTest {
 
     @Test
     public void testMultiValueAttributeIntegers() throws Exception {
+        Hashtable env = new Hashtable();
+        // Werte aus jndi.properties überschreiben
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        /* The default is 'flat', which isn't hierarchial and not what I want. */
+        env.put("jndi.syntax.direction", "left_to_right");
+        /* Separator is required for non-flat */
+        env.put("jndi.syntax.separator", "/");
+        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
         File file = new File("src/test/resources/roots/multiValueAttributes/integers");
+        JndiLoader loader = new JndiLoader(env);
         loader.load( file, ctxt );
         final LinkedList<Integer> ints = (LinkedList<Integer>) ctxt.lookup("person/age");
         assert ints.size() == 3;
@@ -360,7 +511,16 @@ public class JndiLoaderTest {
 
     @Test
     public void testMultiValueAttributeNoType() throws Exception {
+        Hashtable env = new Hashtable();
+        // Werte aus jndi.properties überschreiben
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        /* The default is 'flat', which isn't hierarchial and not what I want. */
+        env.put("jndi.syntax.direction", "left_to_right");
+        /* Separator is required for non-flat */
+        env.put("jndi.syntax.separator", "/");
+        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
         File file = new File("src/test/resources/roots/multiValueAttributes/noType");
+        JndiLoader loader = new JndiLoader(env);
         loader.load( file, ctxt );
         final LinkedList<String> ages = (LinkedList<String>) ctxt.lookup("person/name");
         assert ages.size() == 3;
@@ -371,7 +531,16 @@ public class JndiLoaderTest {
      */
     @Test
     public void testMultiValueAttributeBooleans() throws Exception {
+        Hashtable env = new Hashtable();
+        // Werte aus jndi.properties überschreiben
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        /* The default is 'flat', which isn't hierarchial and not what I want. */
+        env.put("jndi.syntax.direction", "left_to_right");
+        /* Separator is required for non-flat */
+        env.put("jndi.syntax.separator", "/");
+        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
         File file = new File("src/test/resources/roots/multiValueAttributes/booleans");
+        JndiLoader loader = new JndiLoader(env);
         loader.load( file, ctxt );
         final LinkedList<Boolean> booleans = (LinkedList<Boolean>) ctxt.lookup("person/myBooleans");
         assert booleans.size() == 3;
@@ -383,7 +552,16 @@ public class JndiLoaderTest {
      */
     @Test
     public void testMultiValueAttributeCharacters() throws Exception {
+        Hashtable env = new Hashtable();
+        // Werte aus jndi.properties überschreiben
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        /* The default is 'flat', which isn't hierarchial and not what I want. */
+        env.put("jndi.syntax.direction", "left_to_right");
+        /* Separator is required for non-flat */
+        env.put("jndi.syntax.separator", "/");
+        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
         File file = new File("src/test/resources/roots/multiValueAttributes/characters");
+        JndiLoader loader = new JndiLoader(env);
         loader.load( file, ctxt );
         final LinkedList<Character> characters = (LinkedList<Character>) ctxt.lookup("person/spelledName");
         final StringWriter writer = new StringWriter(characters.size());
@@ -399,7 +577,16 @@ public class JndiLoaderTest {
      */
     @Test
     public void testMultiValueAttributeShorts() throws Exception {
+        Hashtable env = new Hashtable();
+        // Werte aus jndi.properties überschreiben
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        /* The default is 'flat', which isn't hierarchial and not what I want. */
+        env.put("jndi.syntax.direction", "left_to_right");
+        /* Separator is required for non-flat */
+        env.put("jndi.syntax.separator", "/");
+        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
         File file = new File("src/test/resources/roots/multiValueAttributes/shorts");
+        JndiLoader loader = new JndiLoader(env);
         loader.load( file, ctxt );
         final LinkedList<Short> shorts = (LinkedList<Short>) ctxt.lookup("person/myShort");
         assert shorts.size() == 2;
@@ -408,7 +595,16 @@ public class JndiLoaderTest {
 
     @Test
     public void testMultiValueAttributeDoubles() throws Exception {
+        Hashtable env = new Hashtable();
+        // Werte aus jndi.properties überschreiben
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        /* The default is 'flat', which isn't hierarchial and not what I want. */
+        env.put("jndi.syntax.direction", "left_to_right");
+        /* Separator is required for non-flat */
+        env.put("jndi.syntax.separator", "/");
+        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
         File file = new File("src/test/resources/roots/multiValueAttributes/doubles");
+        JndiLoader loader = new JndiLoader(env);
         loader.load( file, ctxt );
         final LinkedList<Double> doubles = (LinkedList<Double>) ctxt.lookup("person/myDouble");
         assert doubles.size() == 3;
@@ -419,7 +615,16 @@ public class JndiLoaderTest {
      */
     @Test
     public void testMultiValueAttributeMultipleContexts() throws Exception {
+        Hashtable env = new Hashtable();
+        // Werte aus jndi.properties überschreiben
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        /* The default is 'flat', which isn't hierarchial and not what I want. */
+        env.put("jndi.syntax.direction", "left_to_right");
+        /* Separator is required for non-flat */
+        env.put("jndi.syntax.separator", "/");
+        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
         File file = new File("src/test/resources/roots/multiValueAttributes");
+        JndiLoader loader = new JndiLoader(env);
         loader.load( file, ctxt );
         final LinkedList<Integer> ints = (LinkedList<Integer>) ctxt.lookup("integers/person/age");
         assert ints.size() == 3;

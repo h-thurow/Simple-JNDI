@@ -127,8 +127,8 @@ public class SimpleJndiTest {
         env.put("org.osjava.sj.root", "src/test/resources/roots/java--.properties");
         env.put("org.osjava.sj.filenameToContext", "true");
         ctxt = new InitialContext(env);
-        assertEquals( "42", ctxt.lookup("java:.magic") );
         Context subCtxt = (Context) ctxt.lookup("java:");
+        assertEquals( "42", ctxt.lookup("java:.magic") );
         assertEquals( "42", subCtxt.lookup("magic") );
     }
 

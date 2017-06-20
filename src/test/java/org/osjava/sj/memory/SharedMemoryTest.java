@@ -97,31 +97,4 @@ public class SharedMemoryTest {
 
         }
     }
-
-    /**
-     * 0.11.4.1 javax.naming.ContextNotEmptyException
-     */
-    @Test
-    public void testSjn73() throws Exception {
-        InitialContext ctx = null;
-        InitialContext ctx1 = null;
-        try {
-            String propShared = "org.osjava.sj.jndi.shared";
-            System.setProperty(propShared, "true");
-            ctx = new InitialContext();
-            assertNotNull(ctx.lookup("path.foo"));
-            ctx1 = new InitialContext();
-            assertNotNull(ctx1.lookup("path.foo"));
-            System.getProperties().remove(propShared);
-        }
-        finally {
-            if (ctx != null) {
-                ctx.close();
-            }
-            if (ctx1 != null) {
-                ctx1.close();
-            }
-
-        }
-    }
 }

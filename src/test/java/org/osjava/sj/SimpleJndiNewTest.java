@@ -204,13 +204,13 @@ public class SimpleJndiNewTest {
      * In einem Kontext nachträglich gebundene Objekte sind nicht in einem anderen
      * Kontext sichtbar, wenn org.osjava.sj.jndi.shared nicht true ist.
      */
-    @Test
+    @Test(expected = NameNotFoundException.class)
     public void unsharedContext() throws Exception {
         InitialContext ctx1 = null;
         InitialContext ctx2 = null;
         try {
             final Hashtable<String, String> env = new Hashtable<String, String>();
-            env.put("org.osjava.sj.root", "file://src/test/resources/roots/shareContext1");
+            env.put("org.osjava.sj.root", "src/test/resources/roots/shareContext1");
             env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
             env.put("org.osjava.sj.delimiter", "/");
             env.put("org.osjava.sj.space", "java:comp/env");
@@ -224,8 +224,7 @@ public class SimpleJndiNewTest {
             assert "yep".equals(afterwardsBindedInCtx1);
 
             ctx2 = new InitialContext(env);
-            final String afterwardsBindedInCtx2 = (String) ctx2.lookup("afterwardsBinded");
-            assert afterwardsBindedInCtx2 == null;
+            ctx2.lookup("afterwardsBinded");
         }
         finally {
             if (ctx1 != null) {
@@ -505,7 +504,7 @@ public class SimpleJndiNewTest {
     }
 
     /**
-     * Non matching delimiter ("." instead of "/") > no type casting applied.
+     * Non matching org.osjava.sj.delimiter ("/" instead of ".") > no type casting applied.
      */
     @Test
     public void sharedContextWithDataSource2NonMatchingDelimiter() throws Exception {
@@ -521,6 +520,8 @@ public class SimpleJndiNewTest {
             ctx1 = new InitialContext(env);
             final String type = (String) ctx1.lookup("java:comp/env/ds/TestDS.type");
             assert "javax.sql.DataSource".equals(type);
+            final String user = (String) ctx1.lookup("java:comp/env/ds/TestDS.user");
+            assert "user".equals(user);
 //        final DataSource ds = (DataSource) ctx1.lookup("java:comp/env/ds/TestDS");
 //        assert ds != null;
         }
@@ -839,17 +840,21 @@ public class SimpleJndiNewTest {
         InitialContext ctx1 = null;
         try {
             final Hashtable<String, String> env = new Hashtable<String, String>();
+
             env.put("org.osjava.sj.root",
                     "src/test/resources/roots/fileAsRoot.cfg" + File.pathSeparator +
-                            "src/test/resources/roots/shareContext1/directory1/directory1_file1.properties" + File.pathSeparator +
+                    "src/test/resources/roots/shareContext1/directory1/directory1_file1.properties" + File.pathSeparator +
                             // mix files with directories
-                            "src/test/resources/roots/multiValueAttributes");
+                    "src/test/resources/roots/multiValueAttributes");
+
             env.put("org.osjava.sj.jndi.shared", "true");
             env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
             env.put("org.osjava.sj.delimiter", "/");
             env.put("org.osjava.sj.filenameToContext", "true");
 //        env.put("org.osjava.sj.space", "java:comp/env");
+
             ctx1 = new InitialContext(env);
+
             final String infoCmd = (String) ctx1.lookup("fileAsRoot/IMAGE_INFO_CMD");
             assertEquals(". /.profile_opix;$OCHOME/opt/Python-2.7/bin/python $OCHOME/opt/image_processor/scripts/imageinfo.py", infoCmd);
             assertEquals("'quotes' \"inside\"", ctx1.lookup("directory1_file1/quotesInside"));

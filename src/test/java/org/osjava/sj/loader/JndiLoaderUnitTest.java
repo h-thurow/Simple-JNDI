@@ -128,7 +128,6 @@ public class JndiLoaderUnitTest {
         Context deepestContext = loader.createSubContexts(name, new MemoryContext(env));
         assertNotNull(deepestContext);
         assertEquals("jdbc/sybase/ds", deepestContext.getNameInNamespace());
-
     }
 
     @Test

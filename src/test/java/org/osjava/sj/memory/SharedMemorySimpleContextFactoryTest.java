@@ -40,10 +40,11 @@ import static org.junit.Assert.*;
 public class SharedMemorySimpleContextFactoryTest {
 
     private InitialContext createContext() throws NamingException {
-        Hashtable contextEnv = new Hashtable();
-        contextEnv.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
-        contextEnv.put("org.osjava.sj.jndi.shared", "true");
-        return new InitialContext(contextEnv);
+        Hashtable env = new Hashtable();
+        env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
+        env.put("org.osjava.sj.jndi.shared", "true");
+        env.put("org.osjava.sj.root", "");
+        return new InitialContext(env);
     }
     
     // Bug report submitted by Thomas A. Oehser
@@ -83,33 +84,6 @@ public class SharedMemorySimpleContextFactoryTest {
         finally {
             if (context != null) {
                 context.close();
-            }
-
-        }
-    }
-
-    /**
-     * 0.11.4.1 javax.naming.ContextNotEmptyException
-     */
-    @Test
-    public void testSjn73() throws Exception {
-        InitialContext ctx = null;
-        InitialContext ctx1 = null;
-        try {
-            String propShared = "org.osjava.sj.jndi.shared";
-            System.setProperty(propShared, "true");
-            ctx = new InitialContext();
-            assertNotNull(ctx.lookup("path.foo"));
-            ctx1 = new InitialContext();
-            assertNotNull(ctx1.lookup("path.foo"));
-            System.getProperties().remove(propShared);
-        }
-        finally {
-            if (ctx != null) {
-                ctx.close();
-            }
-            if (ctx1 != null) {
-                ctx1.close();
             }
 
         }

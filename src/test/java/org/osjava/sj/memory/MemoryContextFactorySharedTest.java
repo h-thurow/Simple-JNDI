@@ -119,10 +119,11 @@ public class MemoryContextFactorySharedTest {
      */
     @Test
     public void testDirectory() throws NamingException {
+        contextEnv.put("org.osjava.sj.filenameToContext", "true");
         loader = new JndiLoader(contextEnv);
         ctxt = new InitialContext(contextEnv);
         try {
-            File file = new File("src/test/resources/roots");
+            File file = new File("src/test/resources/roots/test.properties");
             loader.load( file, ctxt );
             assertEquals( "13", ctxt.lookup("test/value") );
         } catch(IOException ioe) {
@@ -194,7 +195,7 @@ public class MemoryContextFactorySharedTest {
         ctxt = new InitialContext(contextEnv);
         String dsString = "org.gjt.mm.mysql.Driver::::jdbc:mysql://127.0.0.1/tmp::::sa";
         try {
-            File file = new File("src/test/resources/roots");
+            File file = new File("src/test/resources/roots/TopLevelDS.properties");
             loader.load( file, ctxt );
             DataSource ds = (DataSource) ctxt.lookup("TopLevelDS");
             assertEquals( dsString, ds.toString() );

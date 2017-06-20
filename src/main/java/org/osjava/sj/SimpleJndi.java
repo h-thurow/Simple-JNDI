@@ -31,6 +31,7 @@
  */
 package org.osjava.sj;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.jetbrains.annotations.Nullable;
 import org.osjava.sj.loader.JndiLoader;
 import org.osjava.sj.loader.util.Utils;
@@ -56,10 +57,10 @@ public class SimpleJndi {
     public static final String FILENAME_TO_CONTEXT = "org.osjava.sj.filenameToContext";
     private static final Logger LOGGER = LoggerFactory.getLogger(SimpleJndi.class);
 
-    private Hashtable<String, String> environment;
+    private Hashtable<String, String> env;
 
     SimpleJndi(Hashtable<String, String> environment) {
-        this.environment = environment;
+        this.env = environment;
         overwriteEnvironmentWithSystemProperties();
     }
 
@@ -68,16 +69,16 @@ public class SimpleJndi {
 
         final InitialContext initialContext = createInitialContext();
         Context ctxt = initialContext;
-        ctxt = createENC(environment, ctxt);
-        JndiLoader loader = new JndiLoader(environment);
-        String root = getRoot(environment);
+        ctxt = createENC(env, ctxt);
+        JndiLoader loader = new JndiLoader(env);
+        String root = getRoot(env);
         if (root != null && !root.isEmpty()) {
             final String[] roots = root.split(File.pathSeparator);
             for (String path : roots) {
                 final File rootFile = new File(path);
                 LOGGER.debug("Loading {}", rootFile.getAbsolutePath());
                 try {
-                    loader.load(rootFile, ctxt);
+                    loader.load(rootFile, ctxt, BooleanUtils.toBoolean(env.get(FILENAME_TO_CONTEXT)), true);
                 }
                 catch (IOException e) {
                     throw new NamingException("Unable to load data from " +
@@ -126,22 +127,22 @@ public class SimpleJndi {
     }
 
     private void initializeStandardJndiEnvironment() {
-        environment.put("jndi.syntax.direction", "left_to_right");
-        if(!environment.containsKey(JndiLoader.SIMPLE_DELIMITER)) {
-            environment.put(JndiLoader.SIMPLE_DELIMITER, ".");
+        env.put("jndi.syntax.direction", "left_to_right");
+        if(!env.containsKey(JndiLoader.SIMPLE_DELIMITER)) {
+            env.put(JndiLoader.SIMPLE_DELIMITER, ".");
         }
-        if (!environment.containsKey(JNDI_SYNTAX_SEPARATOR)) {
-            environment.put(JNDI_SYNTAX_SEPARATOR, environment.get(JndiLoader.SIMPLE_DELIMITER));
+        if (!env.containsKey(JNDI_SYNTAX_SEPARATOR)) {
+            env.put(JNDI_SYNTAX_SEPARATOR, env.get(JndiLoader.SIMPLE_DELIMITER));
         }
     }
 
     private InitialContext createInitialContext() throws NamingException {
-        if(!environment.containsKey(CONTEXT_FACTORY)) {
-            environment.put(CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        if(!env.containsKey(CONTEXT_FACTORY)) {
+            env.put(CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
         }
-        environment.put("java.naming.factory.initial", environment.get(CONTEXT_FACTORY) );
+        env.put("java.naming.factory.initial", env.get(CONTEXT_FACTORY) );
         // Hier wird MemoryContextFactory#getInitialContext() gerufen!
-        return new InitialContext(environment);
+        return new InitialContext(env);
     }
 
     /**
@@ -161,7 +162,7 @@ public class SimpleJndi {
 
     private void overwriteFromSystemProperty(String key) {
         if(System.getProperty(key) != null) {
-            environment.put(key, System.getProperty(key));
+            env.put(key, System.getProperty(key));
         }
     }
 
