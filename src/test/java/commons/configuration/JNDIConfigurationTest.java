@@ -34,7 +34,7 @@ public class JNDIConfigurationTest {
         InitialContext ctx = null;
         try {
             final Properties env = new Properties();
-            env.put(SimpleJndi.SIMPLE_ROOT, "src/test/resources/commons/configuration/slashDelimiter");
+            env.put(SimpleJndi.SIMPLE_ROOT, "src/test/resources/roots/commons/configuration/slashDelimiter");
             env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
             env.put("org.osjava.sj.delimiter", "/");
             env.put("org.osjava.sj.space", "java:comp/env");
@@ -73,7 +73,7 @@ public class JNDIConfigurationTest {
         InitialContext ctx = null;
         try {
             final Properties env = new Properties();
-            env.put(SimpleJndi.SIMPLE_ROOT, "src/test/resources/commons/configuration/dotDelimiter");
+            env.put(SimpleJndi.SIMPLE_ROOT, "src/test/resources/roots/commons/configuration/dotDelimiter");
             env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
             env.put("org.osjava.sj.delimiter", "."); // to be explicit
             env.put("org.osjava.sj.space", "java:comp/env");
@@ -100,7 +100,7 @@ public class JNDIConfigurationTest {
         InitialContext ctx = null;
         try {
             final Properties env = new Properties();
-            env.put(SimpleJndi.SIMPLE_ROOT, "src/test/resources/commons/configuration/dotDelimiter");
+            env.put(SimpleJndi.SIMPLE_ROOT, "src/test/resources/roots/commons/configuration/dotDelimiter");
             env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
             env.put("org.osjava.sj.delimiter", "."); // to be explicit
             env.put("org.osjava.sj.space", "java:comp/env");
@@ -133,7 +133,7 @@ public class JNDIConfigurationTest {
         InitialContext ctx = null;
         try {
             final Properties env = new Properties();
-            env.put(SimpleJndi.SIMPLE_ROOT, "src/test/resources/commons/configuration/mixedDelimiter");
+            env.put(SimpleJndi.SIMPLE_ROOT, "src/test/resources/roots/commons/configuration/mixedDelimiter");
             env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
 //            env.put("org.osjava.sj.delimiter", ".");
             env.put("jndi.syntax.separator", "/");
@@ -177,7 +177,7 @@ public class JNDIConfigurationTest {
         InitialContext ctx = null;
         try {
             final Properties env = new Properties();
-            env.put(SimpleJndi.SIMPLE_ROOT, "src/test/resources/commons/configuration/dotDelimiter");
+            env.put(SimpleJndi.SIMPLE_ROOT, "src/test/resources/roots/commons/configuration/dotDelimiter");
             env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
             env.put("org.osjava.sj.delimiter", "."); // to be explicit
 //            env.put("org.osjava.sj.delimiter", "\\.|/");
@@ -207,7 +207,7 @@ public class JNDIConfigurationTest {
         InitialContext ctx = null;
         try {
             final Properties env = new Properties();
-            env.put(SimpleJndi.SIMPLE_ROOT, "src/test/resources/commons/configuration/dotDelimiter");
+            env.put(SimpleJndi.SIMPLE_ROOT, "src/test/resources/roots/commons/configuration/dotDelimiter");
             env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
             env.put("org.osjava.sj.delimiter", "."); // to be explicit
 //            env.put("org.osjava.sj.delimiter", "\\.|/");
@@ -243,7 +243,7 @@ public class JNDIConfigurationTest {
         InitialContext ctx = null;
         try {
             final Properties env = new Properties();
-            env.put(SimpleJndi.SIMPLE_ROOT, "src/test/resources/commons/configuration/chaining/my.properties");
+            env.put(SimpleJndi.SIMPLE_ROOT, "src/test/resources/roots/commons/configuration/chaining/my.properties");
             env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
 //            env.put("org.osjava.sj.delimiter", "."); // to be explicit
 //            env.put("org.osjava.sj.delimiter", "\\.|/");
@@ -277,7 +277,7 @@ public class JNDIConfigurationTest {
         InitialContext ctx = null;
         try {
             final Properties env = new Properties();
-            env.put(SimpleJndi.SIMPLE_ROOT, "src/test/resources/commons/configuration/interpolation.properties");
+            env.put(SimpleJndi.SIMPLE_ROOT, "src/test/resources/roots/commons/configuration/interpolation.properties");
             env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
             env.put("org.osjava.sj.space", "java:comp/env");
             env.put("jndi.syntax.separator", "/");
@@ -298,7 +298,7 @@ public class JNDIConfigurationTest {
         InitialContext ctx = null;
         try {
             final Properties env = new Properties();
-            env.put(SimpleJndi.SIMPLE_ROOT, "src/test/resources/commons/configuration/interpolationNoEnc.properties");
+            env.put(SimpleJndi.SIMPLE_ROOT, "src/test/resources/roots/commons/configuration/interpolationNoEnc.properties");
             env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
             env.put("jndi.syntax.separator", "/");
             ctx = new InitialContext(env);
@@ -322,7 +322,7 @@ public class JNDIConfigurationTest {
         InitialContext ctx = null;
         try {
             final Properties env = new Properties();
-            env.put(SimpleJndi.SIMPLE_ROOT, "src/test/resources/commons/configuration/interpolationNoEnc.properties");
+            env.put(SimpleJndi.SIMPLE_ROOT, "src/test/resources/roots/commons/configuration/interpolationNoEnc.properties");
             env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
             env.put("jndi.syntax.separator", "/");
             env.put("org.osjava.sj.space", "java:comp/env");
@@ -348,7 +348,7 @@ public class JNDIConfigurationTest {
         InitialContext ctx = null;
         try {
             final Properties env = new Properties();
-            env.put(SimpleJndi.SIMPLE_ROOT, "src/test/resources/commons/configuration/interpolationNoEnc.properties");
+            env.put(SimpleJndi.SIMPLE_ROOT, "src/test/resources/roots/commons/configuration/interpolationNoEnc.properties");
             env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
             env.put("jndi.syntax.separator", "/");
             env.put("org.osjava.sj.space", "java:comp/env");

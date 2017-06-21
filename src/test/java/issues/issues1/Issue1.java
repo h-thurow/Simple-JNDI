@@ -41,7 +41,7 @@ public class Issue1 {
             final Hashtable<String, String> env = new Hashtable<String, String>();
             env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
             env.put("org.osjava.sj.root",
-                    "src/test/resources/issues/issue1");
+                    "src/test/resources/roots/issues/issue1");
             env.put("org.osjava.sj.delimiter", "/");
             env.put("org.osjava.sj.space", "java:jboss");
             env.put("org.osjava.sj.jndi.shared", "true");
@@ -63,7 +63,7 @@ public class Issue1 {
             final Hashtable<String, String> env = new Hashtable<String, String>();
             env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
             env.put("org.osjava.sj.root",
-                    "src/test/resources/issues/issue1");
+                    "src/test/resources/roots/issues/issue1");
             env.put("org.osjava.sj.delimiter", "/");
             env.put("org.osjava.sj.space", "java:jboss");
             env.put("org.osjava.sj.jndi.shared", "true");
