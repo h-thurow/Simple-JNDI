@@ -55,10 +55,9 @@ import java.util.regex.Pattern;
  */
 public class JndiLoader {
 
-    // separator, or just put them in as contexts?
     public static final String SIMPLE_DELIMITER = "org.osjava.sj.delimiter";
 
-    // char(s) to replace : with on the filesystem in filenames
+    /** char(s) to replace with ":" in filenames and directories. Siehe {@link #handleColonReplacement(String)}*/
     public static final String SIMPLE_COLON_REPLACE = "org.osjava.sj.colon.replace";
     private static final Properties EMPTY_PROPERTIES = new Properties();
 
@@ -195,6 +194,9 @@ public class JndiLoader {
         return false;
     }
 
+    /**
+     * Replaces {@link JndiLoader#SIMPLE_COLON_REPLACE} with ":" for building a ENC like "java:comp/env".
+     */
     String handleColonReplacement(String name) {
         String colonReplace = (String) environment.get(SIMPLE_COLON_REPLACE);
         if (colonReplace != null) {
@@ -209,6 +211,7 @@ public class JndiLoader {
      *
      * @return xml file: {@link XmlProperties}. ini file: {@link IniProperties}. Sonst {@link CustomProperties}.
      */
+    // TODO Make package-private
     public Properties toProperties(File file) throws IOException {
 //        System.err.println("LOADING: "+file);
         AbstractProperties p;

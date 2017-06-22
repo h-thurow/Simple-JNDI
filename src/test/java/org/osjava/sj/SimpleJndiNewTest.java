@@ -1,7 +1,9 @@
 package org.osjava.sj;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.osjava.sj.loader.JndiLoader;
 import org.osjava.sj.memory.MemoryContext;
 
@@ -15,6 +17,9 @@ import java.util.Properties;
 import static org.junit.Assert.*;
 
 public class SimpleJndiNewTest {
+
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
     @Before
     public void setUp() throws Exception {
@@ -38,7 +43,7 @@ public class SimpleJndiNewTest {
         try {
             final Hashtable<String, String> env = new Hashtable<String, String>();
 //        env.put("org.osjava.sj.root", workspaceDir + "/SimpleJndi/src/test/resources/roots/datasourcePool/");
-            env.put("org.osjava.sj.root", "file://src/test/resources/roots/datasourcePool/");
+            env.put("org.osjava.sj.root", "src/test/resources/roots/datasourcePool/");
             env.put("org.osjava.sj.jndi.shared", "true");
             env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
             env.put("org.osjava.sj.delimiter", "/");
@@ -94,7 +99,7 @@ public class SimpleJndiNewTest {
     /**
      * You can not mix properties with and without namespace in datasource configuration files.
      */
-    @Test(expected = RuntimeException.class)
+    @Test
     public void sharedContextWithDataSourceMixedNamespaces() throws Exception {
         InitialContext ctx1 = null;
         try {
@@ -106,13 +111,9 @@ public class SimpleJndiNewTest {
             env.put("org.osjava.sj.delimiter", ".");
             env.put("org.osjava.sj.space", "java:comp/env");
 
+            thrown.expect(NamingException.class);
+            thrown.expectMessage("Required subelement 'driver'");
             ctx1 = new InitialContext(env);
-
-            DataSource ds = (DataSource) ctx1.lookup("java:comp/env.mixedNamespaces");
-            assert ds != null;
-
-            DataSource ds2 = (DataSource) ctx1.lookup("java:comp/env.mixedNamespaces.TestDS");
-            assert ds2 != null;
         }
         finally {
             if (ctx1 != null) {
@@ -248,7 +249,7 @@ public class SimpleJndiNewTest {
         try {
             final Hashtable<String, String> env = new Hashtable<String, String>();
             env.put("org.osjava.sj.root",
-                    "file://src/test/resources/roots/shareContext1");
+                    "src/test/resources/roots/shareContext1");
             env.put("org.osjava.sj.jndi.shared", "true");
             env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
             env.put("org.osjava.sj.delimiter", "/");
@@ -258,7 +259,7 @@ public class SimpleJndiNewTest {
 
             final Hashtable<String, String> env2 = new Hashtable<String, String>();
             env2.put("org.osjava.sj.root",
-                    "file://src/test/resources/roots/datasourcePool");
+                    "src/test/resources/roots/datasourcePool");
             env2.put("org.osjava.sj.jndi.shared", "true");
             env2.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
             env2.put("org.osjava.sj.delimiter", "/");
@@ -316,7 +317,7 @@ public class SimpleJndiNewTest {
      *  <p>
      *  "Only String properties are supported." See org.osjava.sj.loader.convert.BeanConverter.
      */
-    @Test(expected = java.lang.RuntimeException.class)
+    @Test
     public void beanSetterNotSharedMixedTypes() throws Exception {
         InitialContext ctx1 = null;
         try {
@@ -326,9 +327,9 @@ public class SimpleJndiNewTest {
             env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
             env.put("org.osjava.sj.delimiter", "/");
             env.put("org.osjava.sj.space", "java:comp/env");
+            thrown.expect(NamingException.class);
+            thrown.expectMessage("Unable to find method setSize");
             ctx1 = new InitialContext(env);
-            final BeanWithSetterMixedTypes bean = (BeanWithSetterMixedTypes) ctx1.lookup("java:comp/env/bean");
-            assert bean != null;
         }
         finally {
             if (ctx1 != null) {
@@ -1086,4 +1087,25 @@ public class SimpleJndiNewTest {
             }
         }
     }
+    
+//    @Test
+//    public void encDoubleBoundBug() throws Exception {
+//        InitialContext ctx = null;
+//        try {
+//            final Hashtable<String, String> env = new Hashtable<String, String>();
+//            env.put("org.osjava.sj.root", "src/test/resources/roots/encDoubleBoundBug.properties");
+//            env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
+//            env.put("org.osjava.sj.jndi.shared", "true");
+//            env.put("org.osjava.sj.delimiter", "/");
+//            JndiLoader loader = new JndiLoader(env);
+//            Context jdbcCtx = (Context) ctx.lookup("jdbc");
+//            assertNull(jdbcCtx);
+//
+//        }
+//        finally {
+//            if (ctx != null) {
+//                ctx.close();
+//            }
+//        }
+//    }
 }

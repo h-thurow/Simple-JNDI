@@ -65,6 +65,7 @@ public class SimpleContextFactory implements InitialContextFactory {
     /**
      * @see javax.naming.spi.InitialContextFactory#getInitialContext(java.util.Hashtable)
      */
+    @Override
     public Context getInitialContext(Hashtable environment) throws NamingException {
         final Boolean isShared = Boolean.valueOf(
                 (String) environment.get(SimpleJndi.SIMPLE_SHARED));

@@ -42,7 +42,6 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.io.File;
-import java.io.IOException;
 import java.util.Hashtable;
 
 public class SimpleJndi {
@@ -80,9 +79,11 @@ public class SimpleJndi {
                 try {
                     loader.load(rootFile, ctxt, BooleanUtils.toBoolean(env.get(FILENAME_TO_CONTEXT)), true);
                 }
-                catch (IOException e) {
-                    throw new NamingException("Unable to load data from " +
-                            rootFile.getAbsolutePath()+" due to error: " + e.getMessage());
+                catch (Exception e) {
+                    LOGGER.error("Unable to load: ",
+                            rootFile.getAbsolutePath(), e);
+                    initialContext.close();
+                    throw new NamingException("" + e.getMessage());
                 }
             }
         }

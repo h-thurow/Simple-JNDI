@@ -75,19 +75,22 @@ public class MemoryContextFactory implements InitialContextFactory {
             return new MemoryContext(environment);
         }
         else {
-            final String root = (String) environment.get("org.osjava.sj.root");
+            String root = (String) environment.get("org.osjava.sj.root");
+            // Siehe MemoryContextTest#loadViaInitialContext()
+            root = root != null ? root : "";
             final Context ctx = contextsByRoot.get(root);
             // ctx.listBindings("").hasMore(): Ob alle Kontexte zerstört wurden.
             if (ctx != null) {
                 return ctx;
             }
             else {
+                String finalRoot = root;
                 MemoryContext context = new MemoryContext(environment) {
                     @Override
                     public void close() throws NamingException {
                         // first remove, so the context will be removed even when close()
                         // throws an Exception
-                        contextsByRoot.remove(root);
+                        contextsByRoot.remove(finalRoot);
                         super.close();
                     }
 

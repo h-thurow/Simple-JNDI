@@ -126,6 +126,7 @@ public class SimpleJndiTest {
         Hashtable env = new Hashtable();
         env.put("org.osjava.sj.root", "src/test/resources/roots/java--.properties");
         env.put("org.osjava.sj.filenameToContext", "true");
+        env.put("org.osjava.sj.colon.replace", "--");
         ctxt = new InitialContext(env);
         Context subCtxt = (Context) ctxt.lookup("java:");
         assertEquals( "42", ctxt.lookup("java:.magic") );

@@ -12,6 +12,7 @@ import static org.junit.Assert.assertEquals;
  * Created by hot on 04/02/2017.
  */
 public class MemoryContextTest {
+
     @Test
     public void bindName() throws Exception {
         Hashtable env = new Hashtable();
@@ -29,20 +30,28 @@ public class MemoryContextTest {
 
     @Test
     public void loadViaInitialContext() throws Exception {
-        Hashtable env = new Hashtable();
-        env.put("jndi.syntax.direction", "left_to_right");
-        env.put("jndi.syntax.separator", "/");
-        env.put("java.naming.factory.initial", "org.osjava.sj.memory.MemoryContextFactory");
-        env.put("org.osjava.sj.jndi.shared", "true");
-        InitialContext ctx = new InitialContext(env);
-        final Context sub1 = ctx.createSubcontext("sub1");
+        InitialContext ctx = null;
+        try {
+            Hashtable env = new Hashtable();
+            env.put("jndi.syntax.direction", "left_to_right");
+            env.put("jndi.syntax.separator", "/");
+            env.put("java.naming.factory.initial", "org.osjava.sj.memory.MemoryContextFactory");
+            env.put("org.osjava.sj.jndi.shared", "true");
+            ctx = new InitialContext(env);
+            final Context sub1 = ctx.createSubcontext("sub1");
 
-        sub1.bind("name", "value");
-        String name = (String) sub1.lookup("name");
-        assertEquals("value", name);
+            sub1.bind("name", "value");
+            String name = (String) sub1.lookup("name");
+            assertEquals("value", name);
 
-        name = (String) ctx.lookup("sub1/name");
-        assertEquals("value", name);
+            name = (String) ctx.lookup("sub1/name");
+            assertEquals("value", name);
+        }
+        finally {
+            if (ctx != null) {
+                ctx.close();
+            }
+        }
     }
 
     @Test
