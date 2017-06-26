@@ -32,7 +32,6 @@
 
 package org.osjava.sj.loader.convert;
 
-import org.osjava.sj.loader.SJDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.osjava.sj.loader;
+package org.osjava.sj.loader.convert;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;
