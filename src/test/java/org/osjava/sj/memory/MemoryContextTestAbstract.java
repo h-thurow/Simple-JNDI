@@ -67,7 +67,7 @@ public abstract class MemoryContextTestAbstract {
         
         /* Initial configuration voodoo for the default context. */
         Hashtable contextEnv = new Hashtable();
-        contextEnv.put("java.naming.factory.initial", "org.osjava.sj.memory.MemoryContextFactory");
+        contextEnv.put("java.naming.factory.initial", "org.osjava.sj.MemoryContextFactory");
 
         /* The default is 'flat', which isn't hierarchial and not what I want. */
         contextEnv.put("jndi.syntax.direction", "left_to_right");

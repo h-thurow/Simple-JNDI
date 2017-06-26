@@ -60,7 +60,7 @@ public class JndiLoaderTest extends TestCase {
         /* Separator is required for non-flat */
 
         Hashtable env = new Hashtable();
-        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
         env.put("jndi.syntax.direction", "left_to_right");
         env.put("jndi.syntax.separator", "/");
         env.put(JndiLoader.SIMPLE_DELIMITER, "/");

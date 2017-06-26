@@ -4,8 +4,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.osjava.sj.jndi.MemoryContext;
 import org.osjava.sj.loader.JndiLoader;
-import org.osjava.sj.memory.MemoryContext;
 
 import javax.naming.*;
 import javax.sql.DataSource;

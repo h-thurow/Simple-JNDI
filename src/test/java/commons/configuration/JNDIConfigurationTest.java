@@ -4,8 +4,8 @@ import org.apache.commons.configuration.JNDIConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 import org.osjava.sj.SimpleJndi;
+import org.osjava.sj.jndi.MemoryContext;
 import org.osjava.sj.loader.JndiLoader;
-import org.osjava.sj.memory.MemoryContext;
 import org.slf4j.LoggerFactory;
 
 import javax.naming.Context;

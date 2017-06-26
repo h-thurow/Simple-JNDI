@@ -38,7 +38,9 @@
  */
 
 
-package org.osjava.sj.memory;
+package org.osjava.sj;
+
+import org.osjava.sj.jndi.MemoryContext;
 
 import javax.naming.Context;
 import javax.naming.NamingException;

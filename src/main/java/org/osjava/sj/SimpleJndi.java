@@ -33,8 +33,8 @@ package org.osjava.sj;
 
 import org.apache.commons.lang.BooleanUtils;
 import org.jetbrains.annotations.Nullable;
+import org.osjava.StringUtils;
 import org.osjava.sj.loader.JndiLoader;
-import org.osjava.sj.loader.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -107,7 +107,7 @@ public class SimpleJndi {
             if (separator != null && !separator.equals(delimiter)) {
                 delimiter = "\\" + delimiter + "|\\" + separator;
             }
-            String[] contextNames = Utils.split(space, delimiter);
+            String[] contextNames = StringUtils.split(space, delimiter);
             for (String name : contextNames) {
                 ctxt = ctxt.createSubcontext(name);
             }
@@ -139,7 +139,7 @@ public class SimpleJndi {
 
     private InitialContext createInitialContext() throws NamingException {
         if(!env.containsKey(CONTEXT_FACTORY)) {
-            env.put(CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+            env.put(CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
         }
         env.put("java.naming.factory.initial", env.get(CONTEXT_FACTORY) );
         // Hier wird MemoryContextFactory#getInitialContext() gerufen!

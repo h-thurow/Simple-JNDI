@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.osjava.sj.loader.util;
+package org.osjava.sj.loader;
 
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;

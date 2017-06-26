@@ -1,6 +1,7 @@
 package org.osjava.sj.memory;
 
 import org.junit.Test;
+import org.osjava.sj.jndi.MemoryContext;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -16,7 +17,7 @@ public class MemoryContextTest {
     @Test
     public void bindName() throws Exception {
         Hashtable env = new Hashtable();
-//        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+//        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
 //        env.put("jndi.syntax.direction", "left_to_right");
 //        env.put("jndi.syntax.separator", "/");
 //        env.put("org.osjava.sj.jndi.shared", "true");
@@ -35,7 +36,7 @@ public class MemoryContextTest {
             Hashtable env = new Hashtable();
             env.put("jndi.syntax.direction", "left_to_right");
             env.put("jndi.syntax.separator", "/");
-            env.put("java.naming.factory.initial", "org.osjava.sj.memory.MemoryContextFactory");
+            env.put("java.naming.factory.initial", "org.osjava.sj.MemoryContextFactory");
             env.put("org.osjava.sj.jndi.shared", "true");
             ctx = new InitialContext(env);
             final Context sub1 = ctx.createSubcontext("sub1");

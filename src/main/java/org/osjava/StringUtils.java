@@ -29,13 +29,13 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
  */
-// Utils.java
-package org.osjava.sj.loader.util;
+// StringUtils.java
+package org.osjava;
 
 /**
- * The usual Utils class with reusable flotsam
+ * The usual StringUtils class with reusable flotsam
  */
-public class Utils {
+public class StringUtils {
 
     public static String[] split(String str, String delimiter) {
         if (delimiter.length() == 1) { // be downwards compatible

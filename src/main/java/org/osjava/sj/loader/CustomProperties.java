@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.osjava.sj.loader.util;
+package org.osjava.sj.loader;
 
 import java.io.BufferedReader;
 import java.io.IOException;

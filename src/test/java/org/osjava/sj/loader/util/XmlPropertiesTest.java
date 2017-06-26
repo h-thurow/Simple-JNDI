@@ -33,6 +33,7 @@
 package org.osjava.sj.loader.util;
 
 import org.junit.Test;
+import org.osjava.sj.loader.XmlProperties;
 
 import java.io.FileInputStream;
 import java.io.IOException;

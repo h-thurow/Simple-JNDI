@@ -32,6 +32,7 @@
 package org.osjava.sj.loader.util;
 
 import org.junit.Test;
+import org.osjava.StringUtils;
 
 import static org.junit.Assert.assertEquals;
 
@@ -39,9 +40,9 @@ public class ReplaceTest {
 
     @Test
     public void testReplace() {
-        assertEquals("one:two:three", Utils.replace("one--two--three", "--", ":" ) );
-        assertEquals("one:two:", Utils.replace("one--two--", "--", ":" ) );
-        assertEquals(":two:three", Utils.replace("--two--three", "--", ":" ) );
+        assertEquals("one:two:three", StringUtils.replace("one--two--three", "--", ":" ) );
+        assertEquals("one:two:", StringUtils.replace("one--two--", "--", ":" ) );
+        assertEquals(":two:three", StringUtils.replace("--two--three", "--", ":" ) );
     }
 
 }

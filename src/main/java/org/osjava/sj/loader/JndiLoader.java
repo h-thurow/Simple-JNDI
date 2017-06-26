@@ -36,9 +36,9 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.osjava.StringUtils;
 import org.osjava.sj.loader.convert.Converter;
 import org.osjava.sj.loader.convert.ConverterRegistry;
-import org.osjava.sj.loader.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -201,7 +201,7 @@ public class JndiLoader {
         String colonReplace = (String) environment.get(SIMPLE_COLON_REPLACE);
         if (colonReplace != null) {
             if (name.contains(colonReplace)) {
-                name = Utils.replace(name, colonReplace, ":");
+                name = StringUtils.replace(name, colonReplace, ":");
             }
         }
         return name;

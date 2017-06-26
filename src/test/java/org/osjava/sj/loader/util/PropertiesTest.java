@@ -1,6 +1,7 @@
 package org.osjava.sj.loader.util;
 
 import org.junit.Test;
+import org.osjava.sj.loader.CustomProperties;
 
 import java.io.FileInputStream;
 

@@ -62,7 +62,7 @@ public class MemoryContextFactorySharedTest {
         contextEnv = new Hashtable();
         // To be explicit. Not used here.
         contextEnv.put("org.osjava.sj.root", "");
-        contextEnv.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        contextEnv.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
         /* The default is 'flat', which isn't hierarchial and not what I want. */
         contextEnv.put("jndi.syntax.direction", "left_to_right");
         /* Separator is required for non-flat */

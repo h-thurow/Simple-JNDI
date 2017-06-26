@@ -1,7 +1,7 @@
 package org.osjava.sj.loader;
 
 import org.junit.Test;
-import org.osjava.sj.memory.MemoryContext;
+import org.osjava.sj.jndi.MemoryContext;
 
 import javax.naming.Context;
 import javax.naming.Name;
@@ -18,7 +18,7 @@ public class JndiLoaderUnitTest {
     @Test
     public void testGetTypeDefinitionSlashNamespaced() throws Exception {
         Hashtable env = new Hashtable();
-        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
         env.put("jndi.syntax.direction", "left_to_right");
 //        env.put("jndi.syntax.separator", "/");
         env.put(JndiLoader.SIMPLE_DELIMITER, "/");
@@ -40,7 +40,7 @@ public class JndiLoaderUnitTest {
     @Test
     public void testGetTypeDefinitionNotNamespaced() throws Exception {
         Hashtable env = new Hashtable();
-        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
         env.put("jndi.syntax.direction", "left_to_right");
 //        env.put("jndi.syntax.separator", "/");
         env.put(JndiLoader.SIMPLE_DELIMITER, "/");
@@ -58,7 +58,7 @@ public class JndiLoaderUnitTest {
     @Test
     public void testGetTypeDefinitionDotNamespaced() throws Exception {
         Hashtable env = new Hashtable();
-        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
         env.put("jndi.syntax.direction", "left_to_right");
 //        env.put("jndi.syntax.separator", "/");
         env.put(JndiLoader.SIMPLE_DELIMITER, ".");
@@ -87,7 +87,7 @@ public class JndiLoaderUnitTest {
     @Test
     public void testExtractContextDotSeparated() throws Exception {
         Hashtable env = new Hashtable();
-        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
         env.put("jndi.syntax.direction", "left_to_right");
 //        env.put("jndi.syntax.separator", "/");
         env.put(JndiLoader.SIMPLE_DELIMITER, ".");
@@ -101,7 +101,7 @@ public class JndiLoaderUnitTest {
     @Test
     public void testExtractContextSlashSeparated() throws Exception {
         Hashtable env = new Hashtable();
-        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
         env.put("jndi.syntax.direction", "left_to_right");
 //        env.put("jndi.syntax.separator", "/");
         env.put(JndiLoader.SIMPLE_DELIMITER, "/");
@@ -115,7 +115,7 @@ public class JndiLoaderUnitTest {
     @Test
     public void testCreateSubContextsSlashSeparated() throws Exception {
         Hashtable env = new Hashtable();
-        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
         env.put("jndi.syntax.direction", "left_to_right");
         env.put("jndi.syntax.separator", "/"); // Required for MemoryContext
         env.put(JndiLoader.SIMPLE_DELIMITER, "/");
@@ -133,7 +133,7 @@ public class JndiLoaderUnitTest {
     @Test
     public void testExtractContextNotNamespaced() throws Exception {
         Hashtable env = new Hashtable();
-        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
         env.put("jndi.syntax.direction", "left_to_right");
 //        env.put("jndi.syntax.separator", "/");
         env.put(JndiLoader.SIMPLE_DELIMITER, "/");
@@ -146,7 +146,7 @@ public class JndiLoaderUnitTest {
     @Test
     public void testExtractContextNonMatchingSeparator() throws Exception {
         Hashtable env = new Hashtable();
-        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
         env.put("jndi.syntax.direction", "left_to_right");
         //env.put("jndi.syntax.separator", "/");
         env.put(JndiLoader.SIMPLE_DELIMITER, "/");
@@ -159,7 +159,7 @@ public class JndiLoaderUnitTest {
     @Test
     public void extractObjectNameSlash() throws Exception {
         Hashtable env = new Hashtable();
-        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
         env.put("jndi.syntax.direction", "left_to_right");
         //env.put("jndi.syntax.separator", "/");
         env.put(JndiLoader.SIMPLE_DELIMITER, "/");
@@ -175,7 +175,7 @@ public class JndiLoaderUnitTest {
     @Test
     public void extractObjectNameNonMatchingSeparator() throws Exception {
         Hashtable env = new Hashtable();
-        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
         env.put("jndi.syntax.direction", "left_to_right");
         //env.put("jndi.syntax.separator", "/");
         env.put(JndiLoader.SIMPLE_DELIMITER, ".");
@@ -191,7 +191,7 @@ public class JndiLoaderUnitTest {
     @Test
     public void extractTypedProperties() throws Exception {
         Hashtable env = new Hashtable();
-        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
         env.put("jndi.syntax.direction", "left_to_right");
         //env.put("jndi.syntax.separator", "/");
         env.put(JndiLoader.SIMPLE_DELIMITER, "/");
@@ -213,7 +213,7 @@ public class JndiLoaderUnitTest {
     @Test
     public void extractTypedPropertiesWithNamespace() throws Exception {
         Hashtable env = new Hashtable();
-        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
         env.put("jndi.syntax.direction", "left_to_right");
         //env.put("jndi.syntax.separator", "/");
         env.put(JndiLoader.SIMPLE_DELIMITER, "/");
@@ -235,7 +235,7 @@ public class JndiLoaderUnitTest {
     @Test
     public void extractTypedPropertiesWithNamespace2() throws Exception {
         Hashtable env = new Hashtable();
-        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
         env.put("jndi.syntax.direction", "left_to_right");
         //env.put("jndi.syntax.separator", "/");
         env.put(JndiLoader.SIMPLE_DELIMITER, "/");
@@ -257,7 +257,7 @@ public class JndiLoaderUnitTest {
     @Test
     public void extractTypedPropertiesSimpleTypeWithNamespace() throws Exception {
         Hashtable env = new Hashtable();
-        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
         env.put("jndi.syntax.direction", "left_to_right");
         //env.put("jndi.syntax.separator", "/");
         env.put(JndiLoader.SIMPLE_DELIMITER, "/");
@@ -279,7 +279,7 @@ public class JndiLoaderUnitTest {
     @Test
     public void extractTypedPropertiesSimpleTypeWithoutNamespace() throws Exception {
         Hashtable env = new Hashtable();
-        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
         env.put("jndi.syntax.direction", "left_to_right");
         //env.put("jndi.syntax.separator", "/");
         env.put(JndiLoader.SIMPLE_DELIMITER, "/");

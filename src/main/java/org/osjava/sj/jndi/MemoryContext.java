@@ -38,9 +38,8 @@
  */
 
 
-package org.osjava.sj.memory;
+package org.osjava.sj.jndi;
 
-import org.osjava.sj.jndi.AbstractContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

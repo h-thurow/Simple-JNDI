@@ -31,7 +31,7 @@
  */
 // OrderedSet.java
 //package com.generationjava.collections;
-package org.osjava.sj.loader.util;
+package org.osjava.sj.loader;
 
 import java.util.*;
 

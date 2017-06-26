@@ -59,7 +59,7 @@ public class JndiLoaderTest {
     public void setUp() {
         Hashtable env = new Hashtable();
         // Werte aus jndi.properties überschreiben
-        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
         /* The default is 'flat', which isn't hierarchial and not what I want. */
         env.put("jndi.syntax.direction", "left_to_right");
         /* Separator is required for non-flat */
@@ -94,7 +94,7 @@ public class JndiLoaderTest {
     public void testProperties() {
         Hashtable env = new Hashtable();
         // Werte aus jndi.properties überschreiben
-        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
         /* The default is 'flat', which isn't hierarchial and not what I want. */
         env.put("jndi.syntax.direction", "left_to_right");
         /* Separator is required for non-flat */
@@ -120,7 +120,7 @@ public class JndiLoaderTest {
     public void testDirectory() {
         Hashtable env = new Hashtable();
         // Werte aus jndi.properties überschreiben
-        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
         /* The default is 'flat', which isn't hierarchial and not what I want. */
         env.put("jndi.syntax.direction", "left_to_right");
         /* Separator is required for non-flat */
@@ -145,7 +145,7 @@ public class JndiLoaderTest {
     public void testDefaultFile() {
         Hashtable env = new Hashtable();
         // Werte aus jndi.properties überschreiben
-        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
         /* The default is 'flat', which isn't hierarchial and not what I want. */
         env.put("jndi.syntax.direction", "left_to_right");
         /* Separator is required for non-flat */
@@ -172,7 +172,7 @@ public class JndiLoaderTest {
     public void testFileAsRoot() throws Exception {
         Hashtable env = new Hashtable();
         // Werte aus jndi.properties überschreiben
-        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
         /* The default is 'flat', which isn't hierarchial and not what I want. */
         env.put("jndi.syntax.direction", "left_to_right");
         /* Separator is required for non-flat */
@@ -190,7 +190,7 @@ public class JndiLoaderTest {
         String dsString = "bing::::foofoo::::Boo";
         Hashtable env = new Hashtable();
         // Werte aus jndi.properties überschreiben
-        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
         /* The default is 'flat', which isn't hierarchial and not what I want. */
         env.put("jndi.syntax.direction", "left_to_right");
         /* Separator is required for non-flat */
@@ -220,7 +220,7 @@ public class JndiLoaderTest {
         String dsString = "org.gjt.mm.mysql.Driver::::jdbc:mysql://127.0.0.1/tmp::::sa";
         Hashtable env = new Hashtable();
         // Werte aus jndi.properties überschreiben
-        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
         /* The default is 'flat', which isn't hierarchial and not what I want. */
         env.put("jndi.syntax.direction", "left_to_right");
         /* Separator is required for non-flat */
@@ -245,7 +245,7 @@ public class JndiLoaderTest {
     public void testBoolean() {
         Hashtable env = new Hashtable();
         // Werte aus jndi.properties überschreiben
-        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
         /* The default is 'flat', which isn't hierarchial and not what I want. */
         env.put("jndi.syntax.direction", "left_to_right");
         /* Separator is required for non-flat */
@@ -268,7 +268,7 @@ public class JndiLoaderTest {
     public void testDate() {
         Hashtable env = new Hashtable();
         // Werte aus jndi.properties überschreiben
-        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
         /* The default is 'flat', which isn't hierarchial and not what I want. */
         env.put("jndi.syntax.direction", "left_to_right");
         /* Separator is required for non-flat */
@@ -300,7 +300,7 @@ public class JndiLoaderTest {
     public void testConverterPlugin() {
         Hashtable env = new Hashtable();
         // Werte aus jndi.properties überschreiben
-        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
         /* The default is 'flat', which isn't hierarchial and not what I want. */
         env.put("jndi.syntax.direction", "left_to_right");
         /* Separator is required for non-flat */
@@ -327,7 +327,7 @@ public class JndiLoaderTest {
     public void testBeanConverter() {
         Hashtable env = new Hashtable();
         // Werte aus jndi.properties überschreiben
-        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
         /* The default is 'flat', which isn't hierarchial and not what I want. */
         env.put("jndi.syntax.direction", "left_to_right");
         /* Separator is required for non-flat */
@@ -356,7 +356,7 @@ public class JndiLoaderTest {
     public void testDbcp() throws IOException, NamingException {
         Hashtable env = new Hashtable();
         // Werte aus jndi.properties überschreiben
-        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
         /* The default is 'flat', which isn't hierarchial and not what I want. */
         env.put("jndi.syntax.direction", "left_to_right");
         /* Separator is required for non-flat */
@@ -382,7 +382,7 @@ public class JndiLoaderTest {
     public void testDbcpPooltest() throws IOException, NamingException {
         Hashtable env = new Hashtable();
         // Werte aus jndi.properties überschreiben
-        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
         /* The default is 'flat', which isn't hierarchial and not what I want. */
         env.put("jndi.syntax.direction", "left_to_right");
         /* Separator is required for non-flat */
@@ -408,7 +408,7 @@ public class JndiLoaderTest {
     public void testDbcp1() throws IOException, NamingException {
         Hashtable env = new Hashtable();
         // Werte aus jndi.properties überschreiben
-        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
         /* The default is 'flat', which isn't hierarchial and not what I want. */
         env.put("jndi.syntax.direction", "left_to_right");
         /* Separator is required for non-flat */
@@ -430,7 +430,7 @@ public class JndiLoaderTest {
     public void testDbcp2() throws IOException, NamingException {
         Hashtable env = new Hashtable();
         // Werte aus jndi.properties überschreiben
-        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
         /* The default is 'flat', which isn't hierarchial and not what I want. */
         env.put("jndi.syntax.direction", "left_to_right");
         /* Separator is required for non-flat */
@@ -452,7 +452,7 @@ public class JndiLoaderTest {
     public void testDbcp3() throws IOException, NamingException {
         Hashtable env = new Hashtable();
         // Werte aus jndi.properties überschreiben
-        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
         /* The default is 'flat', which isn't hierarchial and not what I want. */
         env.put("jndi.syntax.direction", "left_to_right");
         /* Separator is required for non-flat */
@@ -474,7 +474,7 @@ public class JndiLoaderTest {
     public void testDbcp4() throws IOException, NamingException {
         Hashtable env = new Hashtable();
         // Werte aus jndi.properties überschreiben
-        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
         /* The default is 'flat', which isn't hierarchial and not what I want. */
         env.put("jndi.syntax.direction", "left_to_right");
         /* Separator is required for non-flat */
@@ -496,7 +496,7 @@ public class JndiLoaderTest {
     public void testMultiValueAttributeIntegers() throws Exception {
         Hashtable env = new Hashtable();
         // Werte aus jndi.properties überschreiben
-        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
         /* The default is 'flat', which isn't hierarchial and not what I want. */
         env.put("jndi.syntax.direction", "left_to_right");
         /* Separator is required for non-flat */
@@ -513,7 +513,7 @@ public class JndiLoaderTest {
     public void testMultiValueAttributeNoType() throws Exception {
         Hashtable env = new Hashtable();
         // Werte aus jndi.properties überschreiben
-        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
         /* The default is 'flat', which isn't hierarchial and not what I want. */
         env.put("jndi.syntax.direction", "left_to_right");
         /* Separator is required for non-flat */
@@ -533,7 +533,7 @@ public class JndiLoaderTest {
     public void testMultiValueAttributeBooleans() throws Exception {
         Hashtable env = new Hashtable();
         // Werte aus jndi.properties überschreiben
-        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
         /* The default is 'flat', which isn't hierarchial and not what I want. */
         env.put("jndi.syntax.direction", "left_to_right");
         /* Separator is required for non-flat */
@@ -554,7 +554,7 @@ public class JndiLoaderTest {
     public void testMultiValueAttributeCharacters() throws Exception {
         Hashtable env = new Hashtable();
         // Werte aus jndi.properties überschreiben
-        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
         /* The default is 'flat', which isn't hierarchial and not what I want. */
         env.put("jndi.syntax.direction", "left_to_right");
         /* Separator is required for non-flat */
@@ -579,7 +579,7 @@ public class JndiLoaderTest {
     public void testMultiValueAttributeShorts() throws Exception {
         Hashtable env = new Hashtable();
         // Werte aus jndi.properties überschreiben
-        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
         /* The default is 'flat', which isn't hierarchial and not what I want. */
         env.put("jndi.syntax.direction", "left_to_right");
         /* Separator is required for non-flat */
@@ -597,7 +597,7 @@ public class JndiLoaderTest {
     public void testMultiValueAttributeDoubles() throws Exception {
         Hashtable env = new Hashtable();
         // Werte aus jndi.properties überschreiben
-        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
         /* The default is 'flat', which isn't hierarchial and not what I want. */
         env.put("jndi.syntax.direction", "left_to_right");
         /* Separator is required for non-flat */
@@ -617,7 +617,7 @@ public class JndiLoaderTest {
     public void testMultiValueAttributeMultipleContexts() throws Exception {
         Hashtable env = new Hashtable();
         // Werte aus jndi.properties überschreiben
-        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory");
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
         /* The default is 'flat', which isn't hierarchial and not what I want. */
         env.put("jndi.syntax.direction", "left_to_right");
         /* Separator is required for non-flat */

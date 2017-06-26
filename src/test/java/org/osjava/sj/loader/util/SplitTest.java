@@ -32,6 +32,7 @@
 package org.osjava.sj.loader.util;
 
 import org.junit.Test;
+import org.osjava.StringUtils;
 
 import static org.junit.Assert.assertEquals;
 
@@ -39,10 +40,10 @@ public class SplitTest {
 
     @Test
     public void testSplit() {
-        assertArrayEquals("", new String[] { "config", "one", "two"}, Utils.split("config.one.two", ".") );
-        assertArrayEquals("", new String[] { "one", "two", "three"}, Utils.split("one.two.three", ".") );
-        assertArrayEquals("", new String[] { "one"}, Utils.split("one", ".") );
-        assertArrayEquals("", new String[] { ""}, Utils.split("", ".") );
+        assertArrayEquals("", new String[] { "config", "one", "two"}, StringUtils.split("config.one.two", ".") );
+        assertArrayEquals("", new String[] { "one", "two", "three"}, StringUtils.split("one.two.three", ".") );
+        assertArrayEquals("", new String[] { "one"}, StringUtils.split("one", ".") );
+        assertArrayEquals("", new String[] { ""}, StringUtils.split("", ".") );
     }
 
     private void assertArrayEquals(String message, String[] array1, String[] array2) {
