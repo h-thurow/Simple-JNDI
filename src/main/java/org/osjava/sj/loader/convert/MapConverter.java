@@ -36,7 +36,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 
-public class MapConverter implements Converter {
+public class MapConverter implements ConverterIF {
 
     public Object convert(Properties properties, String type) {
         if("java.util.Map".equals(type)) {

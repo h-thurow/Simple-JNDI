@@ -32,57 +32,6 @@
 
 package org.osjava.sj.loader;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-
-
-/**
- * Adds support for multi-line statements.
- */
 public class CustomProperties extends AbstractProperties {
-
-    @Override
-    public synchronized void load(InputStream in) throws IOException {
-        try {
-            BufferedReader reader = new BufferedReader( new InputStreamReader(in) );
-            String line;
-            String nextLine = null;
-            while( (line = reader.readLine()) != null) {
-
-                // we may already be on a multi-line statement.
-                if(nextLine != null) {
-                    line = nextLine + line;
-                    nextLine = null;
-                }
-
-                line = line.trim();
-                if(line.endsWith("\\")) {
-                    nextLine = line;
-                    continue;
-                }
-
-                int idx = line.indexOf('#');
-                // remove comment
-                if(idx != -1) {
-                    line = line.substring(0,idx);
-                }
-                // split equals sign
-                idx = line.indexOf('=');
-                if(idx != -1) {
-                    String value = line.substring(idx + 1);
-                    value = replaceQuotes(value);
-                    this.setProperty(line.substring(0,idx), value);
-                } else {
-                    // blank line, or just a bad line
-                    // we ignore it
-                }
-            }
-            reader.close();
-        } catch(IOException ioe) {
-            ioe.printStackTrace();
-        }
-    }
 
 }

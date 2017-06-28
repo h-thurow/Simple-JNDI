@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Properties;
 
-public class DataSourceConverter implements Converter {
+public class DataSourceConverter implements ConverterIF {
 
     private static Logger LOGGER = LoggerFactory.getLogger(DataSourceConverter.class);
 

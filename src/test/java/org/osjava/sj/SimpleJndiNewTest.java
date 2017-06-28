@@ -181,18 +181,18 @@ public class SimpleJndiNewTest {
 
             final String directory1_file1_name = (String) ctx1.lookup(
                     "java:comp/env/directory1/directory1_file1/name");
-            assert "file1inDirectory1".equals(directory1_file1_name);
+            assertEquals("file1inDirectory1", directory1_file1_name);
 
             final String directory1_file1_withBlanks = (String) ctx1.lookup(
                     "java:comp/env/directory1/directory1_file1/withBlanks");
-            assert "Mit blanks".equals(directory1_file1_withBlanks);
+            assertEquals("\"Mit blanks\"", directory1_file1_withBlanks);
 
             final String directory1_file1_singleQuoted = (String) ctx1.lookup(
                     "java:comp/env/directory1/directory1_file1/singleQuoted");
-            assert "Mit blanks".equals(directory1_file1_singleQuoted);
+            assertEquals("'Mit blanks'", directory1_file1_singleQuoted);
 
-            final String multiWordsInQuotes = (String) ctx1.lookup("java:comp/env/directory1/directory1_file1/multiWordsWithoutQuotes");
-            assertEquals("first second third", multiWordsInQuotes);
+            final String multiWordsWithoutQuotes = (String) ctx1.lookup("java:comp/env/directory1/directory1_file1/multiWordsWithoutQuotes");
+            assertEquals("first second third", multiWordsWithoutQuotes);
         }
         finally {
             if (ctx1 != null) {
@@ -824,7 +824,7 @@ public class SimpleJndiNewTest {
             ctx1 = new InitialContext(env);
             final String infoCmd = (String) ctx1.lookup("IMAGE_INFO_CMD");
             assertEquals(". /.profile_opix;$OCHOME/opt/Python-2.7/bin/python $OCHOME/opt/image_processor/scripts/imageinfo.py", infoCmd);
-            assertEquals("'quotes' \"inside\"", ctx1.lookup("quotesInside"));
+            assertEquals("\"'quotes' \"inside\"\"", ctx1.lookup("quotesInside"));
             List<Boolean> booleans =
                     (List<Boolean>) ctx1.lookup("booleans/person/myBooleans");
             assertEquals(true, booleans.get(0));
@@ -858,7 +858,7 @@ public class SimpleJndiNewTest {
 
             final String infoCmd = (String) ctx1.lookup("fileAsRoot/IMAGE_INFO_CMD");
             assertEquals(". /.profile_opix;$OCHOME/opt/Python-2.7/bin/python $OCHOME/opt/image_processor/scripts/imageinfo.py", infoCmd);
-            assertEquals("'quotes' \"inside\"", ctx1.lookup("directory1_file1/quotesInside"));
+            assertEquals("\"'quotes' \"inside\"\"", ctx1.lookup("directory1_file1/quotesInside"));
             List<Boolean> booleans =
                     (List<Boolean>) ctx1.lookup("booleans/person/myBooleans");
             assertEquals(true, booleans.get(0));

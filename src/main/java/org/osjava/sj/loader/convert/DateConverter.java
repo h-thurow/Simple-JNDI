@@ -36,7 +36,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Properties;
 
-public class DateConverter implements Converter {
+public class DateConverter implements ConverterIF {
 
     public Object convert(Properties properties, String type) {
         String format = properties.getProperty("format");

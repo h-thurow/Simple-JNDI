@@ -37,7 +37,7 @@ import java.util.Map;
 
 public class ConverterRegistry {
 
-    private static Converter NULL_CONVERTER = new NullConverter();
+    private static ConverterIF NULL_CONVERTER = new NullConverter();
 
     private Map converters = new HashMap();
 
@@ -56,9 +56,9 @@ public class ConverterRegistry {
         this.converters.put( "java.lang.Character", new CharacterConverter());
     }
 
-    public Converter getConverter(String type) {
+    public ConverterIF getConverter(String type) {
         if(this.converters.containsKey(type)) {
-            return (Converter) converters.get(type);
+            return (ConverterIF) converters.get(type);
         }
         return NULL_CONVERTER;
     }

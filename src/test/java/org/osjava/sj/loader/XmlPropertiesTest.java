@@ -30,10 +30,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.osjava.sj.loader.util;
+package org.osjava.sj.loader;
 
 import org.junit.Test;
-import org.osjava.sj.loader.XmlProperties;
 
 import java.io.FileInputStream;
 import java.io.IOException;

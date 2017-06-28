@@ -34,7 +34,7 @@ package org.osjava.sj.loader.convert;
 
 import java.util.Properties;
 
-public class PiConverter implements Converter {
+public class PiConverter implements ConverterIF {
 
     public Object convert(Properties properties, String type) {
         Object value = properties.get("valueToConvert");

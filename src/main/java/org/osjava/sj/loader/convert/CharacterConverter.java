@@ -34,7 +34,7 @@ package org.osjava.sj.loader.convert;
 
 import java.util.Properties;
 
-public class CharacterConverter implements Converter {
+public class CharacterConverter implements ConverterIF {
 
     public Object convert(Properties properties, String type) {
         String value = properties.getProperty("valueToConvert");

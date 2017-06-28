@@ -52,7 +52,7 @@ import java.util.Properties;
  * Foo.type=java.lang.Integer
  * </pre>
  */
-public class ConstructorConverter implements Converter {
+public class ConstructorConverter implements ConverterIF {
 
     Logger LOGGER = LoggerFactory.getLogger(ConstructorConverter.class);
 

@@ -118,7 +118,7 @@ public class SimpleJndiTest {
         assertEquals( "13", ctxt.lookup("testini.block1.value") );
         assertEquals( "pears", ctxt.lookup("testini.block2.apple") );
         assertEquals( "stairs", ctxt.lookup("testini.block2.orange") );
-        assertEquals("multiple words value", ctxt.lookup("testini.block2.doubleQuotes"));
+        assertEquals("\"multiple words value\"", ctxt.lookup("testini.block2.doubleQuotes"));
     }
 
     @Test

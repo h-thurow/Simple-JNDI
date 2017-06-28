@@ -53,7 +53,7 @@ import java.util.Properties;
  * Foo.converter=org.osjava.sj.loader.convert.BeanConverter
  * </pre>
  */
-public class BeanConverter implements Converter {
+public class BeanConverter implements ConverterIF {
 
     private static Logger LOGGER = LoggerFactory.getLogger(BeanConverter.class);
 

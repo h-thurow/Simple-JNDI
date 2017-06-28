@@ -29,20 +29,35 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package org.osjava.sj.loader.util;
+package org.osjava.sj;
 
 import org.junit.Test;
 import org.osjava.StringUtils;
 
 import static org.junit.Assert.assertEquals;
 
-public class ReplaceTest {
+public class StringUtilsTest {
 
     @Test
     public void testReplace() {
         assertEquals("one:two:three", StringUtils.replace("one--two--three", "--", ":" ) );
         assertEquals("one:two:", StringUtils.replace("one--two--", "--", ":" ) );
         assertEquals(":two:three", StringUtils.replace("--two--three", "--", ":" ) );
+    }
+
+    @Test
+    public void testSplit() {
+        assertArrayEquals("", new String[] { "config", "one", "two"}, StringUtils.split("config.one.two", ".") );
+        assertArrayEquals("", new String[] { "one", "two", "three"}, StringUtils.split("one.two.three", ".") );
+        assertArrayEquals("", new String[] { "one"}, StringUtils.split("one", ".") );
+        assertArrayEquals("", new String[] { ""}, StringUtils.split("", ".") );
+    }
+
+    private void assertArrayEquals(String message, String[] array1, String[] array2) {
+        assertEquals(message+" - Length not equal ", array1.length, array2.length);
+        for(int i=0; i<array1.length; i++) {
+            assertEquals(message+" - array[" + i + "] element not equal ", array1[i], array2[i]);
+        }
     }
 
 }

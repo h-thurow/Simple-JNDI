@@ -33,7 +33,6 @@
 package org.osjava.sj.loader;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.*;
 
@@ -42,8 +41,6 @@ import java.util.*;
  */
 public abstract class AbstractProperties extends Properties {
 
-    private static final String doubleQuote = "\"";
-    private static final String singleQuote = "'";
     private String delimiter = ".";
     // our index for the ordering
     protected ArrayList index = new ArrayList();
@@ -57,9 +54,6 @@ public abstract class AbstractProperties extends Properties {
     public AbstractProperties(Properties props) {
         super(props);
     }
-
-    @Override
-    public abstract void load(InputStream in) throws IOException;
 
     public void setDelimiter(String delimiter) {
         this.delimiter = delimiter;
@@ -129,16 +123,6 @@ public abstract class AbstractProperties extends Properties {
     @Override
     public void store(OutputStream outstrm, String header) throws IOException {
         super.store(outstrm,header);
-    }
-
-    protected String replaceQuotes(String value) {
-        if (value.startsWith(doubleQuote)) {
-            value = replace(value, doubleQuote);
-        }
-        else if (value.startsWith(singleQuote)){
-            value = replace(value, singleQuote);
-        }
-        return value;
     }
 
     private String replace(String stringValue, String doubleQuote) {

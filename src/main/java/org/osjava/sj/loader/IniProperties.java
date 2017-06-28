@@ -84,7 +84,6 @@ public class IniProperties extends AbstractProperties {
                     // semicolon, etc.). The standard Windows function GetPrivateProfileString
                     // supports this, and will remove quotation marks that surround the values.
                     // https://en.wikipedia.org/wiki/INI_file
-                    value = replaceQuotes(value);
                     if("".equals(block)) {
                         this.setProperty(line.substring(0,idx), value);
                     } else {

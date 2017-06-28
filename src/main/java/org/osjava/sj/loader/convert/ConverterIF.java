@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005, Henri Yandell
+ * Copyright (c) 2005, Henri Yandell
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or 
@@ -29,28 +29,30 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package org.osjava.sj.loader.util;
 
-import org.junit.Test;
-import org.osjava.StringUtils;
+package org.osjava.sj.loader.convert;
 
-import static org.junit.Assert.assertEquals;
+import java.util.Properties;
 
-public class SplitTest {
+public interface ConverterIF {
 
-    @Test
-    public void testSplit() {
-        assertArrayEquals("", new String[] { "config", "one", "two"}, StringUtils.split("config.one.two", ".") );
-        assertArrayEquals("", new String[] { "one", "two", "three"}, StringUtils.split("one.two.three", ".") );
-        assertArrayEquals("", new String[] { "one"}, StringUtils.split("one", ".") );
-        assertArrayEquals("", new String[] { ""}, StringUtils.split("", ".") );
-    }
-
-    private void assertArrayEquals(String message, String[] array1, String[] array2) {
-        assertEquals(message+" - Length not equal ", array1.length, array2.length);
-        for(int i=0; i<array1.length; i++) {
-            assertEquals(message+" - array[" + i + "] element not equal ", array1[i], array2[i]);
-        }
-    }
+    /**
+     * <p>Turn a String-based tree-structure into an Object. Additionally 
+     * the type of object desired is known. This is usually a Java 
+     * class, but this is not mandatory. </p>
+     *
+     * <p>The properties structure is located at the point of the 
+     * lookup key, so if the code asked for a com.example.Foo object, 
+     * the properties structure would be everything below Foo.</p>
+     *
+     * <p>To get at the value of com.example.Foo itself, request the 
+     * empty string, "".</p>
+     *
+     * <p>TODO: No way for a converter to know the delimiter-type. </p>
+     *
+     * @param properties a Properties data structure
+     * @param type a String representation of object desired
+     */
+    Object convert(Properties properties, String type);
 
 }

@@ -37,7 +37,7 @@ import org.apache.commons.lang.BooleanUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.osjava.StringUtils;
-import org.osjava.sj.loader.convert.Converter;
+import org.osjava.sj.loader.convert.ConverterIF;
 import org.osjava.sj.loader.convert.ConverterRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -515,25 +515,25 @@ public class JndiLoader {
 
     private static Object convert(Properties properties) {
         String type = properties.getProperty("type");
+        Object obj = properties.get("valueToConvert");
+
         String converterClassName = properties.getProperty("converter");
         if (converterClassName != null) {
-            try {
-                Class converterClass = Class.forName(converterClassName);
-                Converter converter = (Converter) converterClass.newInstance();
-                return converter.convert(properties, type);
-            }
-            catch (ClassNotFoundException cnfe) {
-                throw new RuntimeException("Unable to find class: " + converterClassName, cnfe);
-            }
-            catch (IllegalAccessException ie) {
-                throw new RuntimeException("Unable to access class: " + type, ie);
-            }
-            catch (InstantiationException ie) {
-                throw new RuntimeException("Unable to create Converter " + type + " via empty constructor. ", ie);
-            }
+            obj = callConverter(properties, type, converterClassName);
         }
+        else {
+            obj = processType(properties, type, obj);
+        }
+        return obj;
 
-        Converter converter = converterRegistry.getConverter(type);
+    }
+
+    private static Object processType(Properties properties, String type, Object obj) {
+        /*
+        * TODO Hier muss NamingManager#getObjectInstance() gerufen werden mit dem Namen der zu verwendenden ObjectFactory und einem Reference-Objekt mit den properties.
+        * type=javax.sql.DataSource verhält sich abwärtskompatibel, sollte die DataSource aber über org.apache.commons.dbcp.BasicDataSourceFactory anfordern?
+        */
+        ConverterIF converter = converterRegistry.getConverter(type);
         if(converter != null) {
             final Object values = properties.get("valueToConvert");
             if (values instanceof List) {
@@ -544,14 +544,32 @@ public class JndiLoader {
                     props.setProperty("valueToConvert", val);
                     converted.add(converter.convert(props, type));
                 }
-                return converted;
+                obj = converted;
             }
             else {
-                return converter.convert(properties, type);
+                obj = converter.convert(properties, type);
             }
         }
-        return properties.get("valueToConvert");
+        return obj;
+    }
 
+    private static Object callConverter(Properties properties, String type, String converterClassName) {
+        Object obj;
+        try {
+            Class converterClass = Class.forName(converterClassName);
+            ConverterIF converter = (ConverterIF) converterClass.newInstance();
+            obj = converter.convert(properties, type);
+        }
+        catch (ClassNotFoundException cnfe) {
+            throw new RuntimeException("Unable to find class: " + converterClassName, cnfe);
+        }
+        catch (IllegalAccessException ie) {
+            throw new RuntimeException("Unable to access class: " + type, ie);
+        }
+        catch (InstantiationException ie) {
+            throw new RuntimeException("Unable to create Converter " + type + " via empty constructor. ", ie);
+        }
+        return obj;
     }
 
     private static String getLastElement( String str, String delimiter ) {
