@@ -70,12 +70,12 @@ public class SimpleContextFactory implements InitialContextFactory {
     @Override
     public Context getInitialContext(Hashtable environment) throws NamingException {
         final Boolean isShared = Boolean.valueOf(
-                (String) environment.get(SimpleJndi.SIMPLE_SHARED));
+                (String) environment.get(SimpleJndi.SHARED));
         if (!isShared) {
             return new DelimiterConvertingContext(new SimpleJndi(environment).loadRoot());
         }
         else {
-            final String root = (String) environment.get(SimpleJndi.SIMPLE_ROOT);
+            final String root = (String) environment.get(SimpleJndi.ROOT);
             final Context ctx = contextsByRoot.get(root);
             if (ctx != null) {
                 return ctx;

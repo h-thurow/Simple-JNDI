@@ -46,11 +46,11 @@ import java.util.Hashtable;
 
 public class SimpleJndi {
 
-    public static final String SIMPLE_ROOT = "org.osjava.sj.root";
+    public static final String ROOT = "org.osjava.sj.root";
     public static final String CONTEXT_FACTORY = "org.osjava.sj.factory";
     /** Option for top level space (ENC), e.g. "java:comp/env". */
-    public static final String SIMPLE_SPACE = "org.osjava.sj.space";
-    public static final String SIMPLE_SHARED = "org.osjava.sj.jndi.shared";
+    public static final String ENC = "org.osjava.sj.space";
+    public static final String SHARED = "org.osjava.sj.jndi.shared";
     public static final String JNDI_SYNTAX_SEPARATOR = "jndi.syntax.separator";
     private static final Logger logger = LoggerFactory.getLogger(SimpleJndi.class);
     public static final String FILENAME_TO_CONTEXT = "org.osjava.sj.filenameToContext";
@@ -100,7 +100,7 @@ public class SimpleJndi {
      * simulates the JNDI environment of Tomcat.
      */
     private Context createENC(Hashtable env, Context ctxt) throws NamingException {
-        String space = (String) env.get(SIMPLE_SPACE);
+        String space = (String) env.get(ENC);
         if(space != null) {
             String delimiter = (String) env.get(JndiLoader.SIMPLE_DELIMITER);
             final Object separator = env.get(JNDI_SYNTAX_SEPARATOR);
@@ -117,9 +117,9 @@ public class SimpleJndi {
 
     @Nullable
     private String getRoot(Hashtable env) {
-        String root = (String) env.get(SIMPLE_ROOT);
+        String root = (String) env.get(ROOT);
 //        if(root == null) {
-//            throw new IllegalStateException("Property "+SIMPLE_ROOT+" is mandatory. ");
+//            throw new IllegalStateException("Property "+ROOT+" is mandatory. ");
 //        }
         if(root != null && root.startsWith("file://")) {
             root = root.substring("file://".length());
@@ -151,10 +151,10 @@ public class SimpleJndi {
      * {@link org.osjava.sj.jndi.AbstractContext#AbstractContext(Hashtable)}.
      */
     private void overwriteEnvironmentWithSystemProperties() {
-        overwriteFromSystemProperty(SIMPLE_ROOT);
-        overwriteFromSystemProperty(SIMPLE_SPACE);
+        overwriteFromSystemProperty(ROOT);
+        overwriteFromSystemProperty(ENC);
         overwriteFromSystemProperty(CONTEXT_FACTORY);
-        overwriteFromSystemProperty(SIMPLE_SHARED);
+        overwriteFromSystemProperty(SHARED);
         overwriteFromSystemProperty(JNDI_SYNTAX_SEPARATOR);
         overwriteFromSystemProperty(FILENAME_TO_CONTEXT);
         overwriteFromSystemProperty(JndiLoader.SIMPLE_DELIMITER);

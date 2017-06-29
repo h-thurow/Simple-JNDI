@@ -23,9 +23,9 @@ public class SimpleJndiNewTest {
 
     @Before
     public void setUp() throws Exception {
-        System.clearProperty(SimpleJndi.SIMPLE_ROOT);
-        System.clearProperty(SimpleJndi.SIMPLE_SHARED);
-        System.clearProperty(SimpleJndi.SIMPLE_SPACE);
+        System.clearProperty(SimpleJndi.ROOT);
+        System.clearProperty(SimpleJndi.SHARED);
+        System.clearProperty(SimpleJndi.ENC);
         System.clearProperty(SimpleJndi.JNDI_SYNTAX_SEPARATOR);
         System.clearProperty(SimpleJndi.FILENAME_TO_CONTEXT);
         System.clearProperty(JndiLoader.SIMPLE_COLON_REPLACE);
