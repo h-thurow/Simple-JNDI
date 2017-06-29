@@ -14,7 +14,7 @@ public class CustomPropertiesTest {
      * "Note that single-quotes or double-quotes are considered part of the string." See <a href=https://en.wikipedia.org/wiki/.properties>Wikipedia .properties</a>.
      */
     @Test
-    public void testReplaceQuotes() throws Exception {
+    public void quotes() throws Exception {
         final CustomProperties properties = new CustomProperties();
         final FileInputStream stream = new FileInputStream(
                 "src/test/resources/roots/shareContext1/directory1/directory1_file1.properties");
@@ -38,6 +38,41 @@ public class CustomPropertiesTest {
         in.reset();
         props.load(in);
         assertEquals("value", props.getProperty("key"));
+    }
+
+    /**
+     * "Trailing space is significant and presumed to be trimmed as required by the consumer." See <a href=https://en.wikipedia.org/wiki/.properties>Wikipedia .properties</a>.
+     */
+    @Test
+    public void trailingWhitespace() throws Exception {
+        ByteArrayInputStream in = new ByteArrayInputStream("key = value   ".getBytes());
+
+        Properties origProps = new Properties();
+        origProps.load(in);
+        assertEquals("value   ", origProps.getProperty("key"));
+
+        CustomProperties props = new CustomProperties();
+        in.reset();
+        props.load(in);
+        assertEquals("value   ", props.getProperty("key"));
+    }
+
+    /**
+     * "there is no need to preceede the value characters =, and : by a backslash." See <a href=https://en.wikipedia.org/wiki/.properties>Wikipedia .properties</a>.
+     *
+     */
+    @Test
+    public void colonSeparated() throws Exception {
+        ByteArrayInputStream in = new ByteArrayInputStream("key : value: 1".getBytes());
+
+        Properties origProps = new Properties();
+        origProps.load(in);
+        assertEquals("value: 1", origProps.getProperty("key"));
+
+        CustomProperties props = new CustomProperties();
+        in.reset();
+        props.load(in);
+        assertEquals("value: 1", props.getProperty("key"));
     }
 
     @Test
