@@ -214,7 +214,7 @@ public class JndiLoader {
     // TODO Make package-private
     public Properties toProperties(File file) throws IOException {
 //        System.err.println("LOADING: "+file);
-        AbstractProperties p;
+        SJProperties p;
 
         if(file.getName().endsWith(".xml")) {
             p = new XmlProperties();

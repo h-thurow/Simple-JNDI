@@ -45,7 +45,7 @@ import java.util.Properties;
 /**
  * Loads properties using the DOM API from an InputStream containing XML
  */
-public class XmlProperties extends AbstractProperties {
+public class XmlProperties extends SJProperties {
 
     public XmlProperties() {
         super();

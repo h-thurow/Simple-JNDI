@@ -98,6 +98,30 @@ public class CustomPropertiesTest {
         origProps.load(in);
         String expected = "first line \n     second line";
         assertEquals(expected, origProps.getProperty("key"));
+
+        CustomProperties props = new CustomProperties();
+        in.reset();
+        props.load(in);
+        assertEquals(expected, props.getProperty("key"));
+    }
+
+    /**
+     * "Comment lines in .properties files are denoted by the number sign (#) or the exclamation mark (!) as the first non blank character, in which all remaining text on that line is ignored." See https://en.wikipedia.org/wiki/.properties>Wikipedia .properties.
+     */
+    @Test
+    public void comments() throws Exception {
+        String multiLine = "first line \\n     second line\n# comment \n! comment";
+        ByteArrayInputStream in = new ByteArrayInputStream(("key = " + multiLine).getBytes());
+
+        Properties origProps = new Properties();
+        origProps.load(in);
+        String expected = "first line \n     second line";
+        assertEquals(expected, origProps.getProperty("key"));
+
+        CustomProperties props = new CustomProperties();
+        in.reset();
+        props.load(in);
+        assertEquals(expected, props.getProperty("key"));
     }
 
     /**
@@ -106,7 +130,7 @@ public class CustomPropertiesTest {
      * "Comment lines in .properties files are denoted by the number sign (#) or the exclamation mark (!) as the first non blank character, in which all remaining text on that line is ignored. The backwards slash is used to escape a character." See https://en.wikipedia.org/wiki/.properties>Wikipedia .properties.
      */
     @Test
-    public void hashInValue() throws Exception {
+    public void exclamationMarkInValue() throws Exception {
         ByteArrayInputStream in = new ByteArrayInputStream("key = value#with#hash".getBytes());
         Properties origProps = new Properties();
         origProps.load(in);

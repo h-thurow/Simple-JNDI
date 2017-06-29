@@ -32,27 +32,30 @@
 
 package org.osjava.sj.loader;
 
-import java.io.IOException;
-import java.io.OutputStream;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.*;
 
 /**
  * To extract configuration from different file formats, e. g. .xml and .ini files, and not only from property files.
  */
-public abstract class AbstractProperties extends Properties {
+public class SJProperties extends Properties {
 
     private String delimiter = ".";
     // our index for the ordering
     protected ArrayList index = new ArrayList();
 
-    public AbstractProperties() {
+    SJProperties() {
         super();
     }
 
-    // the props attribute is for defaults. These will need to be
-    // remembered for the save/store method.
-    public AbstractProperties(Properties props) {
-        super(props);
+    /**
+     * From {@link Properties}: "A property list can contain another property list as its "defaults"; this second property list is searched if the property key is not found in the original property list."
+     * <p>
+     * The defaults will need to be remembered for the save/store method.
+     */
+    SJProperties(Properties defaults) {
+        super(defaults);
     }
 
     public void setDelimiter(String delimiter) {
@@ -102,36 +105,10 @@ public abstract class AbstractProperties extends Properties {
         return propertyNames();
     }
 
+    @NotNull
     @Override
     public synchronized Set keySet() {
         return new OrderedSet(index);
     }
  
-    // TODO: Handle both save and store.
-    /**
-     * Currently will write out defaults as well, which is not 
-     * in the specification.
-     */
-    @Override
-    public void save(OutputStream outstrm, String header) {
-        super.save(outstrm,header);
-    }
-    /**
-     * Currently will write out defaults as well, which is not 
-     * in the specification.
-     */
-    @Override
-    public void store(OutputStream outstrm, String header) throws IOException {
-        super.store(outstrm,header);
-    }
-
-    private String replace(String stringValue, String doubleQuote) {
-        String value;
-        stringValue = stringValue.substring(stringValue.indexOf(doubleQuote) + 1);
-        if (stringValue.endsWith(doubleQuote)) {
-            stringValue = stringValue.substring(0, stringValue.length() - 1);
-        }
-        value = stringValue;
-        return value;
-    }
 }

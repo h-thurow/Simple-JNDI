@@ -38,44 +38,42 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 
-/** 
- * Functionally like the CustomProperties class in that it has 
+/**
+ * Functionally like the CustomProperties class in that it has
  * comments and an order, IniProperties reads .ini files. These
- * implicitly have a two level dotted notation, though any values 
- * not in the two level are treated as simple one levels. 
- * Comments are a semi-colon. 
+ * implicitly have a two level dotted notation, though any values
+ * not in the two level are treated as simple one levels.
+ * Comments are a semi-colon.
  */
-public class IniProperties extends AbstractProperties {
+public class IniProperties extends SJProperties {
 
     /**
-     * Load in a .ini file. 
-     * semi-colons are comments. blocks are denoted with square brackets.
-     * values are then key=value pairs, with blocks being prepended to keys.
+     * Load in a .ini file. Semi-colons are comments. Blocks are denoted with square brackets. Values are then key=value pairs, with blocks being prepended to keys.
      */
     @Override
     public synchronized void load(InputStream in) throws IOException {
         try {
-            BufferedReader reader = new BufferedReader( new InputStreamReader(in) );
+            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
             String line = "";
             String block = "";
-            while( (line = reader.readLine()) != null) {
+            while ((line = reader.readLine()) != null) {
 
                 line = line.trim();   // important?? bad??
 
                 // handle blocks
-                if(line.startsWith("[") && line.endsWith("]")) {
-                    block = line.substring(1, line.length()-1);
+                if (line.startsWith("[") && line.endsWith("]")) {
+                    block = line.substring(1, line.length() - 1);
                 }
 
                 int idx = line.indexOf(';');
                 // remove comment
-                if(idx != -1) {
-                    line = line.substring(0,idx);
+                if (idx != -1) {
+                    line = line.substring(0, idx);
                 }
 
                 // split equals sign
                 idx = line.indexOf('=');
-                if(idx != -1) {
+                if (idx != -1) {
                     String value = line.substring(idx + 1);
                     // Quoted values[edit]
                     // Some implementations allow values to be quoted, typically using
@@ -84,18 +82,20 @@ public class IniProperties extends AbstractProperties {
                     // semicolon, etc.). The standard Windows function GetPrivateProfileString
                     // supports this, and will remove quotation marks that surround the values.
                     // https://en.wikipedia.org/wiki/INI_file
-                    if("".equals(block)) {
-                        this.setProperty(line.substring(0,idx), value);
-                    } else {
-                        this.setProperty(block + getDelimiter() + line.substring(0,idx), value);
+                    if ("".equals(block)) {
+                        setProperty(line.substring(0, idx), value);
                     }
-                } else {
-                    // blank line, or just a bad line
-                    // we ignore it
+                    else {
+                        setProperty(block + getDelimiter() + line.substring(0, idx), value);
+                    }
+                }
+                else {
+                    // Blank line, or just a bad line. We ignore it
                 }
             }
             reader.close();
-        } catch(IOException ioe) {
+        }
+        catch (IOException ioe) {
             ioe.printStackTrace();
         }
     }
