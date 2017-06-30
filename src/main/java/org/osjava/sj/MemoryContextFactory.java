@@ -86,7 +86,7 @@ public class MemoryContextFactory implements InitialContextFactory {
                 return ctx;
             }
             else {
-                String finalRoot = root;
+                final String finalRoot = root;
                 MemoryContext context = new MemoryContext(environment) {
                     @Override
                     public void close() throws NamingException {
