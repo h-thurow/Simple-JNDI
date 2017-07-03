@@ -159,6 +159,7 @@ public class SimpleJndi {
         overwriteFromSystemProperty(FILENAME_TO_CONTEXT);
         overwriteFromSystemProperty(JndiLoader.SIMPLE_DELIMITER);
         overwriteFromSystemProperty(JndiLoader.SIMPLE_COLON_REPLACE);
+        overwriteFromSystemProperty(Context.OBJECT_FACTORIES);
     }
 
     private void overwriteFromSystemProperty(String key) {
