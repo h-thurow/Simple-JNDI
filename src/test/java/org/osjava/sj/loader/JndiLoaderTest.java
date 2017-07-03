@@ -31,7 +31,9 @@
  */
 package org.osjava.sj.loader;
 
-import junit.framework.TestCase;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -45,15 +47,14 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
 
-public class JndiLoaderTest extends TestCase {
+import static org.junit.Assert.*;
+
+public class JndiLoaderTest {
 
     private Context ctxt;
     private JndiLoader loader;
 
-    public JndiLoaderTest(String name) {
-        super(name);
-    }
-
+    @Before
     public void setUp() {
 
         /* The default is 'flat', which isn't hierarchial and not what I want. */
@@ -82,10 +83,12 @@ public class JndiLoaderTest extends TestCase {
         }
     }
 
+    @After
     public void tearDown() {
         this.ctxt = null;
     }
 
+    @Test
     public void testProperties() {
         try {
             Properties props = new Properties();
@@ -102,20 +105,7 @@ public class JndiLoaderTest extends TestCase {
         }
     }
 
-    public void testDirectory() {
-        try {
-            File file = new File("src/test/resources/roots/");
-            loader.load( file, ctxt );
-            assertEquals( "13", ctxt.lookup("test/value") );
-        } catch(IOException ioe) {
-            ioe.printStackTrace();
-            fail("IOException: "+ioe.getMessage());
-        } catch(NamingException ne) {
-            ne.printStackTrace();
-            fail("NamingException: "+ne.getMessage());
-        }
-    }
-
+    @Test
     public void testDefaultFile() {
         try {
             File file = new File("src/test/resources/roots/default.properties");
@@ -133,7 +123,31 @@ public class JndiLoaderTest extends TestCase {
         }
     }
 
+    @Test
     public void testSubContext() {
+
+        Hashtable env = new Hashtable();
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
+        env.put("jndi.syntax.direction", "left_to_right");
+        env.put("jndi.syntax.separator", "/");
+        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
+        env.put(JndiLoader.FILENAME_TO_CONTEXT, "true");
+
+        /* For Directory-Naming
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.apache.naming.java.javaURLContextFactory");
+        env.put(Context.URL_PKG_PREFIXES, "org.apache.naming");
+        env.put("jndi.syntax.direction", "left_to_right");
+        env.put("jndi.syntax.separator", "/");
+        */
+
+        JndiLoader loader = new JndiLoader(env);
+
+        try {
+            ctxt = new InitialContext(env);
+        } catch(NamingException ne) {
+            ne.printStackTrace();
+        }
+
         String dsString = "bing::::foofoo::::Boo";
         try {
             File file = new File("src/test/resources/roots/java.properties");
@@ -151,6 +165,7 @@ public class JndiLoaderTest extends TestCase {
         }
     }
 
+    @Test
     public void testTopLevelDataSource() {
         String dsString = "org.gjt.mm.mysql.Driver::::jdbc:mysql://127.0.0.1/tmp::::sa";
         try {
@@ -167,6 +182,7 @@ public class JndiLoaderTest extends TestCase {
         }
     }
 
+    @Test
     public void testBoolean() {
         try {
             Properties props = new Properties();
@@ -180,6 +196,7 @@ public class JndiLoaderTest extends TestCase {
         }
     }
 
+    @Test
     public void testSlashSeparatedNamespacedProperty() throws NamingException {
         Properties props = new Properties();
         props.put("my/name", "holger");
@@ -188,6 +205,7 @@ public class JndiLoaderTest extends TestCase {
         assertEquals("holger", obj);
     }
 
+    @Test
     public void testDate() {
         try {
             Properties props = new Properties();
@@ -210,6 +228,7 @@ public class JndiLoaderTest extends TestCase {
         }
     }
 
+    @Test
     public void testConverterPlugin() {
         try {
             Properties props = new Properties();
@@ -227,6 +246,7 @@ public class JndiLoaderTest extends TestCase {
         }
     }
 
+    @Test
     public void testBeanConverter() {
         try {
             Properties props = new Properties();
@@ -246,6 +266,7 @@ public class JndiLoaderTest extends TestCase {
         }
     }
 
+    @Test
     public void testDbcp() throws IOException, NamingException {
         File file = new File("src/test/resources/roots/pooltest");
         loader.load( file, ctxt );
@@ -265,6 +286,9 @@ public class JndiLoaderTest extends TestCase {
         }
     }
 
+    /**
+     * For testing legacy {@link org.osjava.sj.loader.convert.SJDataSource} with commons-dbcp.
+     */
     public void testPoolLive() throws IOException, NamingException, SQLException {
         Properties props = new Properties();
         props.put("Sybase/type", "javax.sql.DataSource");
@@ -296,6 +320,49 @@ public class JndiLoaderTest extends TestCase {
         rs = stmnt.getResultSet();
         rs.next();
         result = rs.getInt(1);
+        rs.close();
+        c.close();
+
+        assertEquals(1, result);
+    }
+
+    /**
+     * For testing commons-dbcp2's BasicDataSource.
+     */
+    public void testDbcp2BasicDataSource() throws IOException, NamingException, SQLException {
+
+        Hashtable env = new Hashtable();
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
+        env.put("jndi.syntax.direction", "left_to_right");
+        env.put("jndi.syntax.separator", "/");
+        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
+        env.put(Context.OBJECT_FACTORIES, org.apache.commons.dbcp2.BasicDataSourceFactory.class.getName());
+
+        JndiLoader loader = new JndiLoader(env);
+
+        try {
+            ctxt = new InitialContext(env);
+        } catch(NamingException ne) {
+            ne.printStackTrace();
+        }
+
+        Properties props = new Properties();
+        props.put("Sybase/type", "javax.sql.DataSource");
+        props.put("Sybase/driverClassName", "com.sybase.jdbc4.jdbc.SybDriver");
+        props.put("Sybase/url", "jdbc:sybase:Tds:b-sonar-omcdb.berlin.six.de:5000");
+        props.put("Sybase/username", "");
+        props.put("Sybase/password", "");
+        loader.load(props, ctxt);
+        DataSource ds = (DataSource) ctxt.lookup("Sybase");
+        assertNotNull(ds);
+
+        // creates and accesses the pool
+        Connection c = ds.getConnection();
+        Statement stmnt = c.createStatement();
+        stmnt.execute("select 1");
+        ResultSet rs = stmnt.getResultSet();
+        rs.next();
+        int result = rs.getInt(1);
         rs.close();
         c.close();
 
