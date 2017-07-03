@@ -194,11 +194,10 @@ Either methods will recursively destroy every context and dereference all contai
 <p>This project is based on old https://github.com/hen/osjava/tree/master/simple-jndi .</p>
 <ul>
 <li>Several bugs fixed and many new tests added. <a href=https://github.com/h-thurow/Simple-JNDI/wiki/Failed-Tests-in-0.11.4.1>See Failed Tests in 0.11.4.1</a>
-<li>Changed the way contexts are shared, because of ContextNotEmptyException with type=javax.sql.DataSource. 
+<li>Changed the way contexts are shared, because of ContextNotEmptyException with type=javax.sql.DataSource and Beans. In shared mode subcontexts and bound objects are now managed per context and not in a single static map for the same reason.
 <li>Tests ported to JUnit 4. 
 <li>Maven 2/3 support. 
 <li>Support for additional basic datatypes (Byte, Short, Integer, Long, Float, Double, Character) in type declaration.
-<li>Support for values in quotation marks (quotation marks get removed)
 </ul>
 
 
