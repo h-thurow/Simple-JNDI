@@ -51,7 +51,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Initial Context Factory for MemoryContexts.
  * 
- * @author Robert M. Zigweid
+ * @author Robert M. Zigweid, Holger Thurow
  * @since Simple-JNDI 0.11
  * @version $Rev: 1743 $ $Date: 2005-06-24 16:56:40 -0700 (Fri, 24 Jun 2005) $
  */

@@ -42,7 +42,7 @@ import java.util.Properties;
 import java.util.logging.Logger;
 
 /**
- * A basic implementation of a DataSource. 
+ * A basic implementation of a DataSource with optional connection pooling.
  */
 public class SJDataSource implements DataSource {
 
@@ -80,13 +80,15 @@ public class SJDataSource implements DataSource {
         }
     }
 
+    /**
+     * @see SJDataSource#getConnection(String, String)
+     */
     public Connection getConnection() throws SQLException {
         return this.getConnection(this.username, this.password);
     }
 
     /**
-     * returns a connection to the database specified in the properties and
-     * creates a connection pool, if neccessary 
+     * With every call a new connection is returned unless property "pool" was set.
      */
     public Connection getConnection(String username, String password) throws SQLException {
         String tmpUrl = this.url;

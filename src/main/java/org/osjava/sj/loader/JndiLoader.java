@@ -37,12 +37,14 @@ import org.apache.commons.lang.BooleanUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.osjava.StringUtils;
+import org.osjava.sj.jndi.JndiUtils;
 import org.osjava.sj.loader.convert.ConverterIF;
 import org.osjava.sj.loader.convert.ConverterRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.naming.*;
+import javax.naming.spi.NamingManager;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -69,10 +71,15 @@ public class JndiLoader {
     public static final String FILENAME_TO_CONTEXT = "org.osjava.sj.filenameToContext";
 
     public JndiLoader(Hashtable env) {
-        if(!env.containsKey(SIMPLE_DELIMITER)) {
-            throw new IllegalArgumentException("The property " + SIMPLE_DELIMITER + " is mandatory. ");
-        }
         environment = new Hashtable(env);
+        if(!environment.containsKey(SIMPLE_DELIMITER)) {
+            LOGGER.info("{} not set. Setting to \".\"", SIMPLE_DELIMITER);
+            environment.put(SIMPLE_DELIMITER, ".");
+        }
+        if (!environment.containsKey("jndi.syntax.direction")) {
+            LOGGER.warn("jndi.syntax.direction not set. Setting to \"left_to_right\"");
+            environment.put("jndi.syntax.direction", "left_to_right");
+        }
         Properties props = new Properties();
         props.putAll(environment);
         envAsProperties = props;
@@ -441,6 +448,7 @@ public class JndiLoader {
     private CompoundName toCompoundName(@NotNull String path) throws InvalidNameException {
         Properties envCopy = new Properties(envAsProperties);
         envCopy.setProperty("jndi.syntax.separator", envAsProperties.getProperty(SIMPLE_DELIMITER));
+        envCopy.setProperty("jndi.syntax.direction", (String) envAsProperties.get("jndi.syntax.direction"));
         return new CompoundName(path, envCopy);
     }
 
@@ -513,7 +521,7 @@ public class JndiLoader {
         return currentCtx;
     }
 
-    private static Object convert(Properties properties) {
+    private Object convert(Properties properties) {
         String type = properties.getProperty("type");
         Object obj = properties.get("valueToConvert");
 
@@ -528,27 +536,39 @@ public class JndiLoader {
 
     }
 
-    private static Object processType(Properties properties, String type, Object obj) {
-        /*
-        * TODO Hier muss NamingManager#getObjectInstance() gerufen werden mit dem Namen der zu verwendenden ObjectFactory und einem Reference-Objekt mit den properties.
-        * type=javax.sql.DataSource verhält sich abwärtskompatibel, sollte die DataSource aber über org.apache.commons.dbcp.BasicDataSourceFactory anfordern?
-        */
-        ConverterIF converter = converterRegistry.getConverter(type);
-        if(converter != null) {
-            final Object values = properties.get("valueToConvert");
-            if (values instanceof List) {
-                List<String> vals = (List<String>) values;
-                final LinkedList converted = new LinkedList();
-                for (String val : vals) {
-                    final Properties props = new Properties();
-                    props.setProperty("valueToConvert", val);
-                    converted.add(converter.convert(props, type));
+    Object processType(Properties properties, String type, Object obj) {
+        Object o = null;
+        if (environment.containsKey(Context.OBJECT_FACTORIES)) {
+            try {
+                Reference reference = JndiUtils.toReference(properties, type);
+                o = NamingManager.getObjectInstance(reference, null, null, environment);
+                o = o == reference ? null : o;
+            }
+            catch (Exception e) {
+                LOGGER.error("processType() Exception caught: ", e);
+            }
+        }
+        if (o == null) {
+            ConverterIF converter = converterRegistry.getConverter(type);
+            if (converter != null) {
+                final Object values = properties.get("valueToConvert");
+                if (values instanceof List) {
+                    List<String> vals = (List<String>) values;
+                    final LinkedList converted = new LinkedList();
+                    for (String val : vals) {
+                        final Properties props = new Properties();
+                        props.setProperty("valueToConvert", val);
+                        converted.add(converter.convert(props, type));
+                    }
+                    obj = converted;
                 }
-                obj = converted;
+                else {
+                    obj = converter.convert(properties, type);
+                }
             }
-            else {
-                obj = converter.convert(properties, type);
-            }
+        }
+        else {
+            obj = o;
         }
         return obj;
     }

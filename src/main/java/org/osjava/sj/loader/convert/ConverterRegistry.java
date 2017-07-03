@@ -32,12 +32,12 @@
 
 package org.osjava.sj.loader.convert;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.util.HashMap;
 import java.util.Map;
 
 public class ConverterRegistry {
-
-    private static ConverterIF NULL_CONVERTER = new NullConverter();
 
     private Map converters = new HashMap();
 
@@ -56,11 +56,12 @@ public class ConverterRegistry {
         this.converters.put( "java.lang.Character", new CharacterConverter());
     }
 
+    @Nullable
     public ConverterIF getConverter(String type) {
         if(this.converters.containsKey(type)) {
             return (ConverterIF) converters.get(type);
         }
-        return NULL_CONVERTER;
+        return null;
     }
 
 }

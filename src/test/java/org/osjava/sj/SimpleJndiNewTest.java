@@ -1087,25 +1087,5 @@ public class SimpleJndiNewTest {
             }
         }
     }
-    
-//    @Test
-//    public void encDoubleBoundBug() throws Exception {
-//        InitialContext ctx = null;
-//        try {
-//            final Hashtable<String, String> env = new Hashtable<String, String>();
-//            env.put("org.osjava.sj.root", "src/test/resources/roots/encDoubleBoundBug.properties");
-//            env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
-//            env.put("org.osjava.sj.jndi.shared", "true");
-//            env.put("org.osjava.sj.delimiter", "/");
-//            JndiLoader loader = new JndiLoader(env);
-//            Context jdbcCtx = (Context) ctx.lookup("jdbc");
-//            assertNull(jdbcCtx);
-//
-//        }
-//        finally {
-//            if (ctx != null) {
-//                ctx.close();
-//            }
-//        }
-//    }
+
 }

@@ -301,4 +301,5 @@ public class JndiLoaderTest extends TestCase {
 
         assertEquals(1, result);
     }
+
 }

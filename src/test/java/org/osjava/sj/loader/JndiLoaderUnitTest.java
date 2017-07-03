@@ -297,4 +297,18 @@ public class JndiLoaderUnitTest {
         assertNotNull(type);
         assertEquals("java.lang.Integer", type);
     }
+
+    @Test
+    public void loadDbcp2BasicDataSource() throws Exception {
+        Hashtable env = new Hashtable();
+        env.put(Context.OBJECT_FACTORIES, org.apache.commons.dbcp2.BasicDataSourceFactory.class.getName());
+        JndiLoader loader = new JndiLoader(env);
+        Properties properties = new Properties();
+        properties.setProperty("username", "username");
+        properties.setProperty("password", "password");
+        properties.setProperty("url", "url");
+        Object o = loader.processType(properties, javax.sql.DataSource.class.getName(), null);
+        assertEquals(org.apache.commons.dbcp2.BasicDataSource.class.getName(), o.getClass().getName());
+    }
+
 }

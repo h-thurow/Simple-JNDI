@@ -47,7 +47,7 @@ import javax.naming.*;
 import java.util.Hashtable;
 
 /**
- * A generic context that requires no DataSource backend.   It is designed to
+ * A generic context that requires no DataSource backend. It is designed to
  * live exclusively in memory and not have its state saved.
  * 
  * @author Robert M. Zigweid
@@ -62,31 +62,18 @@ public class MemoryContext extends AbstractContext {
         super();
     }
 
-    /**
-     * @param env
-     */
     public MemoryContext(Hashtable env) {
         super(env);
     }
 
-    /**
-     * @param env
-     * @param parser
-     */
     public MemoryContext(Hashtable env, NameParser parser) {
         super(env, parser);
     }
 
-    /**
-     * @param parser
-     */
     public MemoryContext(NameParser parser) {
         super(parser);
     }
 
-    /**
-     * @param that
-     */
     public MemoryContext(AbstractContext that) {
         super(that);
     }
