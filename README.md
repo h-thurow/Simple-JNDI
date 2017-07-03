@@ -50,9 +50,6 @@ org.osjava.sj.root=config/
 # NEW in 0.13.0: Specify a list of files and/or directories. Separate them by the platform specific path separator.
 org.osjava.sj.root=file1.cfg:directory1/file.properties:directory2
 </pre>
-<p>
-If no org.osjava.sj.root is specified, an Exception is thrown.
-</p>
 <p>See also <a href="https://github.com/h-thurow/Simple-JNDI/wiki/Load-property-files-with-any-extension-from-any-location-(New-in-0.13.0)">Load property files with any extension from any location</a>.</p>
 
 <h3>Declaratively create your contexts and context objects</h3>
