@@ -81,7 +81,7 @@ public class SimpleNameParser implements NameParser {
     }
 
     /** 
-     * Parses a name into its components.<br/>
+     * Parses a name into its components.<br>
      * (Copied from {@link javax.naming.NameParser#parse(java.lang.String)}
      * 
      * @param name The non-null string name to parse.

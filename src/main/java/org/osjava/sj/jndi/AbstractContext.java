@@ -136,7 +136,7 @@ public abstract class AbstractContext implements Cloneable, Context  {
 
     /**
      * Return the named object.  
-     * This implementation looks for things in the following order:<br/>
+     * This implementation looks for things in the following order:<br>
      * <ol>
      * <li>The empty element to duplicate the context.</li>
      * <li>A named object in the environment.</li>
@@ -488,7 +488,7 @@ public abstract class AbstractContext implements Cloneable, Context  {
         Context newContext;
         Hashtable subContexts = getSubContexts();
 
-        if(name.size() > 1) {
+        if(name.size() &gt; 1) {
             if(subContexts.containsKey(name.getPrefix(1))) {
                 Context subContext = (Context)subContexts.get(name.getPrefix(1));
                 newContext = subContext.createSubcontext(name.getSuffix(1));

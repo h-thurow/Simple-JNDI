@@ -1,7 +1,7 @@
 package spi.objectfactories;
 
 /**
- * Created by hot on 03.07.17.
+ * Not a bean in the proper sense because there is no argumentless constructor.
  */
 public class DemoBean {
 
