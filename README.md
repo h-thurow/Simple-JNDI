@@ -146,6 +146,7 @@ application/ds/TestDS.properties
       DataSource ds = (DataSource) ctxt.lookup("application/ds/TestDS");
 </pre>
 <p>This example uses a delimiter of '/', which must be set with the <i>org.osjava.sj.delimiter</i> property.</p>
+<p>See also <a href=https://github.com/h-thurow/Simple-JNDI/wiki/DBCP-2-and-Commons-Pool-2-support-(New-in-0.15.0)>DBCP 2 and Commons Pool 2 support (New in 0.15.0)</a></p>
 
 <h3>Connection pooling</h3>
 
@@ -160,7 +161,7 @@ application/ds/TestDS.properties
     pool=apachePool
 </pre>
 <p>Note: The pool variable used to be a boolean '<i>true</i>' variable, but now a pool name is provided. This is fully backwards compatible. </p>
-<p>See also <a href=https://github.com/h-thurow/Simple-JNDI/wiki/Connection-pool-configuration>Connection pool configuration</a></p>
+<p>See also <a href=https://github.com/h-thurow/Simple-JNDI/wiki/Connection-pool-configuration-(commons-dbcp1)>Connection pool configuration (commons-dbcp1)</a> and <a href=https://github.com/h-thurow/Simple-JNDI/wiki/DBCP-2-and-Commons-Pool-2-support-(New-in-0.15.0)>DBCP 2 and Commons Pool 2 support (New in 0.15.0)</a></p>
 
 <h3>Shared or unshared context?</h3>
 
