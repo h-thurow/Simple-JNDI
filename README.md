@@ -11,15 +11,14 @@ This JNDI implementation is entirely memory based, so no server instances are st
 
 <h3>Download</h3>
 
-<a href=https://github.com/h-thurow/Simple-JNDI/raw/master/dist/simple-jndi-0.14.0.jar>simple-jndi-0.14.0.jar</a><br>
-<a href=https://github.com/h-thurow/Simple-JNDI/raw/master/dist/simple-jndi-0.14.0-sources.jar>simple-jndi-0.14.0-sources.jar</a><br>
-<a href=https://github.com/h-thurow/Simple-JNDI/raw/master/dist/simple-jndi-0.14.0-test-sources.jar>simple-jndi-0.14.0-test-sources.jar</a><br>
-<a href=https://github.com/h-thurow/Simple-JNDI/raw/master/dist/simple-jndi-0.11.4.1-manual.zip>simple-jndi-0.11.4.1-manual.zip</a><br>
+<a href=https://github.com/h-thurow/Simple-JNDI/raw/master/dist/simple-jndi-0.14.0.jar>simple-jndi-0.15.0.jar</a><br>
+<a href=https://github.com/h-thurow/Simple-JNDI/raw/master/dist/simple-jndi-0.14.0-sources.jar>simple-jndi-0.15.0-sources.jar</a><br>
+<a href=https://github.com/h-thurow/Simple-JNDI/raw/master/dist/simple-jndi-0.14.0-test-sources.jar>simple-jndi-0.15.0-test-sources.jar</a><br>
 <pre>
 &lt;dependency>
     &lt;groupId>com.github.h-thurow&lt;/groupId>
     &lt;artifactId>simple-jndi&lt;/artifactId>
-    &lt;version>0.14.0&lt;/version>
+    &lt;version>0.15.0&lt;/version>
 &lt;/dependency>
 </pre>
 <h3>Installing Simple-JNDI</h3>
