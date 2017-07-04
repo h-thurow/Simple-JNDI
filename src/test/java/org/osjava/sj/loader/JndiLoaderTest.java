@@ -31,6 +31,7 @@
  */
 package org.osjava.sj.loader;
 
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -327,8 +328,9 @@ public class JndiLoaderTest {
     }
 
     /**
-     * For testing commons-dbcp2's BasicDataSource.
+     * For testing commons-dbcp2's BasicDataSource. For monitoring with JMX you have to set jmxName. See the code. Follow the JMX name syntax: <a href=http://www.oracle.com/us/technologies/java/best-practices-jsp-136021.html>Java Management Extensions (JMX) - Best Practices</a>.
      */
+    @Test
     public void testDbcp2BasicDataSource() throws IOException, NamingException, SQLException {
 
         Hashtable env = new Hashtable();
@@ -352,11 +354,14 @@ public class JndiLoaderTest {
         props.put("Sybase/url", "jdbc:sybase:Tds:b-sonar-omcdb.berlin.six.de:5000");
         props.put("Sybase/username", "");
         props.put("Sybase/password", "");
+        // Not working: jmxName is not in BasicDataSourceFactory.ALL_PROPERTIES and so will be not set. You have to set it after creation by calling setJmxName(). See below.
+//        props.put("Sybase/jmxName", "org.osjava.sj:type=DS");
         loader.load(props, ctxt);
-        DataSource ds = (DataSource) ctxt.lookup("Sybase");
+        BasicDataSource ds = (BasicDataSource) ctxt.lookup("Sybase");
+        ds.setJmxName("org.osjava.sj:type=DS");
+
         assertNotNull(ds);
 
-        // creates and accesses the pool
         Connection c = ds.getConnection();
         Statement stmnt = c.createStatement();
         stmnt.execute("select 1");
