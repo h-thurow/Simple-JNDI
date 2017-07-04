@@ -330,7 +330,6 @@ public class JndiLoaderTest {
     /**
      * For testing commons-dbcp2's BasicDataSource. For monitoring with JMX you have to set jmxName. See the code. Follow the JMX name syntax: <a href=http://www.oracle.com/us/technologies/java/best-practices-jsp-136021.html>Java Management Extensions (JMX) - Best Practices</a>.
      */
-    @Test
     public void testDbcp2BasicDataSource() throws IOException, NamingException, SQLException {
 
         Hashtable env = new Hashtable();

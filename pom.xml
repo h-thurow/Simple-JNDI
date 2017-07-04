@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.h-thurow</groupId>
     <artifactId>simple-jndi</artifactId>
-    <version>0.14.0</version>
+    <version>0.15.0</version>
     <name>${project.groupId}:${project.artifactId}</name>
     <description>
         An in-memory implementation of JNDI, so no server
@@ -71,11 +71,13 @@
             <groupId>commons-dbcp</groupId>
             <artifactId>commons-dbcp</artifactId>
             <version>1.2.2</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-dbcp2</artifactId>
             <version>2.1.1</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -122,7 +124,7 @@
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
             <!-- 13.0: Java 1.6, 15.0: Java 1.8 -->
-            <version>13.0</version>
+            <version>15.0</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>

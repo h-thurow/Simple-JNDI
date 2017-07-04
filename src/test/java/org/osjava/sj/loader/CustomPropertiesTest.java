@@ -76,6 +76,20 @@ public class CustomPropertiesTest {
     }
 
     @Test
+    public void whitespaceSeparated() throws Exception {
+        ByteArrayInputStream in = new ByteArrayInputStream("key value: 1".getBytes());
+
+        Properties origProps = new Properties();
+        origProps.load(in);
+        assertEquals("value: 1", origProps.getProperty("key"));
+
+        CustomProperties props = new CustomProperties();
+        in.reset();
+        props.load(in);
+        assertEquals("value: 1", props.getProperty("key"));
+    }
+
+    @Test
     public void whitespaceWithinKeys() throws Exception {
         ByteArrayInputStream in = new ByteArrayInputStream(" \tmy\\ key = \tvalue".getBytes());
 

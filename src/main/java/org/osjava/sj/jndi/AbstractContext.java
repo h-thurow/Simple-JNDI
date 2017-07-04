@@ -187,7 +187,6 @@ public abstract class AbstractContext implements Cloneable, Context  {
         if(subContexts.containsKey(name)) {
             return subContexts.get(name);
         }
-        // Nothing could be found.  Return null. Is this right? Should a NamingException be thrown here instead because nothing could be found?
         LOGGER.debug("AbstractContext#lookup() {} not found in {}", name, this);
         throw new NameNotFoundException(name.toString());
     }
