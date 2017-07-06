@@ -10,10 +10,6 @@ choice may be opened.
 This JNDI implementation is entirely memory based, so no server instances are started. The structure of a root directory serves as a model for the contexts structure. The contexts get populated with Objects defined by .properties files, XML files or Windows-style .ini files. Of course you can bind Objects programmatically to contexts too.
 
 <h3>Download</h3>
-
-<a href=https://github.com/h-thurow/Simple-JNDI/raw/master/dist/simple-jndi-0.14.0.jar>simple-jndi-0.15.0.jar</a><br>
-<a href=https://github.com/h-thurow/Simple-JNDI/raw/master/dist/simple-jndi-0.14.0-sources.jar>simple-jndi-0.15.0-sources.jar</a><br>
-<a href=https://github.com/h-thurow/Simple-JNDI/raw/master/dist/simple-jndi-0.14.0-test-sources.jar>simple-jndi-0.15.0-test-sources.jar</a><br>
 <pre>
 &lt;dependency>
     &lt;groupId>com.github.h-thurow&lt;/groupId>
@@ -21,6 +17,7 @@ This JNDI implementation is entirely memory based, so no server instances are st
     &lt;version>0.15.0&lt;/version>
 &lt;/dependency>
 </pre>
+or <a href=http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.github.h-thurow%22%20AND%20a%3A%22simple-jndi%22>download from here</a>.
 <h3>Installing Simple-JNDI</h3>
 
 After download, installing Simple-JNDI is as simple as adding the simple-jndi jar to your classpath. Some of the features 
