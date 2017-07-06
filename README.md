@@ -10,18 +10,14 @@ choice may be opened.
 This JNDI implementation is entirely memory based, so no server instances are started. The structure of a root directory serves as a model for the contexts structure. The contexts get populated with Objects defined by .properties files, XML files or Windows-style .ini files. Of course you can bind Objects programmatically to contexts too.
 
 <h3>Download</h3>
-
-<a href=https://github.com/h-thurow/Simple-JNDI/raw/master/dist/simple-jndi-0.14.0.jar>simple-jndi-0.14.0.jar</a><br>
-<a href=https://github.com/h-thurow/Simple-JNDI/raw/master/dist/simple-jndi-0.14.0-sources.jar>simple-jndi-0.14.0-sources.jar</a><br>
-<a href=https://github.com/h-thurow/Simple-JNDI/raw/master/dist/simple-jndi-0.14.0-test-sources.jar>simple-jndi-0.14.0-test-sources.jar</a><br>
-<a href=https://github.com/h-thurow/Simple-JNDI/raw/master/dist/simple-jndi-0.11.4.1-manual.zip>simple-jndi-0.11.4.1-manual.zip</a><br>
 <pre>
 &lt;dependency>
     &lt;groupId>com.github.h-thurow&lt;/groupId>
     &lt;artifactId>simple-jndi&lt;/artifactId>
-    &lt;version>0.14.0&lt;/version>
+    &lt;version>0.15.0&lt;/version>
 &lt;/dependency>
 </pre>
+or <a href=http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.github.h-thurow%22%20AND%20a%3A%22simple-jndi%22>download from here</a>.
 <h3>Installing Simple-JNDI</h3>
 
 After download, installing Simple-JNDI is as simple as adding the simple-jndi jar to your classpath. Some of the features 
@@ -102,7 +98,9 @@ The following types are supported: Byte, Short, Integer, Long, Float, Double, Ch
 Note that you have to write "quantity/type=java.lang.Integer" and "enabled/type=java.lang.Boolean" when setting "org.osjava.sj.delimiter=/".
 </p>
 <p>
-See also <a href=https://github.com/h-thurow/Simple-JNDI/wiki/A-more-elegant-way-to-lookup-typed-properties-(New-in-0.14.0)>A more elegant way to lookup typed properties (New in 0.14.0)</a>
+See also<br>
+<a href=https://github.com/h-thurow/Simple-JNDI/wiki/A-more-elegant-way-to-lookup-typed-properties-(New-in-0.14.0)>A more elegant way to lookup typed properties (New in 0.14.0)</a><br>
+<a href=https://github.com/h-thurow/Simple-JNDI/wiki/Load-self-defined-types-as-Beans-(New-in-0.15.0)>Load self-defined types as Beans (New in 0.15.0)</a>
 </p>
 <h3>Lookup pathes with "/" as context separator instead of "."</h3>
 <p>
@@ -161,7 +159,9 @@ application/ds/TestDS.properties
     pool=apachePool
 </pre>
 <p>Note: The pool variable used to be a boolean '<i>true</i>' variable, but now a pool name is provided. This is fully backwards compatible. </p>
-<p>See also <a href=https://github.com/h-thurow/Simple-JNDI/wiki/Connection-pool-configuration-(commons-dbcp1)>Connection pool configuration (commons-dbcp1)</a> and <a href=https://github.com/h-thurow/Simple-JNDI/wiki/DBCP-2-and-Commons-Pool-2-support-(New-in-0.15.0)>DBCP 2 and Commons Pool 2 support (New in 0.15.0)</a></p>
+<p>See also<br>
+<a href=https://github.com/h-thurow/Simple-JNDI/wiki/Connection-pool-configuration-(commons-dbcp1)>Connection pool configuration (commons-dbcp1)</a><br>
+<a href=https://github.com/h-thurow/Simple-JNDI/wiki/DBCP-2-and-Commons-Pool-2-support-(New-in-0.15.0)>DBCP 2 and Commons Pool 2 support (New in 0.15.0)</a></p>
 
 <h3>Shared or unshared context?</h3>
 
