@@ -160,7 +160,9 @@ application/ds/TestDS.properties
     pool=apachePool
 </pre>
 <p>Note: The pool variable used to be a boolean '<i>true</i>' variable, but now a pool name is provided. This is fully backwards compatible. </p>
-<p>See also <a href=https://github.com/h-thurow/Simple-JNDI/wiki/Connection-pool-configuration-(commons-dbcp1)>Connection pool configuration (commons-dbcp1)</a> and <a href=https://github.com/h-thurow/Simple-JNDI/wiki/DBCP-2-and-Commons-Pool-2-support-(New-in-0.15.0)>DBCP 2 and Commons Pool 2 support (New in 0.15.0)</a></p>
+<p>See also<br>
+<a href=https://github.com/h-thurow/Simple-JNDI/wiki/Connection-pool-configuration-(commons-dbcp1)>Connection pool configuration (commons-dbcp1)</a><br>
+<a href=https://github.com/h-thurow/Simple-JNDI/wiki/DBCP-2-and-Commons-Pool-2-support-(New-in-0.15.0)>DBCP 2 and Commons Pool 2 support (New in 0.15.0)</a></p>
 
 <h3>Shared or unshared context?</h3>
 
