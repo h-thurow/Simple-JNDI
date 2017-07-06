@@ -101,7 +101,9 @@ The following types are supported: Byte, Short, Integer, Long, Float, Double, Ch
 Note that you have to write "quantity/type=java.lang.Integer" and "enabled/type=java.lang.Boolean" when setting "org.osjava.sj.delimiter=/".
 </p>
 <p>
-See also <a href=https://github.com/h-thurow/Simple-JNDI/wiki/A-more-elegant-way-to-lookup-typed-properties-(New-in-0.14.0)>A more elegant way to lookup typed properties (New in 0.14.0)</a>
+See also<br>
+<a href=https://github.com/h-thurow/Simple-JNDI/wiki/A-more-elegant-way-to-lookup-typed-properties-(New-in-0.14.0)>A more elegant way to lookup typed properties (New in 0.14.0)</a><br>
+<a href=https://github.com/h-thurow/Simple-JNDI/wiki/Load-self-defined-types-as-Beans-(New-in-0.15.0)>Load self-defined types as Beans (New in 0.15.0)</a>
 </p>
 <h3>Lookup pathes with "/" as context separator instead of "."</h3>
 <p>
