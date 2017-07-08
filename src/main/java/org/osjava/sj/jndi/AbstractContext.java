@@ -32,6 +32,7 @@
 
 package org.osjava.sj.jndi;
 
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -135,60 +136,51 @@ public abstract class AbstractContext implements Cloneable, Context  {
     }
 
     /**
-     * Return the named object.  
-     * This implementation looks for things in the following order:<br>
-     * <ol>
-     * <li>The empty element to duplicate the context.</li>
-     * <li>A named object in the environment.</li>
-     * <li>A named object in the Context's store</li>
-     * <li>A named sub-Context of this Context</li>
-     * </ol>
-     * Unlike many implementations of the JNDI specification, this 
-     * implementation returns null when a name is not found, rather than 
-     * throwing an exception. The specification does not appear to state 
-     * which way it should be. 
      *
      * @see javax.naming.Context#lookup(javax.naming.Name)
+     * @throws OperationNotSupportedException if name is empty, because "a new instance of this context" (see {@link Context#lookup(Name)}) is at this time an unsupported operation.
      */
     @Override
     public Object lookup(Name name) throws NamingException {
-        /* If name is empty then this context is to be cloned.  This is
-         * required based upon the javadoc of Context.  UGH! */
-        if(name.size() == 0) {
-            Object ret = null;
-            try {
-                ret = this.clone();
-            } catch(CloneNotSupportedException e) {
-                // TODO: Improve error handling. I'm not quite sure yet what should be done, but this almost certainly isn't it.
-                e.printStackTrace();
+        if (name.size() == 0) {
+            return newInstance();
+        }
+        else {
+            Name objName = name.getPrefix(1);
+            if (name.size() > 1) { // A subcontext is lookuped.
+                if (subContexts.containsKey(objName)) {
+                    return ((Context) subContexts.get(objName)).lookup(name.getSuffix(1));
+                }
+                String msg = "AbstractContext#lookup(\"{}\"): Invalid subcontext '{}' in context '{}': {}";
+                LOGGER.error(msg, name, objName, getNameInNamespace(), this);
+                throw new NamingException();
             }
-            if(ret != null) {
-                return ret;
+            else { // Can be a subcontext or an object.
+                if (namesToObjects.containsKey(name)) {
+                    return namesToObjects.get(objName);
+                }
+                if (subContexts.containsKey(name)) {
+                    return subContexts.get(name);
+                }
+                LOGGER.debug("AbstractContext#lookup() {} not found in {}", name, this);
+                throw new NameNotFoundException(name.toString());
             }
         }
+    }
 
-        Name objName = name.getPrefix(1);
-        if(name.size() > 1) {
-            // Look in a subcontext.
-            if(subContexts.containsKey(objName)) {
-                return ((Context)subContexts.get(objName)).lookup(name.getSuffix(1));
-            }
-            String msg = "AbstractContext#lookup(\"{}\"): Invalid subcontext '{}' in context '{}': {}";
-            LOGGER.error(msg, name, objName, getNameInNamespace(), this);
-            throw new NamingException();
+    /**
+     * TODO To be implemented? See {@link OperationNotSupportedException}.
+     */
+    @Nullable
+    private Object newInstance() throws OperationNotSupportedException {
+        Context clone;
+        try {
+            clone = (Context) this.clone();
         }
-        
-        /* Lookup the object in this context */
-        if(namesToObjects.containsKey(name)) {
-            return namesToObjects.get(objName);
+        catch (CloneNotSupportedException e) {
+            throw new OperationNotSupportedException();
         }
-        
-        // Lookup the object from the subcontexts namesToObjects and return it if found.
-        if(subContexts.containsKey(name)) {
-            return subContexts.get(name);
-        }
-        LOGGER.debug("AbstractContext#lookup() {} not found in {}", name, this);
-        throw new NameNotFoundException(name.toString());
+        return clone;
     }
 
     /**

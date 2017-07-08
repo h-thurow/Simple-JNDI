@@ -1,15 +1,21 @@
 package org.osjava.sj;
 
+import com.zaxxer.hikari.HikariJNDIFactory;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.osjava.sj.jndi.MemoryContext;
 import org.osjava.sj.loader.JndiLoader;
+import spi.objectfactories.DemoBeanFactory;
 
 import javax.naming.*;
 import javax.sql.DataSource;
 import java.io.File;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
@@ -1088,4 +1094,103 @@ public class SimpleJndiNewTest {
         }
     }
 
+    @Test
+    public void hikariCP() throws Exception {
+        InitialContext ctx = null;
+        try {
+            final Hashtable<String, String> env = new Hashtable<String, String>();
+            env.put("org.osjava.sj.root", "src/test/resources/roots/HikariCP");
+            env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
+            env.put("org.osjava.sj.jndi.shared", "true");
+            env.put("org.osjava.sj.delimiter", ".");
+            env.put("jndi.syntax.separator", "/");
+            env.put(Context.OBJECT_FACTORIES, HikariJNDIFactory.class.getName());
+            ctx = new InitialContext(env);
+
+            DataSource ds = (DataSource) ctx.lookup("HikariDataSource");
+            Connection con = ds.getConnection();
+            Statement stmnt = con.createStatement();
+            //createTable(statement);
+            stmnt.executeQuery("INSERT INTO DATATYPES_TEST (a_varchar) values ('test')");
+            ResultSet rs = stmnt.executeQuery("SELECT count(*) FROM DATATYPES_TEST");
+            rs.next();
+            int count = rs.getInt(1);
+            stmnt.executeQuery("DELETE FROM DATATYPES_TEST");
+            con.close();
+            assertEquals(1, count);
+        }
+        finally {
+            if (ctx != null) {
+                ctx.close();
+            }
+        }
+    }
+
+    /**
+     * See <a href=https://github.com/brettwooldridge/HikariCP/issues/928>HikariJNDIFactory should not throw a NamingException when !"javax.sql.DataSource".equals(ref.getClassName())</a>
+     */
+    @Test(expected = NamingException.class)
+    public void hikariCPAndBeans() throws Exception {
+        InitialContext ctx = null;
+        try {
+            final Hashtable<String, String> env = new Hashtable<String, String>();
+            env.put("org.osjava.sj.root", "src/test/resources/roots/HikariCPAndBeans");
+            env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
+            env.put("org.osjava.sj.jndi.shared", "true");
+            env.put("org.osjava.sj.delimiter", ".");
+            env.put("jndi.syntax.separator", "/");
+            env.put(Context.OBJECT_FACTORIES, HikariJNDIFactory.class.getName() + ":" + DemoBeanFactory.class.getName());
+            ctx = new InitialContext(env);
+        }
+        finally {
+            if (ctx != null) {
+                ctx.close();
+            }
+        }
+    }
+
+    /**
+     *
+     * @see #hikariCPAndBeans()
+     */
+    @Test(expected = NamingException.class)
+    public void hikariCPAndTypes() throws Exception {
+        InitialContext ctx = null;
+        try {
+            final Hashtable<String, String> env = new Hashtable<String, String>();
+            env.put("org.osjava.sj.root", "src/test/resources/roots/HikariCPAndTypes");
+            env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
+            env.put("org.osjava.sj.jndi.shared", "true");
+            env.put("org.osjava.sj.delimiter", ".");
+            env.put("jndi.syntax.separator", "/");
+            env.put(Context.OBJECT_FACTORIES, HikariJNDIFactory.class.getName() + ":" + DemoBeanFactory.class.getName());
+            ctx = new InitialContext(env);
+        }
+        finally {
+            if (ctx != null) {
+                ctx.close();
+            }
+        }
+    }
+
+    private void createTable(Statement statement) throws SQLException {
+        int i = statement.executeUpdate("CREATE TABLE\n" +
+                "  DATATYPES_TEST\n" +
+                "  (\n" +
+                "    a_date DATE NULL,\n" +
+                "    a_time TIME NULL,\n" +
+                "    a_datetime DATETIME NULL,\n" +
+                "    a_numeric NUMERIC(8,0) NULL,\n" +
+                "    a_float FLOAT NULL,\n" +
+                //"    a_text TEXT NULL,\n" +
+                "    a_varchar VARCHAR(36) NULL,\n" +
+                "    a_int INT NULL,\n" +
+                "    a_tinyint TINYINT NULL,\n" +
+                "    TIMESTAMP TIMESTAMP NULL,\n" +
+                //"    a_smalldatetime SMALLDATETIME NULL,\n" +
+                //"    a_image IMAGE NULL,\n" +
+                "    a_numeric_18_15 NUMERIC(18,15) NULL,\n" +
+                "    a_varchar_not_null VARCHAR(36) DEFAULT ''\n" +
+                "  )");
+    }
 }
