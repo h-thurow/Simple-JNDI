@@ -109,6 +109,7 @@ Now you can lookup a Map:
     Map myMap = (Map) ctx.lookup("city");
     assertEquals("3.520.031", myMap.get("citizens"));
 </pre>
+<p>
 For further examples <a href=https://github.com/h-thurow/Simple-JNDI/tree/master/src/test/resources/roots/maps>see here</a>.
 <p>
 Note that you have to write "quantity/type=java.lang.Integer" and "enabled/type=java.lang.Boolean" when setting "org.osjava.sj.delimiter=/".
