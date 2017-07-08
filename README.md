@@ -10,6 +10,7 @@ choice may be opened.
 This JNDI implementation is entirely memory based, so no server instances are started. The structure of a root directory serves as a model for the contexts structure. The contexts get populated with Objects defined by .properties files, XML files or Windows-style .ini files. Of course you can bind Objects programmatically to contexts too.
 
 <h3>Download</h3>
+
 <pre>
 &lt;dependency>
     &lt;groupId>com.github.h-thurow&lt;/groupId>
@@ -74,7 +75,9 @@ in which the file looks like:</p>
 </p>
 <p><a href=https://github.com/h-thurow/Simple-JNDI/wiki/Declarative-creation-of-contexts-and-context-objects>Further information.</a>
 </p>
+
 <h3>Lookup typed properties, not only Strings</h3>
+
 <p>
 In the above example it would be favourable to lookup "quantity" as Integer and "enabled" as Boolean. To achieve this you can type your properties:
 </p>
@@ -102,7 +105,9 @@ See also<br>
 <a href=https://github.com/h-thurow/Simple-JNDI/wiki/A-more-elegant-way-to-lookup-typed-properties-(New-in-0.14.0)>A more elegant way to lookup typed properties (New in 0.14.0)</a><br>
 <a href=https://github.com/h-thurow/Simple-JNDI/wiki/Load-self-defined-types-as-Beans-(New-in-0.15.0)>Load self-defined types as Beans (New in 0.15.0)</a>
 </p>
+
 <h3>Lookup pathes with "/" as context separator instead of "."</h3>
+
 <p>
 So far we used "." as context separator in lookup pathes like in
 </p>
@@ -125,7 +130,10 @@ org.osjava.sj.delimiter=/
 Note that you can not mix up different separators in property names and lookup pathes. When setting "org.osjava.sj.delimiter=/" and using namespaced property names you can not declare "a.b.c=123". You have to declare "a/b/c=123". See also <a href=https://github.com/h-thurow/Simple-JNDI/issues/1>ENC problem</a>.
 <p>
 See also <a href=https://github.com/h-thurow/Simple-JNDI/wiki/Use-slash-separated-lookup-pathes-with-dot-separated-property-names-(New-in-0.14.0)>Use slash separated lookup pathes with dot separated property names (New in 0.14.0)</a>
+</p>
+
 <h3>DataSources</h3>
+
 <p>
 The most popular object to get from JNDI is a object of type <i>javax.sql.DataSource</i>, allowing the developer to obtain JDBC connections to databases. Simple-JNDI supports this out of the box.</p>
 
@@ -144,7 +152,10 @@ application/ds/TestDS.properties
       DataSource ds = (DataSource) ctxt.lookup("application/ds/TestDS");
 </pre>
 <p>This example uses a delimiter of '/', which must be set with the <i>org.osjava.sj.delimiter</i> property.</p>
-<p>See also <a href=https://github.com/h-thurow/Simple-JNDI/wiki/DBCP-2-and-Commons-Pool-2-support-(New-in-0.15.0)>DBCP 2 and Commons Pool 2 support (New in 0.15.0)</a></p>
+<p>See also<br>
+<a href=https://github.com/h-thurow/Simple-JNDI/wiki/DBCP-2-and-Commons-Pool-2-support-(New-in-0.15.0)>DBCP 2 and Commons Pool 2 support (New in 0.15.0)</a><br>
+<a href=https://github.com/h-thurow/Simple-JNDI/wiki/Usage-with-Spring>Usage with Spring - Inject a DataSource into beans</a>
+</p>
 
 <h3>Connection pooling</h3>
 
@@ -178,10 +189,6 @@ application/ds/TestDS.properties
 <h3>Context.close() and Context.destroySubcontext()</h3>
 
 Either methods will recursively destroy every context and dereference all contained objects. So when writing JUnit tests, it is good practice to call close() in tearDown() and reinitialize the JNDI environment in setUp() by calling new InitialContext(). But do not forget to close your datasources by yourself.
-
-<h3>Usage with Spring</h3>
-
-<a href=https://github.com/h-thurow/Simple-JNDI/wiki/Usage-with-Spring>See "Usage with Spring - Inject a DataSource into beans"</a>
 
 <h3>See also</h3>
 
