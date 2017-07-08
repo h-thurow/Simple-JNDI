@@ -22,8 +22,7 @@ or <a href=http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.github.h-thuro
 <h3>Installing Simple-JNDI</h3>
 
 After download, installing Simple-JNDI is as simple as adding the simple-jndi jar to your classpath. Some of the features 
-do however need additional dependencies. To get connection-pooling you will need commons-dbcp, which needs commons-pool 
-and commons-collections.
+do however need additional dependencies. To get connection-pooling you will need commons-dbcp, commons-dbcp2 or HikariCP.
 
 <h3>Setting up Simple-JNDI</h3>
 
