@@ -784,6 +784,38 @@ public class SimpleJndiNewTest {
     }
 
     @Test
+    public void closeContextAndInstantiateAgain() throws Exception {
+        InitialContext ctx = null;
+        try {
+            final Hashtable<String, String> env = new Hashtable<String, String>();
+            env.put("org.osjava.sj.root",
+                    "file://src/test/resources/roots/typedProperty");
+            env.put("org.osjava.sj.jndi.shared", "true");
+            env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
+            env.put("org.osjava.sj.delimiter", ".");
+            env.put(SimpleJndi.JNDI_SYNTAX_SEPARATOR, "/");
+//        env.put("org.osjava.sj.space", "java:comp/env");
+            ctx = new InitialContext(env);
+            int myInteger = (int) ctx.lookup("file1/myInteger");
+            assertEquals(123, myInteger);
+            ctx.close();
+            try {
+                ctx.lookup("file1/myInteger");
+                fail("We should not have arrived here.");
+            }
+            catch (NoInitialContextException ignore) { }
+            ctx = new InitialContext(env);
+            myInteger = (int) ctx.lookup("file1/myInteger");
+            assertEquals(123, myInteger);
+        }
+        finally {
+            if (ctx != null) {
+                ctx.close();
+            }
+        }
+    }
+
+    @Test
     public void testFileAsRoot() throws Exception {
         InitialContext ctx1 = null;
         try {
