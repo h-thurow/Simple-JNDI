@@ -216,7 +216,7 @@ public class JndiLoader {
 
     /**
      *
-     * @return xml file: {@link XmlProperties}. ini file: {@link IniProperties}. Sonst {@link CustomProperties}.
+     * @return xml file: {@link XmlSJProperties}. ini file: {@link IniSJProperties}. Sonst {@link CustomSJProperties}.
      */
     // TODO Make package-private
     public Properties toProperties(File file) throws IOException {
@@ -224,12 +224,12 @@ public class JndiLoader {
         SJProperties p;
 
         if(file.getName().endsWith(".xml")) {
-            p = new XmlProperties();
+            p = new XmlSJProperties();
         } else
         if(file.getName().endsWith(".ini")) {
-            p = new IniProperties();
+            p = new IniSJProperties();
         } else {
-            p = new CustomProperties();
+            p = new CustomSJProperties();
         }
 
         p.setDelimiter( (String) environment.get(SIMPLE_DELIMITER) );

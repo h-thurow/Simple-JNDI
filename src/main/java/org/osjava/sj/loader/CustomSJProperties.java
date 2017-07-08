@@ -32,6 +32,6 @@
 
 package org.osjava.sj.loader;
 
-public class CustomProperties extends SJProperties {
+public class CustomSJProperties extends SJProperties {
 
 }

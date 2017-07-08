@@ -42,12 +42,12 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-public class XmlPropertiesTest {
+public class XmlSJPropertiesTest {
 
     @Test
     public void testLoad() throws IOException {
         InputStream is = new FileInputStream("src/test/resources/roots/xmltest.xml");
-        XmlProperties xmlProperties = new XmlProperties();
+        XmlSJProperties xmlProperties = new XmlSJProperties();
         xmlProperties.load(is);
         is.close();
 

@@ -8,14 +8,14 @@ import java.util.Properties;
 
 import static org.junit.Assert.assertEquals;
 
-public class CustomPropertiesTest {
+public class CustomSJPropertiesTest {
 
     /**
      * "Note that single-quotes or double-quotes are considered part of the string." See <a href=https://en.wikipedia.org/wiki/.properties>Wikipedia .properties</a>.
      */
     @Test
     public void quotes() throws Exception {
-        final CustomProperties properties = new CustomProperties();
+        final CustomSJProperties properties = new CustomSJProperties();
         final FileInputStream stream = new FileInputStream(
                 "src/test/resources/roots/shareContext1/directory1/directory1_file1.properties");
         properties.load(stream);
@@ -34,7 +34,7 @@ public class CustomPropertiesTest {
         origProps.load(in);
         assertEquals("value", origProps.getProperty("key"));
 
-        CustomProperties props = new CustomProperties();
+        CustomSJProperties props = new CustomSJProperties();
         in.reset();
         props.load(in);
         assertEquals("value", props.getProperty("key"));
@@ -51,7 +51,7 @@ public class CustomPropertiesTest {
         origProps.load(in);
         assertEquals("value   ", origProps.getProperty("key"));
 
-        CustomProperties props = new CustomProperties();
+        CustomSJProperties props = new CustomSJProperties();
         in.reset();
         props.load(in);
         assertEquals("value   ", props.getProperty("key"));
@@ -69,7 +69,7 @@ public class CustomPropertiesTest {
         origProps.load(in);
         assertEquals("value: 1", origProps.getProperty("key"));
 
-        CustomProperties props = new CustomProperties();
+        CustomSJProperties props = new CustomSJProperties();
         in.reset();
         props.load(in);
         assertEquals("value: 1", props.getProperty("key"));
@@ -83,7 +83,7 @@ public class CustomPropertiesTest {
         origProps.load(in);
         assertEquals("value: 1", origProps.getProperty("key"));
 
-        CustomProperties props = new CustomProperties();
+        CustomSJProperties props = new CustomSJProperties();
         in.reset();
         props.load(in);
         assertEquals("value: 1", props.getProperty("key"));
@@ -97,7 +97,7 @@ public class CustomPropertiesTest {
         origProps.load(in);
         assertEquals("value", origProps.getProperty("my key"));
 
-        CustomProperties props = new CustomProperties();
+        CustomSJProperties props = new CustomSJProperties();
         in.reset();
         props.load(in);
         assertEquals("value", props.getProperty("my key"));
@@ -113,7 +113,7 @@ public class CustomPropertiesTest {
         String expected = "first line \n     second line";
         assertEquals(expected, origProps.getProperty("key"));
 
-        CustomProperties props = new CustomProperties();
+        CustomSJProperties props = new CustomSJProperties();
         in.reset();
         props.load(in);
         assertEquals(expected, props.getProperty("key"));
@@ -132,7 +132,7 @@ public class CustomPropertiesTest {
         String expected = "first line \n     second line";
         assertEquals(expected, origProps.getProperty("key"));
 
-        CustomProperties props = new CustomProperties();
+        CustomSJProperties props = new CustomSJProperties();
         in.reset();
         props.load(in);
         assertEquals(expected, props.getProperty("key"));
@@ -150,7 +150,7 @@ public class CustomPropertiesTest {
         origProps.load(in);
         assertEquals("value#with#hash", origProps.getProperty("key"));
 
-        CustomProperties props = new CustomProperties();
+        CustomSJProperties props = new CustomSJProperties();
         in.reset();
         props.load(in);
         assertEquals("value#with#hash", props.getProperty("key"));

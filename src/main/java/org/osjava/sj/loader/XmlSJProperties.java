@@ -45,13 +45,13 @@ import java.util.Properties;
 /**
  * Loads properties using the DOM API from an InputStream containing XML
  */
-public class XmlProperties extends SJProperties {
+public class XmlSJProperties extends SJProperties {
 
-    public XmlProperties() {
+    public XmlSJProperties() {
         super();
     }
 
-    public XmlProperties(Properties props) {
+    public XmlSJProperties(Properties props) {
         super(props);
     }
 

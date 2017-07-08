@@ -39,13 +39,13 @@ import java.io.InputStreamReader;
 
 
 /**
- * Functionally like the CustomProperties class in that it has
- * comments and an order, IniProperties reads .ini files. These
+ * Functionally like the CustomSJProperties class in that it has
+ * comments and an order, IniSJProperties reads .ini files. These
  * implicitly have a two level dotted notation, though any values
  * not in the two level are treated as simple one levels.
  * Comments are a semi-colon.
  */
-public class IniProperties extends SJProperties {
+public class IniSJProperties extends SJProperties {
 
     /**
      * Load in a .ini file. Semi-colons are comments. Blocks are denoted with square brackets. Values are then key=value pairs, with blocks being prepended to keys.
