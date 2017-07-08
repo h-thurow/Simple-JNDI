@@ -112,7 +112,7 @@ Now you can lookup a Map:
 <p>
 For further examples <a href=https://github.com/h-thurow/Simple-JNDI/tree/master/src/test/resources/roots/maps>see here</a>.
 <p>
-Note that you have to write "quantity/type=java.lang.Integer" and "enabled/type=java.lang.Boolean" when setting "org.osjava.sj.delimiter=/".
+Note that you have to write "quantity/type=java.lang.Integer" and "enabled/type=java.lang.Boolean" when setting "org.osjava.sj.delimiter=/". And as you might anticipate already: "type" is a reserved word with Simple-JNDI.
 </p>
 <p>
 See also<br>
