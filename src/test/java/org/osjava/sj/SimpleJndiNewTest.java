@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.osjava.sj.jndi.MemoryContext;
 import org.osjava.sj.loader.JndiLoader;
+import spi.objectfactories.DemoBean;
 import spi.objectfactories.DemoBeanFactory;
 
 import javax.naming.*;
@@ -1129,7 +1130,7 @@ public class SimpleJndiNewTest {
     /**
      * See <a href=https://github.com/brettwooldridge/HikariCP/issues/928>HikariJNDIFactory should not throw a NamingException when !"javax.sql.DataSource".equals(ref.getClassName())</a>
      */
-    @Test(expected = NamingException.class)
+    @Test
     public void hikariCPAndBeans() throws Exception {
         InitialContext ctx = null;
         try {
@@ -1141,6 +1142,8 @@ public class SimpleJndiNewTest {
             env.put("jndi.syntax.separator", "/");
             env.put(Context.OBJECT_FACTORIES, HikariJNDIFactory.class.getName() + ":" + DemoBeanFactory.class.getName());
             ctx = new InitialContext(env);
+            DemoBean demoBean = (DemoBean) ctx.lookup("DemoBean");
+            assertNotNull(demoBean);
         }
         finally {
             if (ctx != null) {
@@ -1149,11 +1152,7 @@ public class SimpleJndiNewTest {
         }
     }
 
-    /**
-     *
-     * @see #hikariCPAndBeans()
-     */
-    @Test(expected = NamingException.class)
+    @Test
     public void hikariCPAndTypes() throws Exception {
         InitialContext ctx = null;
         try {
@@ -1165,6 +1164,8 @@ public class SimpleJndiNewTest {
             env.put("jndi.syntax.separator", "/");
             env.put(Context.OBJECT_FACTORIES, HikariJNDIFactory.class.getName() + ":" + DemoBeanFactory.class.getName());
             ctx = new InitialContext(env);
+            int year = (int) ctx.lookup("typed.year");
+            assertEquals(2017, year);
         }
         finally {
             if (ctx != null) {

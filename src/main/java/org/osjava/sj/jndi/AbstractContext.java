@@ -32,6 +32,7 @@
 
 package org.osjava.sj.jndi;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,9 +48,8 @@ import java.util.*;
  */
 public abstract class AbstractContext implements Cloneable, Context  {
 
-    // namesToObjects is used as a read-write cache which sits above the file-store
-    private Hashtable namesToObjects = new Hashtable();
-    private Hashtable subContexts = new Hashtable();
+    protected Map<Name, Object> namesToObjects = Collections.synchronizedMap(new HashMap<Name, Object>());
+    protected Map<Name, Context> subContexts = Collections.synchronizedMap(new HashMap<Name, Context>());
     private Hashtable env = new Hashtable();
     private NameParser nameParser;
     /* The full name of this context. */
@@ -141,7 +141,7 @@ public abstract class AbstractContext implements Cloneable, Context  {
      * @throws OperationNotSupportedException if name is empty, because "a new instance of this context" (see {@link Context#lookup(Name)}) is at this time an unsupported operation.
      */
     @Override
-    public Object lookup(Name name) throws NamingException {
+    public Object lookup(@NotNull Name name) throws NamingException {
         if (name.size() == 0) {
             return newInstance();
         }
@@ -149,7 +149,7 @@ public abstract class AbstractContext implements Cloneable, Context  {
             Name objName = name.getPrefix(1);
             if (name.size() > 1) { // A subcontext is lookuped.
                 if (subContexts.containsKey(objName)) {
-                    return ((Context) subContexts.get(objName)).lookup(name.getSuffix(1));
+                    return subContexts.get(objName).lookup(name.getSuffix(1));
                 }
                 String msg = "AbstractContext#lookup(\"{}\"): Invalid subcontext '{}' in context '{}': {}";
                 LOGGER.error(msg, name, objName, getNameInNamespace(), this);
@@ -187,7 +187,7 @@ public abstract class AbstractContext implements Cloneable, Context  {
      * @see javax.naming.Context#lookup(java.lang.String)
      */
     @Override
-    public Object lookup(String name) throws NamingException {
+    public Object lookup(@NotNull String name) throws NamingException {
         return lookup(nameParser.parse(name));
     }
 
@@ -195,14 +195,14 @@ public abstract class AbstractContext implements Cloneable, Context  {
      * @see javax.naming.Context#bind(javax.naming.Name, java.lang.Object)
      */
     @Override
-    public void bind(Name name, Object object) throws NamingException {
+    public void bind(@NotNull Name name, @Nullable Object object) throws NamingException {
         if(name.size() == 0) {
             throw new InvalidNameException("Cannot bind to an empty name.");
         }
         else if(name.size() > 1) {
             Name prefix = name.getPrefix(1);
             if(subContexts.containsKey(prefix)) {
-                ((Context)subContexts.get(prefix)).bind(name.getSuffix(1), object);
+                subContexts.get(prefix).bind(name.getSuffix(1), object);
             }
             else {
                 LOGGER.error("No such subcontext: {} in {}", prefix, this);
@@ -218,7 +218,7 @@ public abstract class AbstractContext implements Cloneable, Context  {
                     + " already bound.  Use rebind() to override");
             }
             if (object instanceof Context) {
-                subContexts.put(name, object);
+                subContexts.put(name, (Context) object);
             }
             else {
                 namesToObjects.put(name, object);
@@ -230,7 +230,7 @@ public abstract class AbstractContext implements Cloneable, Context  {
      * @see javax.naming.Context#bind(java.lang.String, java.lang.Object)
      */
     @Override
-    public void bind(String name, Object object) throws NamingException {
+    public void bind(@NotNull String name, @Nullable Object object) throws NamingException {
         bind(nameParser.parse(name), object);
     }
 
@@ -238,7 +238,7 @@ public abstract class AbstractContext implements Cloneable, Context  {
      * @see javax.naming.Context#rebind(javax.naming.Name, java.lang.Object)
      */
     @Override
-    public void rebind(Name name, Object object) throws NamingException {
+    public void rebind(@NotNull Name name, @Nullable Object object) throws NamingException {
         if(name.isEmpty()) {
             throw new InvalidNameException("Cannot bind to empty name");
         }
@@ -255,7 +255,7 @@ public abstract class AbstractContext implements Cloneable, Context  {
      * @see javax.naming.Context#rebind(java.lang.String, java.lang.Object)
      */
     @Override
-    public void rebind(String name, Object object) throws NamingException {
+    public void rebind(@NotNull String name, @Nullable Object object) throws NamingException {
         rebind(nameParser.parse(name), object);
     }
 
@@ -263,7 +263,7 @@ public abstract class AbstractContext implements Cloneable, Context  {
      * @see javax.naming.Context#unbind(javax.naming.Name)
      */
     @Override
-    public void unbind(Name name) throws NamingException {
+    public void unbind(@NotNull Name name) throws NamingException {
         if(name.isEmpty()) {
             throw new InvalidNameException("Cannot unbind to empty name");
         }
@@ -293,7 +293,7 @@ public abstract class AbstractContext implements Cloneable, Context  {
      * @see javax.naming.Context#unbind(java.lang.String)
      */
     @Override
-    public void unbind(String name) throws NamingException {
+    public void unbind(@NotNull String name) throws NamingException {
         unbind(nameParser.parse(name));
     }
 
@@ -301,7 +301,7 @@ public abstract class AbstractContext implements Cloneable, Context  {
      * @see javax.naming.Context#rename(javax.naming.Name, javax.naming.Name)
      */
     @Override
-    public void rename(Name oldName, Name newName) throws NamingException {
+    public void rename(@NotNull Name oldName, @NotNull Name newName) throws NamingException {
         /* Confirm that this works.  We might have to catch the exception */
         Object old = lookup(oldName);
         if(newName.isEmpty()) {
@@ -330,7 +330,7 @@ public abstract class AbstractContext implements Cloneable, Context  {
      * @see javax.naming.Context#rename(java.lang.String, java.lang.String)
      */
     @Override
-    public void rename(String oldName, String newName) throws NamingException {
+    public void rename(@NotNull String oldName, @NotNull String newName) throws NamingException {
         rename(nameParser.parse(oldName), nameParser.parse(newName));
     }
     /* End of Write-functionality */
@@ -340,7 +340,7 @@ public abstract class AbstractContext implements Cloneable, Context  {
      * @see javax.naming.Context#list(javax.naming.Name)
      */
     @Override
-    public NamingEnumeration list(Name name) throws NamingException {
+    public NamingEnumeration list(@NotNull Name name) throws NamingException {
 //      if name is a directory, we should do the same as we do above
 //      if name is a properties file, we should return the keys (?)
 //      issues: default.properties ?
@@ -362,7 +362,7 @@ public abstract class AbstractContext implements Cloneable, Context  {
             throw new NotContextException(name + " cannot be listed");
         }
         if(subContexts.containsKey(subName)) {
-            return ((Context)subContexts.get(subName)).list(name.getSuffix(1));
+            return subContexts.get(subName).list(name.getSuffix(1));
         }
         /* Couldn't find the subcontext and it wasn't pointing at us, throw
          * an exception. */
@@ -375,7 +375,7 @@ public abstract class AbstractContext implements Cloneable, Context  {
      * @see javax.naming.Context#list(java.lang.String)
      */
     @Override
-    public NamingEnumeration list(String name) throws NamingException {
+    public NamingEnumeration list(@NotNull String name) throws NamingException {
         return list(nameParser.parse(name));
     }
 
@@ -383,7 +383,7 @@ public abstract class AbstractContext implements Cloneable, Context  {
      * @see javax.naming.Context#listBindings(javax.naming.Name)
      */
     @Override
-    public NamingEnumeration listBindings(Name name) throws NamingException {
+    public NamingEnumeration listBindings(@NotNull Name name) throws NamingException {
         if(name == null || name.isEmpty()) {
             /* Because there are two mappings that need to be used here,
              * create a new mapping and add the two maps to it.  This also 
@@ -397,7 +397,7 @@ public abstract class AbstractContext implements Cloneable, Context  {
         /* Look for a subcontext */
         Name subName = name.getPrefix(1);
         if(subContexts.containsKey(subName)) {
-            return ((Context)subContexts.get(subName)).listBindings(name.getSuffix(1));
+            return subContexts.get(subName).listBindings(name.getSuffix(1));
         }
         else {
         /* Couldn't find the subcontext and it wasn't pointing at us, throw an exception. */
@@ -409,7 +409,7 @@ public abstract class AbstractContext implements Cloneable, Context  {
      * @see javax.naming.Context#listBindings(java.lang.String)
      */
     @Override
-    public NamingEnumeration listBindings(String name) throws NamingException {
+    public NamingEnumeration listBindings(@NotNull String name) throws NamingException {
         return listBindings(nameParser.parse(name));
     }
     /* End of List functionality */
@@ -421,7 +421,7 @@ public abstract class AbstractContext implements Cloneable, Context  {
     public void destroySubcontext(Name name) throws NamingException {
         if(name.size() > 1) {
             if(subContexts.containsKey(name.getPrefix(1))) {
-                Context subContext = (Context)subContexts.get(name.getPrefix(1));
+                Context subContext = subContexts.get(name.getPrefix(1));
                 destroySubcontexts(subContext);
                 return;
             } 
@@ -436,7 +436,7 @@ public abstract class AbstractContext implements Cloneable, Context  {
         if(!subContexts.containsKey(name)) {
             throw new NameNotFoundException();
         }
-        Context subContext = (Context)subContexts.get(name);
+        Context subContext = subContexts.get(name);
         destroySubcontexts(subContext);
         subContext.close();
         subContexts.remove(name);
@@ -541,7 +541,7 @@ public abstract class AbstractContext implements Cloneable, Context  {
         }
         Name subName = name.getPrefix(1); 
         if(subContexts.containsKey(subName)) {
-            return ((Context)subContexts.get(subName)).getNameParser(name.getSuffix(1));
+            return subContexts.get(subName).getNameParser(name.getSuffix(1));
         }
         throw new NotContextException();
     }
@@ -711,13 +711,6 @@ public abstract class AbstractContext implements Cloneable, Context  {
         setNameInNamespace(nameParser.parse(name));
     }
 
-    /**
-     * Convenience method returning the subcontexts that this context parents.
-     * @return a Hashtable of context objects that are parented by this context.
-     */
-    protected Hashtable getSubContexts() {
-        return (Hashtable)subContexts.clone();
-    }
 }
 
 

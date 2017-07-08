@@ -1,5 +1,8 @@
 package spi.objectfactories;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.naming.Context;
 import javax.naming.Name;
 import javax.naming.Reference;
@@ -11,8 +14,11 @@ import java.util.Hashtable;
  */
 public class DemoBeanFactory implements ObjectFactory {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(DemoBeanFactory.class);
+
     @Override
     public Object getObjectInstance(Object obj, Name name, Context nameCtx, Hashtable<?, ?> environment) throws Exception {
+        LOGGER.debug("{} called.", this.getClass().getName());
         Reference ref = (Reference) obj;
         String type = (String) ref.get("type").getContent();
         if (type.equals(DemoBean.class.getName())) {

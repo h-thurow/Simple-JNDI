@@ -84,12 +84,10 @@ public class MemoryContext extends AbstractContext {
     @Override
     public Context createSubcontext(Name name) throws NamingException {
         Context newContext;
-        /* Get the subcontexts of this subcontext. */
-        Hashtable subContexts = getSubContexts();
 
         if(name.size() > 1) {
             if(subContexts.containsKey(name.getPrefix(1))) {
-                Context subContext = (Context)subContexts.get(name.getPrefix(1));
+                Context subContext = subContexts.get(name.getPrefix(1));
                 newContext = subContext.createSubcontext(name.getSuffix(1));
                 return newContext;
             }

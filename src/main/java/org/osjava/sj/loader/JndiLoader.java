@@ -521,6 +521,7 @@ public class JndiLoader {
         return currentCtx;
     }
 
+    @Nullable
     private Object convert(Properties properties) {
         String type = properties.getProperty("type");
         Object obj = properties.get("valueToConvert");
@@ -536,6 +537,7 @@ public class JndiLoader {
 
     }
 
+    @Nullable
     Object processType(Properties properties, String type, Object obj) {
         Object o = null;
         if (environment.containsKey(Context.OBJECT_FACTORIES)) {
