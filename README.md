@@ -96,6 +96,14 @@ Thereafter you can call typed properties:
 <p>
 The following types are supported: Byte, Short, Integer, Long, Float, Double, Character.
 <p>
+Also supported are Maps:
+</p>
+<pre>
+    city.type = java.util.Map
+    city.citizens = 3.520.031
+    city.name = Berlin
+</pre>
+For further examples <a href=https://github.com/h-thurow/Simple-JNDI/tree/master/src/test/resources/roots/maps>see here</a>.
 <p>
 Note that you have to write "quantity/type=java.lang.Integer" and "enabled/type=java.lang.Boolean" when setting "org.osjava.sj.delimiter=/".
 </p>
