@@ -12,6 +12,7 @@ import javax.sql.DataSource;
 import java.io.File;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import static org.junit.Assert.*;
@@ -1102,16 +1103,91 @@ public class SimpleJndiNewTest {
     }
 
     @Test
-    public void contextWithContextsAndObjects() throws Exception {
+    public void maps() throws Exception {
         InitialContext ctx = null;
         try {
             final Hashtable<String, String> env = new Hashtable<String, String>();
-            env.put("org.osjava.sj.root", "src/test/resources/roots/contextWithContextsAndObjects");
+            env.put("org.osjava.sj.root", "src/test/resources/roots/maps/myMap.properties");
             env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
-            env.put("org.osjava.sj.jndi.shared", "true");
-            env.put("org.osjava.sj.delimiter", ".");
-//            env.put("jndi.syntax.separator", "/");
+            env.put(SimpleJndi.SHARED, "true");
+            env.put(JndiLoader.SIMPLE_DELIMITER, ".");
+            env.put(SimpleJndi.JNDI_SYNTAX_SEPARATOR, "/");
+            env.put(SimpleJndi.FILENAME_TO_CONTEXT, "true");
             ctx = new InitialContext(env);
+            Map myMap = (Map) ctx.lookup("myMap");
+            assertEquals("Holger", myMap.get("first name"));
+        }
+        finally {
+            if (ctx != null) {
+                ctx.close();
+            }
+        }
+    }
+
+    @Test
+    public void namespacedMaps() throws Exception {
+        InitialContext ctx = null;
+        try {
+            final Hashtable<String, String> env = new Hashtable<String, String>();
+            env.put("org.osjava.sj.root", "src/test/resources/roots/maps/namespacedMap.properties");
+            env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
+            env.put(SimpleJndi.SHARED, "true");
+            env.put(JndiLoader.SIMPLE_DELIMITER, ".");
+            env.put(SimpleJndi.JNDI_SYNTAX_SEPARATOR, "/");
+            env.put(SimpleJndi.FILENAME_TO_CONTEXT, "true");
+            ctx = new InitialContext(env);
+            Map myMap = (Map) ctx.lookup("namespacedMap/person");
+            assertEquals("Holger", myMap.get("first name"));
+        }
+        finally {
+            if (ctx != null) {
+                ctx.close();
+            }
+        }
+    }
+
+    @Test
+    public void mixedNamespacedMaps() throws Exception {
+        InitialContext ctx = null;
+        try {
+            final Hashtable<String, String> env = new Hashtable<String, String>();
+            env.put("org.osjava.sj.root", "src/test/resources/roots/maps/mixedNamespaces.properties");
+            env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
+            env.put(SimpleJndi.SHARED, "true");
+            env.put(JndiLoader.SIMPLE_DELIMITER, ".");
+            env.put(SimpleJndi.JNDI_SYNTAX_SEPARATOR, "/");
+            env.put(SimpleJndi.FILENAME_TO_CONTEXT, "true");
+            ctx = new InitialContext(env);
+            Map myMap = (Map) ctx.lookup("mixedNamespaces/person");
+            assertEquals("Holger", myMap.get("first name"));
+            String firstName = (String) ctx.lookup("mixedNamespaces/first name");
+            assertEquals("sb. else", firstName);
+        }
+        finally {
+            if (ctx != null) {
+                ctx.close();
+            }
+        }
+    }
+
+    @Test
+    public void multipleMaps() throws Exception {
+        InitialContext ctx = null;
+        try {
+            final Hashtable<String, String> env = new Hashtable<String, String>();
+            env.put("org.osjava.sj.root", "src/test/resources/roots/maps/multipleMaps.properties");
+            env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
+            env.put(SimpleJndi.SHARED, "true");
+            env.put(JndiLoader.SIMPLE_DELIMITER, ".");
+            env.put(SimpleJndi.JNDI_SYNTAX_SEPARATOR, "/");
+            env.put(SimpleJndi.FILENAME_TO_CONTEXT, "true");
+            ctx = new InitialContext(env);
+
+            Map myMap = (Map) ctx.lookup("multipleMaps/person");
+            assertEquals("Holger", myMap.get("first name"));
+
+            myMap = (Map) ctx.lookup("multipleMaps/city");
+            assertEquals("3.520.031", myMap.get("citizens"));
         }
         finally {
             if (ctx != null) {

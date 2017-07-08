@@ -54,6 +54,7 @@ public class ConverterRegistry {
         this.converters.put( "java.lang.Float", new ConstructorConverter());
         this.converters.put( "java.lang.Double", new ConstructorConverter());
         this.converters.put( "java.lang.Character", new CharacterConverter());
+        this.converters.put( "java.util.Map", new MapConverter());
     }
 
     @Nullable

@@ -39,29 +39,34 @@ import java.util.Properties;
 public class MapConverter implements ConverterIF {
 
     public Object convert(Properties properties, String type) {
-        if("java.util.Map".equals(type)) {
+        if ("java.util.Map".equals(type)) {
             type = "java.util.HashMap";
-        } else 
-        if("java.util.Properties".equals(type)) {
+        }
+        else if ("java.util.Properties".equals(type)) {
             return properties;
         }
         try {
             Class c = Class.forName(type);
-            Map m = (Map) c.newInstance();
+            Map map = (Map) c.newInstance();
 
             Iterator entries = properties.entrySet().iterator();
-            while(entries.hasNext()) {
+            while (entries.hasNext()) {
                 Map.Entry entry = (Map.Entry) entries.next();
-                m.put( entry.getKey(), entry.getValue() );
+                String key = (String) entry.getKey();
+                if (!key.equals("type")) {
+                    map.put(key, entry.getValue());
+                }
             }
-
-            return m;
-        } catch(ClassNotFoundException cnfe) {
-            throw new RuntimeException("Unable to find class: "+type, cnfe);
-        } catch(InstantiationException ie) {
-            throw new RuntimeException("Unable to instantiate class: "+type, ie);
-        } catch(IllegalAccessException ie) {
-            throw new RuntimeException("Unable to access class: "+type, ie);
+            return map;
+        }
+        catch (ClassNotFoundException cnfe) {
+            throw new RuntimeException("Unable to find class: " + type, cnfe);
+        }
+        catch (InstantiationException ie) {
+            throw new RuntimeException("Unable to instantiate class: " + type, ie);
+        }
+        catch (IllegalAccessException ie) {
+            throw new RuntimeException("Unable to access class: " + type, ie);
         }
 
     }
