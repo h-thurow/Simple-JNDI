@@ -12,7 +12,8 @@ import java.util.Properties;
 import static org.junit.Assert.*;
 
 /**
- * @author Holger Thurow (thurow.h@gmail.com) on 18.06.17.
+ * @author Holger Thurow (thurow.h@gmail.com)
+ * @since 18.06.17
  */
 public class JndiLoaderUnitTest {
     @Test

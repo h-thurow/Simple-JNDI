@@ -7,7 +7,8 @@ import org.springframework.context.support.FileSystemXmlApplicationContext;
 import static org.junit.Assert.assertTrue;
 
 /**
- * @author Holger Thurow (thurow.h@gmail.com) on 07.06.17.
+ * @author Holger Thurow (thurow.h@gmail.com)
+ * @since 07.06.17
  */
 public class SpringTest {
 

@@ -7,7 +7,8 @@ import java.util.Enumeration;
 import java.util.Properties;
 
 /**
- * Created by hot on 02.07.17.
+ * @author Holger Thurow (thurow.h@gmail.com)
+ * @since 02.07.17
  */
 public class JndiUtils {
 

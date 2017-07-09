@@ -8,7 +8,8 @@ import javax.naming.NamingException;
 import java.util.Hashtable;
 
 /**
- * @author Holger Thurow (thurow.h@gmail.com) on 08.07.17.
+ * @author Holger Thurow (thurow.h@gmail.com)
+ * @since 08.07.17
  */
 public class NullReturningHikariJNDIFactory extends HikariJNDIFactory {
     @Override
