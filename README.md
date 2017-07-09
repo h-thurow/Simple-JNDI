@@ -110,7 +110,7 @@ Now you can lookup a Map:
     assertEquals("3.520.031", myMap.get("citizens"));
 </pre>
 <p>
-For further examples <a href=https://github.com/h-thurow/Simple-JNDI/tree/master/src/test/resources/roots/maps>see here</a>.
+For further map examples <a href=https://github.com/h-thurow/Simple-JNDI/tree/master/src/test/resources/roots/maps>see here</a>.
 <p>
 Note that you have to write "quantity/type=java.lang.Integer" and "enabled/type=java.lang.Boolean" when setting "org.osjava.sj.delimiter=/" unless you <a href=https://github.com/h-thurow/Simple-JNDI/wiki/Use-slash-separated-lookup-pathes-with-dot-separated-property-names-(New-in-0.14.0)>follow this description</a>. And as you might anticipate already: "type" is a reserved word with Simple-JNDI.
 </p>
