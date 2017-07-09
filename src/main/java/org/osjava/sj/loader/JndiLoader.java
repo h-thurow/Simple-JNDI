@@ -57,10 +57,10 @@ import java.util.regex.Pattern;
  */
 public class JndiLoader {
 
-    public static final String SIMPLE_DELIMITER = "org.osjava.sj.delimiter";
+    public static final String DELIMITER = "org.osjava.sj.delimiter";
 
     /** char(s) to replace with ":" in filenames and directories. Siehe {@link #handleColonReplacement(String)}*/
-    public static final String SIMPLE_COLON_REPLACE = "org.osjava.sj.colon.replace";
+    public static final String COLON_REPLACE = "org.osjava.sj.colon.replace";
     private static final Properties EMPTY_PROPERTIES = new Properties();
 
     private static ConverterRegistry converterRegistry = new ConverterRegistry();
@@ -72,9 +72,9 @@ public class JndiLoader {
 
     public JndiLoader(Hashtable env) {
         environment = new Hashtable(env);
-        if(!environment.containsKey(SIMPLE_DELIMITER)) {
-            LOGGER.info("{} not set. Setting to \".\"", SIMPLE_DELIMITER);
-            environment.put(SIMPLE_DELIMITER, ".");
+        if(!environment.containsKey(DELIMITER)) {
+            LOGGER.info("{} not set. Setting to \".\"", DELIMITER);
+            environment.put(DELIMITER, ".");
         }
         if (!environment.containsKey("jndi.syntax.direction")) {
             LOGGER.warn("jndi.syntax.direction not set. Setting to \"left_to_right\"");
@@ -202,10 +202,10 @@ public class JndiLoader {
     }
 
     /**
-     * Replaces {@link JndiLoader#SIMPLE_COLON_REPLACE} with ":" for building a ENC like "java:comp/env".
+     * Replaces {@link JndiLoader#COLON_REPLACE} with ":" for building a ENC like "java:comp/env".
      */
     String handleColonReplacement(String name) {
-        String colonReplace = (String) environment.get(SIMPLE_COLON_REPLACE);
+        String colonReplace = (String) environment.get(COLON_REPLACE);
         if (colonReplace != null) {
             if (name.contains(colonReplace)) {
                 name = StringUtils.replace(name, colonReplace, ":");
@@ -232,7 +232,7 @@ public class JndiLoader {
             p = new CustomSJProperties();
         }
 
-        p.setDelimiter( (String) environment.get(SIMPLE_DELIMITER) );
+        p.setDelimiter( (String) environment.get(DELIMITER) );
 
         FileInputStream fin = null;
         try {
@@ -442,23 +442,23 @@ public class JndiLoader {
     }
 
     /**
-     * @return  The CompoundName for path with respect to {@link JndiLoader#SIMPLE_DELIMITER}.
+     * @return  The CompoundName for path with respect to {@link JndiLoader#DELIMITER}.
      */
     @NotNull
     private CompoundName toCompoundName(@NotNull String path) throws InvalidNameException {
         Properties envCopy = new Properties(envAsProperties);
-        envCopy.setProperty("jndi.syntax.separator", envAsProperties.getProperty(SIMPLE_DELIMITER));
+        envCopy.setProperty("jndi.syntax.separator", envAsProperties.getProperty(DELIMITER));
         envCopy.setProperty("jndi.syntax.direction", (String) envAsProperties.get("jndi.syntax.direction"));
         return new CompoundName(path, envCopy);
     }
 
     /**
-     * Incompletely implemented: Let SIMPLE_DELIMITER be a regular expression, e.g. "\.|\/".
+     * Incompletely implemented: Let DELIMITER be a regular expression, e.g. "\.|\/".
      *
-     * @return delimiter "." or "/" or whatever is found by {@link #SIMPLE_DELIMITER}.
+     * @return delimiter "." or "/" or whatever is found by {@link #DELIMITER}.
      */
     private String extractDelimiter(String key) {
-        String delimiter = (String) environment.get(SIMPLE_DELIMITER);
+        String delimiter = (String) environment.get(DELIMITER);
         if (delimiter.length() == 1) { // be downwards compatible
             delimiter = delimiter.replace(".", "\\.");
         }

@@ -29,8 +29,8 @@ public class SimpleJndiNewTest {
         System.clearProperty(SimpleJndi.ENC);
         System.clearProperty(SimpleJndi.JNDI_SYNTAX_SEPARATOR);
         System.clearProperty(SimpleJndi.FILENAME_TO_CONTEXT);
-        System.clearProperty(JndiLoader.SIMPLE_COLON_REPLACE);
-        System.clearProperty(JndiLoader.SIMPLE_DELIMITER);
+        System.clearProperty(JndiLoader.COLON_REPLACE);
+        System.clearProperty(JndiLoader.DELIMITER);
     }
 
     /**
@@ -1107,10 +1107,10 @@ public class SimpleJndiNewTest {
         InitialContext ctx = null;
         try {
             final Hashtable<String, String> env = new Hashtable<String, String>();
-            env.put("org.osjava.sj.root", "src/test/resources/roots/maps/myMap.properties");
+            env.put("org.osjava.sj.root", "src/test/resources/roots/maps/nonNamespacedMap.properties");
             env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
             env.put(SimpleJndi.SHARED, "true");
-            env.put(JndiLoader.SIMPLE_DELIMITER, ".");
+            env.put(JndiLoader.DELIMITER, ".");
             env.put(SimpleJndi.JNDI_SYNTAX_SEPARATOR, "/");
             env.put(SimpleJndi.FILENAME_TO_CONTEXT, "true");
             ctx = new InitialContext(env);
@@ -1132,7 +1132,7 @@ public class SimpleJndiNewTest {
             env.put("org.osjava.sj.root", "src/test/resources/roots/maps/namespacedMap.properties");
             env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
             env.put(SimpleJndi.SHARED, "true");
-            env.put(JndiLoader.SIMPLE_DELIMITER, ".");
+            env.put(JndiLoader.DELIMITER, ".");
             env.put(SimpleJndi.JNDI_SYNTAX_SEPARATOR, "/");
             env.put(SimpleJndi.FILENAME_TO_CONTEXT, "true");
             ctx = new InitialContext(env);
@@ -1154,7 +1154,7 @@ public class SimpleJndiNewTest {
             env.put("org.osjava.sj.root", "src/test/resources/roots/maps/mixedNamespaces.properties");
             env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
             env.put(SimpleJndi.SHARED, "true");
-            env.put(JndiLoader.SIMPLE_DELIMITER, ".");
+            env.put(JndiLoader.DELIMITER, ".");
             env.put(SimpleJndi.JNDI_SYNTAX_SEPARATOR, "/");
             env.put(SimpleJndi.FILENAME_TO_CONTEXT, "true");
             ctx = new InitialContext(env);
@@ -1175,10 +1175,10 @@ public class SimpleJndiNewTest {
         InitialContext ctx = null;
         try {
             final Hashtable<String, String> env = new Hashtable<String, String>();
-            env.put("org.osjava.sj.root", "src/test/resources/roots/maps/multipleMaps.properties");
+            env.put(SimpleJndi.ROOT, "src/test/resources/roots/maps/multipleMaps.properties");
             env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
             env.put(SimpleJndi.SHARED, "true");
-            env.put(JndiLoader.SIMPLE_DELIMITER, ".");
+            env.put(JndiLoader.DELIMITER, ".");
             env.put(SimpleJndi.JNDI_SYNTAX_SEPARATOR, "/");
             env.put(SimpleJndi.FILENAME_TO_CONTEXT, "true");
             ctx = new InitialContext(env);
@@ -1187,6 +1187,35 @@ public class SimpleJndiNewTest {
             assertEquals("Holger", myMap.get("first name"));
 
             myMap = (Map) ctx.lookup("multipleMaps/city");
+            assertEquals("3.520.031", myMap.get("citizens"));
+        }
+        finally {
+            if (ctx != null) {
+                ctx.close();
+            }
+        }
+    }
+
+    @Test
+    public void mixedDeep() throws Exception {
+        InitialContext ctx = null;
+        try {
+            final Hashtable<String, String> env = new Hashtable<String, String>();
+            env.put(SimpleJndi.ROOT, "src/test/resources/roots/maps/mixedDeep.properties");
+            env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
+            env.put(SimpleJndi.SHARED, "true");
+            env.put(JndiLoader.DELIMITER, ".");
+            env.put(SimpleJndi.JNDI_SYNTAX_SEPARATOR, "/");
+            env.put(SimpleJndi.FILENAME_TO_CONTEXT, "true");
+            ctx = new InitialContext(env);
+
+            Map myMap = (Map) ctx.lookup("mixedDeep/person");
+            assertEquals("Holger", myMap.get("first name"));
+
+            Context my = (Context) ctx.lookup("mixedDeep/my");
+            assertNotNull(my);
+
+            myMap = (Map) ctx.lookup("mixedDeep/my/city");
             assertEquals("3.520.031", myMap.get("citizens"));
         }
         finally {

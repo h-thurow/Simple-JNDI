@@ -68,7 +68,7 @@ public class MemoryContextFactorySharedTest {
         /* Separator is required for non-flat */
         contextEnv.put("jndi.syntax.separator", "/");
         contextEnv.put("org.osjava.sj.jndi.shared", "true");
-        contextEnv.put(JndiLoader.SIMPLE_DELIMITER, "/");
+        contextEnv.put(JndiLoader.DELIMITER, "/");
 
         /* For Directory-Naming
         contextEnv.put(Context.INITIAL_CONTEXT_FACTORY, "org.apache.naming.java.javaURLContextFactory");

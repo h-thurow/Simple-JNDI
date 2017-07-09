@@ -25,8 +25,8 @@ public class JNDIConfigurationTest {
         System.clearProperty(SimpleJndi.ENC);
         System.clearProperty(SimpleJndi.JNDI_SYNTAX_SEPARATOR);
         System.clearProperty(SimpleJndi.FILENAME_TO_CONTEXT);
-        System.clearProperty(JndiLoader.SIMPLE_COLON_REPLACE);
-        System.clearProperty(JndiLoader.SIMPLE_DELIMITER);
+        System.clearProperty(JndiLoader.COLON_REPLACE);
+        System.clearProperty(JndiLoader.DELIMITER);
     }
 
     @Test

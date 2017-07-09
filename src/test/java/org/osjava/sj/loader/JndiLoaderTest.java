@@ -65,7 +65,7 @@ public class JndiLoaderTest {
         env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
         env.put("jndi.syntax.direction", "left_to_right");
         env.put("jndi.syntax.separator", "/");
-        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
+        env.put(JndiLoader.DELIMITER, "/");
 
         /* For Directory-Naming
         env.put(Context.INITIAL_CONTEXT_FACTORY, "org.apache.naming.java.javaURLContextFactory");
@@ -131,7 +131,7 @@ public class JndiLoaderTest {
         env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
         env.put("jndi.syntax.direction", "left_to_right");
         env.put("jndi.syntax.separator", "/");
-        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
+        env.put(JndiLoader.DELIMITER, "/");
         env.put(JndiLoader.FILENAME_TO_CONTEXT, "true");
 
         /* For Directory-Naming
@@ -336,7 +336,7 @@ public class JndiLoaderTest {
         env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
         env.put("jndi.syntax.direction", "left_to_right");
         env.put("jndi.syntax.separator", "/");
-        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
+        env.put(JndiLoader.DELIMITER, "/");
         env.put(Context.OBJECT_FACTORIES, org.apache.commons.dbcp2.BasicDataSourceFactory.class.getName());
 
         JndiLoader loader = new JndiLoader(env);

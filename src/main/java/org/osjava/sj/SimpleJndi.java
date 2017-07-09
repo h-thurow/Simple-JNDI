@@ -102,7 +102,7 @@ public class SimpleJndi {
     private Context createENC(Hashtable env, Context ctxt) throws NamingException {
         String space = (String) env.get(ENC);
         if(space != null) {
-            String delimiter = (String) env.get(JndiLoader.SIMPLE_DELIMITER);
+            String delimiter = (String) env.get(JndiLoader.DELIMITER);
             final Object separator = env.get(JNDI_SYNTAX_SEPARATOR);
             if (separator != null && !separator.equals(delimiter)) {
                 delimiter = "\\" + delimiter + "|\\" + separator;
@@ -129,11 +129,11 @@ public class SimpleJndi {
 
     private void initializeStandardJndiEnvironment() {
         env.put("jndi.syntax.direction", "left_to_right");
-        if(!env.containsKey(JndiLoader.SIMPLE_DELIMITER)) {
-            env.put(JndiLoader.SIMPLE_DELIMITER, ".");
+        if(!env.containsKey(JndiLoader.DELIMITER)) {
+            env.put(JndiLoader.DELIMITER, ".");
         }
         if (!env.containsKey(JNDI_SYNTAX_SEPARATOR)) {
-            env.put(JNDI_SYNTAX_SEPARATOR, env.get(JndiLoader.SIMPLE_DELIMITER));
+            env.put(JNDI_SYNTAX_SEPARATOR, env.get(JndiLoader.DELIMITER));
         }
     }
 
@@ -157,8 +157,8 @@ public class SimpleJndi {
         overwriteFromSystemProperty(SHARED);
         overwriteFromSystemProperty(JNDI_SYNTAX_SEPARATOR);
         overwriteFromSystemProperty(FILENAME_TO_CONTEXT);
-        overwriteFromSystemProperty(JndiLoader.SIMPLE_DELIMITER);
-        overwriteFromSystemProperty(JndiLoader.SIMPLE_COLON_REPLACE);
+        overwriteFromSystemProperty(JndiLoader.DELIMITER);
+        overwriteFromSystemProperty(JndiLoader.COLON_REPLACE);
         overwriteFromSystemProperty(Context.OBJECT_FACTORIES);
     }
 

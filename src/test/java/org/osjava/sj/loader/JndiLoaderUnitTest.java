@@ -21,7 +21,7 @@ public class JndiLoaderUnitTest {
         env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
         env.put("jndi.syntax.direction", "left_to_right");
 //        env.put("jndi.syntax.separator", "/");
-        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
+        env.put(JndiLoader.DELIMITER, "/");
         Properties typeDef = new Properties();
         typeDef.setProperty("ds/type", "javax.sql.DataSource");
         typeDef.setProperty("ds/url", "jdbc:sybase:Tds:b-sonar-omcdb.berlin.six.de:5000");
@@ -43,7 +43,7 @@ public class JndiLoaderUnitTest {
         env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
         env.put("jndi.syntax.direction", "left_to_right");
 //        env.put("jndi.syntax.separator", "/");
-        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
+        env.put(JndiLoader.DELIMITER, "/");
         Properties typeDef = new Properties();
         typeDef.setProperty("type", "javax.sql.DataSource");
         typeDef.setProperty("url", "jdbc:sybase:Tds:b-sonar-omcdb.berlin.six.de:5000");
@@ -61,7 +61,7 @@ public class JndiLoaderUnitTest {
         env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
         env.put("jndi.syntax.direction", "left_to_right");
 //        env.put("jndi.syntax.separator", "/");
-        env.put(JndiLoader.SIMPLE_DELIMITER, ".");
+        env.put(JndiLoader.DELIMITER, ".");
 
         Properties typeDef = new Properties();
         typeDef.setProperty("ds/type", "javax.sql.DataSource");
@@ -90,7 +90,7 @@ public class JndiLoaderUnitTest {
         env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
         env.put("jndi.syntax.direction", "left_to_right");
 //        env.put("jndi.syntax.separator", "/");
-        env.put(JndiLoader.SIMPLE_DELIMITER, ".");
+        env.put(JndiLoader.DELIMITER, ".");
 
         JndiLoader loader = new JndiLoader(env);
         Name name = loader.extractContextName("ds.type");
@@ -104,7 +104,7 @@ public class JndiLoaderUnitTest {
         env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
         env.put("jndi.syntax.direction", "left_to_right");
 //        env.put("jndi.syntax.separator", "/");
-        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
+        env.put(JndiLoader.DELIMITER, "/");
 
         JndiLoader loader = new JndiLoader(env);
         Name name = loader.extractContextName("ds/type");
@@ -118,7 +118,7 @@ public class JndiLoaderUnitTest {
         env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
         env.put("jndi.syntax.direction", "left_to_right");
         env.put("jndi.syntax.separator", "/"); // Required for MemoryContext
-        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
+        env.put(JndiLoader.DELIMITER, "/");
 
         JndiLoader loader = new JndiLoader(env);
         Name name = loader.extractContextName("jdbc/sybase/ds/type");
@@ -136,7 +136,7 @@ public class JndiLoaderUnitTest {
         env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
         env.put("jndi.syntax.direction", "left_to_right");
 //        env.put("jndi.syntax.separator", "/");
-        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
+        env.put(JndiLoader.DELIMITER, "/");
 
         JndiLoader loader = new JndiLoader(env);
         Name name = loader.extractContextName("type");
@@ -149,7 +149,7 @@ public class JndiLoaderUnitTest {
         env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
         env.put("jndi.syntax.direction", "left_to_right");
         //env.put("jndi.syntax.separator", "/");
-        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
+        env.put(JndiLoader.DELIMITER, "/");
 
         JndiLoader loader = new JndiLoader(env);
         Name name = loader.extractContextName("ds.type");
@@ -162,7 +162,7 @@ public class JndiLoaderUnitTest {
         env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
         env.put("jndi.syntax.direction", "left_to_right");
         //env.put("jndi.syntax.separator", "/");
-        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
+        env.put(JndiLoader.DELIMITER, "/");
 
         JndiLoader loader = new JndiLoader(env);
         String objName = loader.extractObjectName("my/ctx/object");
@@ -178,7 +178,7 @@ public class JndiLoaderUnitTest {
         env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
         env.put("jndi.syntax.direction", "left_to_right");
         //env.put("jndi.syntax.separator", "/");
-        env.put(JndiLoader.SIMPLE_DELIMITER, ".");
+        env.put(JndiLoader.DELIMITER, ".");
 
         JndiLoader loader = new JndiLoader(env);
         String objName = loader.extractObjectName("my/ctx/object");
@@ -194,7 +194,7 @@ public class JndiLoaderUnitTest {
         env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
         env.put("jndi.syntax.direction", "left_to_right");
         //env.put("jndi.syntax.separator", "/");
-        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
+        env.put(JndiLoader.DELIMITER, "/");
 
         JndiLoader loader = new JndiLoader(env);
 
@@ -216,7 +216,7 @@ public class JndiLoaderUnitTest {
         env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
         env.put("jndi.syntax.direction", "left_to_right");
         //env.put("jndi.syntax.separator", "/");
-        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
+        env.put(JndiLoader.DELIMITER, "/");
 
         JndiLoader loader = new JndiLoader(env);
 
@@ -238,7 +238,7 @@ public class JndiLoaderUnitTest {
         env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
         env.put("jndi.syntax.direction", "left_to_right");
         //env.put("jndi.syntax.separator", "/");
-        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
+        env.put(JndiLoader.DELIMITER, "/");
 
         JndiLoader loader = new JndiLoader(env);
 
@@ -260,7 +260,7 @@ public class JndiLoaderUnitTest {
         env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
         env.put("jndi.syntax.direction", "left_to_right");
         //env.put("jndi.syntax.separator", "/");
-        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
+        env.put(JndiLoader.DELIMITER, "/");
 
         JndiLoader loader = new JndiLoader(env);
 
@@ -282,7 +282,7 @@ public class JndiLoaderUnitTest {
         env.put(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
         env.put("jndi.syntax.direction", "left_to_right");
         //env.put("jndi.syntax.separator", "/");
-        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
+        env.put(JndiLoader.DELIMITER, "/");
 
         JndiLoader loader = new JndiLoader(env);
 

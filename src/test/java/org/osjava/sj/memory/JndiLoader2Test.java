@@ -64,7 +64,7 @@ public class JndiLoader2Test {
         env.put("jndi.syntax.direction", "left_to_right");
         /* Separator is required for non-flat */
         env.put("jndi.syntax.separator", "/");
-        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
+        env.put(JndiLoader.DELIMITER, "/");
 
         /* For Directory-Naming
         env.put(Context.INITIAL_CONTEXT_FACTORY, "org.apache.naming.java.javaURLContextFactory");
@@ -99,7 +99,7 @@ public class JndiLoader2Test {
         env.put("jndi.syntax.direction", "left_to_right");
         /* Separator is required for non-flat */
         env.put("jndi.syntax.separator", "/");
-        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
+        env.put(JndiLoader.DELIMITER, "/");
         try {
             Properties props = new Properties();
             props.put("foo", "13");
@@ -125,7 +125,7 @@ public class JndiLoader2Test {
         env.put("jndi.syntax.direction", "left_to_right");
         /* Separator is required for non-flat */
         env.put("jndi.syntax.separator", "/");
-        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
+        env.put(JndiLoader.DELIMITER, "/");
         env.put("org.osjava.sj.filenameToContext", "true");
         try {
             File file = new File("src/test/resources/roots/test.properties");
@@ -150,7 +150,7 @@ public class JndiLoader2Test {
         env.put("jndi.syntax.direction", "left_to_right");
         /* Separator is required for non-flat */
         env.put("jndi.syntax.separator", "/");
-        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
+        env.put(JndiLoader.DELIMITER, "/");
         try {
             File file = new File("src/test/resources/roots/default.properties");
             JndiLoader loader = new JndiLoader(env);
@@ -177,7 +177,7 @@ public class JndiLoader2Test {
         env.put("jndi.syntax.direction", "left_to_right");
         /* Separator is required for non-flat */
         env.put("jndi.syntax.separator", "/");
-        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
+        env.put(JndiLoader.DELIMITER, "/");
         JndiLoader loader = new JndiLoader(env);
         loader.load(loader.toProperties(
                 new File("src/test/resources/roots/fileAsRoot.cfg")), ctxt);
@@ -196,7 +196,7 @@ public class JndiLoader2Test {
         /* Separator is required for non-flat */
         env.put("jndi.syntax.separator", "/");
         env.put("org.osjava.sj.filenameToContext", "true");
-        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
+        env.put(JndiLoader.DELIMITER, "/");
         try {
             File file = new File("src/test/resources/roots/java.properties");
 
@@ -225,7 +225,7 @@ public class JndiLoader2Test {
         env.put("jndi.syntax.direction", "left_to_right");
         /* Separator is required for non-flat */
         env.put("jndi.syntax.separator", "/");
-        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
+        env.put(JndiLoader.DELIMITER, "/");
         try {
             File file = new File("src/test/resources/roots/TopLevelDS.properties");
             JndiLoader loader = new JndiLoader(env);
@@ -250,7 +250,7 @@ public class JndiLoader2Test {
         env.put("jndi.syntax.direction", "left_to_right");
         /* Separator is required for non-flat */
         env.put("jndi.syntax.separator", "/");
-        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
+        env.put(JndiLoader.DELIMITER, "/");
         try {
             Properties props = new Properties();
             props.put("foo", "true");
@@ -273,7 +273,7 @@ public class JndiLoader2Test {
         env.put("jndi.syntax.direction", "left_to_right");
         /* Separator is required for non-flat */
         env.put("jndi.syntax.separator", "/");
-        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
+        env.put(JndiLoader.DELIMITER, "/");
         try {
             Properties props = new Properties();
             props.put("birthday", "2004-10-22");
@@ -305,7 +305,7 @@ public class JndiLoader2Test {
         env.put("jndi.syntax.direction", "left_to_right");
         /* Separator is required for non-flat */
         env.put("jndi.syntax.separator", "/");
-        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
+        env.put(JndiLoader.DELIMITER, "/");
         try {
             Properties props = new Properties();
             props.put("math", "Pi");
@@ -332,7 +332,7 @@ public class JndiLoader2Test {
         env.put("jndi.syntax.direction", "left_to_right");
         /* Separator is required for non-flat */
         env.put("jndi.syntax.separator", "/");
-        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
+        env.put(JndiLoader.DELIMITER, "/");
         try {
             Properties props = new Properties();
             props.put("bean/type", "org.osjava.sj.loader.TestBean");
@@ -361,7 +361,7 @@ public class JndiLoader2Test {
         env.put("jndi.syntax.direction", "left_to_right");
         /* Separator is required for non-flat */
         env.put("jndi.syntax.separator", "/");
-        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
+        env.put(JndiLoader.DELIMITER, "/");
         File file = new File("src/test/resources/roots/pooltest");
         JndiLoader loader = new JndiLoader(env);
         loader.load( file, ctxt );
@@ -387,7 +387,7 @@ public class JndiLoader2Test {
         env.put("jndi.syntax.direction", "left_to_right");
         /* Separator is required for non-flat */
         env.put("jndi.syntax.separator", "/");
-        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
+        env.put(JndiLoader.DELIMITER, "/");
         File file = new File("src/test/resources/roots/pooltest");
         JndiLoader loader = new JndiLoader(env);
         loader.load( file, ctxt );
@@ -413,7 +413,7 @@ public class JndiLoader2Test {
         env.put("jndi.syntax.direction", "left_to_right");
         /* Separator is required for non-flat */
         env.put("jndi.syntax.separator", "/");
-        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
+        env.put(JndiLoader.DELIMITER, "/");
         File file = new File("src/test/resources/roots/pooltest1");
         JndiLoader loader = new JndiLoader(env);
         loader.load( file, ctxt );
@@ -435,7 +435,7 @@ public class JndiLoader2Test {
         env.put("jndi.syntax.direction", "left_to_right");
         /* Separator is required for non-flat */
         env.put("jndi.syntax.separator", "/");
-        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
+        env.put(JndiLoader.DELIMITER, "/");
         File file = new File("src/test/resources/roots/pooltest2");
         JndiLoader loader = new JndiLoader(env);
         loader.load( file, ctxt );
@@ -457,7 +457,7 @@ public class JndiLoader2Test {
         env.put("jndi.syntax.direction", "left_to_right");
         /* Separator is required for non-flat */
         env.put("jndi.syntax.separator", "/");
-        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
+        env.put(JndiLoader.DELIMITER, "/");
         File file = new File("src/test/resources/roots/pooltest3");
         JndiLoader loader = new JndiLoader(env);
         loader.load( file, ctxt );
@@ -479,7 +479,7 @@ public class JndiLoader2Test {
         env.put("jndi.syntax.direction", "left_to_right");
         /* Separator is required for non-flat */
         env.put("jndi.syntax.separator", "/");
-        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
+        env.put(JndiLoader.DELIMITER, "/");
         File file = new File("src/test/resources/roots/pooltest4");
         JndiLoader loader = new JndiLoader(env);
         loader.load( file, ctxt );
@@ -501,7 +501,7 @@ public class JndiLoader2Test {
         env.put("jndi.syntax.direction", "left_to_right");
         /* Separator is required for non-flat */
         env.put("jndi.syntax.separator", "/");
-        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
+        env.put(JndiLoader.DELIMITER, "/");
         File file = new File("src/test/resources/roots/multiValueAttributes/integers");
         JndiLoader loader = new JndiLoader(env);
         loader.load( file, ctxt );
@@ -518,7 +518,7 @@ public class JndiLoader2Test {
         env.put("jndi.syntax.direction", "left_to_right");
         /* Separator is required for non-flat */
         env.put("jndi.syntax.separator", "/");
-        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
+        env.put(JndiLoader.DELIMITER, "/");
         File file = new File("src/test/resources/roots/multiValueAttributes/noType");
         JndiLoader loader = new JndiLoader(env);
         loader.load( file, ctxt );
@@ -538,7 +538,7 @@ public class JndiLoader2Test {
         env.put("jndi.syntax.direction", "left_to_right");
         /* Separator is required for non-flat */
         env.put("jndi.syntax.separator", "/");
-        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
+        env.put(JndiLoader.DELIMITER, "/");
         File file = new File("src/test/resources/roots/multiValueAttributes/booleans");
         JndiLoader loader = new JndiLoader(env);
         loader.load( file, ctxt );
@@ -559,7 +559,7 @@ public class JndiLoader2Test {
         env.put("jndi.syntax.direction", "left_to_right");
         /* Separator is required for non-flat */
         env.put("jndi.syntax.separator", "/");
-        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
+        env.put(JndiLoader.DELIMITER, "/");
         File file = new File("src/test/resources/roots/multiValueAttributes/characters");
         JndiLoader loader = new JndiLoader(env);
         loader.load( file, ctxt );
@@ -584,7 +584,7 @@ public class JndiLoader2Test {
         env.put("jndi.syntax.direction", "left_to_right");
         /* Separator is required for non-flat */
         env.put("jndi.syntax.separator", "/");
-        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
+        env.put(JndiLoader.DELIMITER, "/");
         File file = new File("src/test/resources/roots/multiValueAttributes/shorts");
         JndiLoader loader = new JndiLoader(env);
         loader.load( file, ctxt );
@@ -602,7 +602,7 @@ public class JndiLoader2Test {
         env.put("jndi.syntax.direction", "left_to_right");
         /* Separator is required for non-flat */
         env.put("jndi.syntax.separator", "/");
-        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
+        env.put(JndiLoader.DELIMITER, "/");
         File file = new File("src/test/resources/roots/multiValueAttributes/doubles");
         JndiLoader loader = new JndiLoader(env);
         loader.load( file, ctxt );
@@ -622,7 +622,7 @@ public class JndiLoader2Test {
         env.put("jndi.syntax.direction", "left_to_right");
         /* Separator is required for non-flat */
         env.put("jndi.syntax.separator", "/");
-        env.put(JndiLoader.SIMPLE_DELIMITER, "/");
+        env.put(JndiLoader.DELIMITER, "/");
         File file = new File("src/test/resources/roots/multiValueAttributes");
         JndiLoader loader = new JndiLoader(env);
         loader.load( file, ctxt );
