@@ -96,8 +96,7 @@ Thereafter you can call typed properties:
 <p>
 The following types are supported: Byte, Short, Integer, Long, Float, Double, Character.
 <p>
-<p>
-Note that you have to write "quantity/type=java.lang.Integer" and "enabled/type=java.lang.Boolean" when setting "org.osjava.sj.delimiter=/".
+Note that you have to write "quantity/type=java.lang.Integer" and "enabled/type=java.lang.Boolean" when setting "org.osjava.sj.delimiter=/". And as you might anticipate already: "type" is a reserved word with Simple-JNDI.
 </p>
 <p>
 See also<br>
