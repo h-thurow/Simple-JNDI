@@ -149,7 +149,7 @@ See also <a href=https://github.com/h-thurow/Simple-JNDI/wiki/Use-slash-separate
 <h3>DataSources</h3>
 
 <p>
-The most popular object to get from JNDI is a object of type <i>javax.sql.DataSource</i>, allowing the developer to obtain JDBC connections to databases. Simple-JNDI supports this out of the box. See</p>
+The most popular object to get from JNDI is an object of type <i>javax.sql.DataSource</i>, allowing the developer to obtain JDBC connections to databases. Simple-JNDI supports this out of the box. See</p>
 <p>
 <a href=https://github.com/h-thurow/Simple-JNDI/wiki/DataSource-Configuration-DBCP-2-and-Commons-Pool-2-(New-in-0.15.0)>DataSource Configuration DBCP 2 and Commons Pool 2 (New in 0.15.0)</a><br>
 <a href=https://github.com/h-thurow/Simple-JNDI/wiki/DataSource-Configuration-HikariCP-(0.15.0)>DataSource Configuration HikariCP (0.15.0)</a><br>
