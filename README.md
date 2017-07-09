@@ -150,37 +150,10 @@ See also <a href=https://github.com/h-thurow/Simple-JNDI/wiki/Use-slash-separate
 
 <p>
 The most popular object to get from JNDI is a object of type <i>javax.sql.DataSource</i>, allowing the developer to obtain JDBC connections to databases. Simple-JNDI supports this out of the box.</p>
-
-<p>There are five mandatory parameters for a DataSource in Simple-JNDI: <i>url, driver, user, password, type</i>. The following shows an example of a DataSource that will be available under the lookup key <i>application/ds/TestDS</i>. </p>
-<pre>
-application/ds/TestDS.properties
-    type=javax.sql.DataSource
-    driver=org.gjt.mm.mysql.Driver
-    url=jdbc:mysql://localhost/testdb
-    user=testuser
-    password=testing
-</pre>
-<p>The code to obtain it would be:</p>
-<pre>
-      InitialContext ctxt = new InitialContext();
-      DataSource ds = (DataSource) ctxt.lookup("application/ds/TestDS");
-</pre>
-<p>This example uses a delimiter of '/', which must be set with the <i>org.osjava.sj.delimiter</i> property.</p>
 <p>
-Often when using a DataSource you will want to pool the Connections the DataSource is handing out. Simple-JNDI delegates to the Jakarta Commons DBCP project for this feature so you will need commons-dbcp, commons-pool and commons-collections jars in your classpath. </p>
-<p>The feature is turned on by adding a sub-parameter of '<i>pool=&lt;pool-name&gt;</i>' in your datasource properties file. The above shown application1/ds/TestDS.properties file then looks like:
-<pre>
-    type=javax.sql.DataSource
-    driver=org.gjt.mm.mysql.Driver
-    url=jdbc:mysql://localhost/testdb
-    user=testuser
-    password=testing
-    pool=apachePool
-</pre>
-<p>Note: The pool variable used to be a boolean '<i>true</i>' variable, but now a pool name is provided. This is fully backwards compatible. </p>
-<p>See also<br>
-<a href=https://github.com/h-thurow/Simple-JNDI/wiki/Connection-pool-configuration-(commons-dbcp1)>Connection pool configuration (commons-dbcp1)</a><br>
-<a href=https://github.com/h-thurow/Simple-JNDI/wiki/DBCP-2-and-Commons-Pool-2-support-(New-in-0.15.0)>DBCP 2 and Commons Pool 2 support (New in 0.15.0)</a><br>
+See<br>
+<a href=https://github.com/h-thurow/Simple-JNDI/wiki/DataSource-configuration-(commons-dbcp-1)>DataSource configuration (commons dbcp 1)</a><br>
+<a href=https://github.com/h-thurow/Simple-JNDI/wiki/DataSource-Configuration-DBCP-2-and-Commons-Pool-2-(New-in-0.15.0)>DataSource Configuration DBCP 2 and Commons Pool 2 (New in 0.15.0)</a><br>
 <a href=https://github.com/h-thurow/Simple-JNDI/wiki/Usage-with-Spring>Usage with Spring - Inject a DataSource into beans</a>
 </p>
 
