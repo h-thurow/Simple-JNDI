@@ -13,7 +13,7 @@ import java.util.Properties;
 import static org.junit.Assert.*;
 
 /**
- * Created by hot on 03.07.17.
+ * @author Holger Thurow (thurow.h@gmail.com) on 03.07.17.
  */
 public class DemoBeanFactoryTest {
 

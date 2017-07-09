@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by hot on 22/12/2016.
+ * @author Holger Thurow (thurow.h@gmail.com) on 22/12/2016.
  */
 public class BeanWithSetterStringsOnly {
     private String firstName;

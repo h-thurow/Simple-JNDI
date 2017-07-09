@@ -1197,7 +1197,7 @@ public class SimpleJndiNewTest {
     }
 
     @Test
-    public void mixedDeep() throws Exception {
+    public void mixedDeepMaps() throws Exception {
         InitialContext ctx = null;
         try {
             final Hashtable<String, String> env = new Hashtable<String, String>();

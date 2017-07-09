@@ -10,7 +10,7 @@ import java.util.Hashtable;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Created by hot on 04/02/2017.
+ * @author Holger Thurow (thurow.h@gmail.com) on 04/02/2017.
  */
 public class MemoryContextTest {
 

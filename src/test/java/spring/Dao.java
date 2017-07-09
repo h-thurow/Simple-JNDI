@@ -3,7 +3,7 @@ package spring;
 import javax.sql.DataSource;
 
 /**
- * Created by hot on 07.06.17.
+ * @author Holger Thurow (thurow.h@gmail.com) on 07.06.17.
  */
 public class Dao {
     private DataSource dataSource;

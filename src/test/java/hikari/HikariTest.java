@@ -17,7 +17,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 /**
- * Created by hot on 08.07.17.
+ * @author Holger Thurow (thurow.h@gmail.com) on 08.07.17.
  */
 public class HikariTest {
 

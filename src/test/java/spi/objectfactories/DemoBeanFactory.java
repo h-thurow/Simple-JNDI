@@ -10,7 +10,7 @@ import javax.naming.spi.ObjectFactory;
 import java.util.Hashtable;
 
 /**
- * Created by hot on 03.07.17.
+ * @author Holger Thurow (thurow.h@gmail.com) on 03.07.17.
  */
 public class DemoBeanFactory implements ObjectFactory {
 
