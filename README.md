@@ -166,14 +166,8 @@ application/ds/TestDS.properties
       DataSource ds = (DataSource) ctxt.lookup("application/ds/TestDS");
 </pre>
 <p>This example uses a delimiter of '/', which must be set with the <i>org.osjava.sj.delimiter</i> property.</p>
-<p>See also<br>
-<a href=https://github.com/h-thurow/Simple-JNDI/wiki/DBCP-2-and-Commons-Pool-2-support-(New-in-0.15.0)>DBCP 2 and Commons Pool 2 support (New in 0.15.0)</a><br>
-<a href=https://github.com/h-thurow/Simple-JNDI/wiki/Usage-with-Spring>Usage with Spring - Inject a DataSource into beans</a>
-</p>
-
-<h3>Connection pooling</h3>
-
-<p>Often when using a DataSource you will want to pool the Connections the DataSource is handing out. Simple-JNDI delegates to the Jakarta Commons DBCP project for this feature so you will need commons-dbcp, commons-pool and commons-collections jars in your classpath. </p>
+<p>
+Often when using a DataSource you will want to pool the Connections the DataSource is handing out. Simple-JNDI delegates to the Jakarta Commons DBCP project for this feature so you will need commons-dbcp, commons-pool and commons-collections jars in your classpath. </p>
 <p>The feature is turned on by adding a sub-parameter of '<i>pool=&lt;pool-name&gt;</i>' in your datasource properties file. The above shown application1/ds/TestDS.properties file then looks like:
 <pre>
     type=javax.sql.DataSource
@@ -186,7 +180,9 @@ application/ds/TestDS.properties
 <p>Note: The pool variable used to be a boolean '<i>true</i>' variable, but now a pool name is provided. This is fully backwards compatible. </p>
 <p>See also<br>
 <a href=https://github.com/h-thurow/Simple-JNDI/wiki/Connection-pool-configuration-(commons-dbcp1)>Connection pool configuration (commons-dbcp1)</a><br>
-<a href=https://github.com/h-thurow/Simple-JNDI/wiki/DBCP-2-and-Commons-Pool-2-support-(New-in-0.15.0)>DBCP 2 and Commons Pool 2 support (New in 0.15.0)</a></p>
+<a href=https://github.com/h-thurow/Simple-JNDI/wiki/DBCP-2-and-Commons-Pool-2-support-(New-in-0.15.0)>DBCP 2 and Commons Pool 2 support (New in 0.15.0)</a><br>
+<a href=https://github.com/h-thurow/Simple-JNDI/wiki/Usage-with-Spring>Usage with Spring - Inject a DataSource into beans</a>
+</p>
 
 <h3>Shared or unshared context?</h3>
 
