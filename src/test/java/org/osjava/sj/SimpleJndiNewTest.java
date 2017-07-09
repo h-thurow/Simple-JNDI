@@ -1114,7 +1114,7 @@ public class SimpleJndiNewTest {
             env.put(SimpleJndi.JNDI_SYNTAX_SEPARATOR, "/");
             env.put(SimpleJndi.FILENAME_TO_CONTEXT, "true");
             ctx = new InitialContext(env);
-            Map myMap = (Map) ctx.lookup("myMap");
+            Map myMap = (Map) ctx.lookup("nonNamespacedMap");
             assertEquals("Holger", myMap.get("first name"));
         }
         finally {
