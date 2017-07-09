@@ -10,7 +10,6 @@ import javax.naming.InitialContext;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Hashtable;
 
@@ -57,7 +56,7 @@ public class HikariTest {
     /**
      * See <a href=https://github.com/brettwooldridge/HikariCP/issues/928>HikariJNDIFactory should not throw a NamingException when !"javax.sql.DataSource".equals(ref.getClassName())</a>
      */
-    @Test
+    @Test(expected = AssertionError.class)
     public void hikariCPAndBeans() throws Exception {
         InitialContext ctx = null;
         try {
@@ -151,24 +150,4 @@ public class HikariTest {
         }
     }
 
-    private void createTable(Statement statement) throws SQLException {
-        int i = statement.executeUpdate("CREATE TABLE\n" +
-                "  DATATYPES_TEST\n" +
-                "  (\n" +
-                "    a_date DATE NULL,\n" +
-                "    a_time TIME NULL,\n" +
-                "    a_datetime DATETIME NULL,\n" +
-                "    a_numeric NUMERIC(8,0) NULL,\n" +
-                "    a_float FLOAT NULL,\n" +
-                //"    a_text TEXT NULL,\n" +
-                "    a_varchar VARCHAR(36) NULL,\n" +
-                "    a_int INT NULL,\n" +
-                "    a_tinyint TINYINT NULL,\n" +
-                "    TIMESTAMP TIMESTAMP NULL,\n" +
-                //"    a_smalldatetime SMALLDATETIME NULL,\n" +
-                //"    a_image IMAGE NULL,\n" +
-                "    a_numeric_18_15 NUMERIC(18,15) NULL,\n" +
-                "    a_varchar_not_null VARCHAR(36) DEFAULT ''\n" +
-                "  )");
-    }
 }
