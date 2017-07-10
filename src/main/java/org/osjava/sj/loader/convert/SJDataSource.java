@@ -50,7 +50,7 @@ public class SJDataSource implements DataSource {
     private String username;
     private String password;
     private String url;
-    private String driver;
+    private String driverName;
 
     // for pooling
     private Properties properties;
@@ -62,7 +62,7 @@ public class SJDataSource implements DataSource {
 
     public SJDataSource(String driverName, String url, String username, String password, Properties properties) {
         ensureLoaded(driverName);
-        this.driver = driverName;
+        this.driverName = driverName;
         this.url = url;
         this.printWriter = new PrintWriter(System.err);
         this.username = username;
@@ -133,7 +133,7 @@ public class SJDataSource implements DataSource {
     }
 
     public String toString() {
-        return driver + "::::" + url + "::::" + username;
+        return driverName + "::::" + url + "::::" + username;
     }
 
     public boolean equals(Object obj) {
@@ -146,12 +146,12 @@ public class SJDataSource implements DataSource {
         SJDataSource other = (SJDataSource) obj;
 
         return other.url.equals(this.url) &&
-                other.driver.equals(this.driver) &&
+                other.driverName.equals(this.driverName) &&
                 other.username.equals(this.username);
     }
 
     public int hashCode() {
-        return this.url.hashCode() & this.username.hashCode() & this.driver.hashCode();
+        return this.url.hashCode() & this.username.hashCode() & this.driverName.hashCode();
     }
 
     // Added by JDK 1.6 via java.sql.Wrapper
