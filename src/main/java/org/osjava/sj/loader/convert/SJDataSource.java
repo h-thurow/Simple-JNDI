@@ -46,7 +46,7 @@ import java.util.logging.Logger;
  */
 public class SJDataSource implements DataSource {
 
-    private PrintWriter pw;
+    private PrintWriter printWriter;
     private String username;
     private String password;
     private String url;
@@ -60,11 +60,11 @@ public class SJDataSource implements DataSource {
      */
     private String poolUrl = null;
 
-    public SJDataSource(String driver, String url, String username, String password, Properties properties) {
-        ensureLoaded(driver);
-        this.driver = driver;
+    public SJDataSource(String driverName, String url, String username, String password, Properties properties) {
+        ensureLoaded(driverName);
+        this.driver = driverName;
         this.url = url;
-        this.pw = new PrintWriter(System.err);
+        this.printWriter = new PrintWriter(System.err);
         this.username = username;
         this.password = password;
         this.properties = properties;
@@ -75,7 +75,8 @@ public class SJDataSource implements DataSource {
         try {
             Class.forName(name).newInstance();
             return true;
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return false;
         }
     }
@@ -91,27 +92,32 @@ public class SJDataSource implements DataSource {
      * With every call a new connection is returned unless property "pool" was set.
      */
     public Connection getConnection(String username, String password) throws SQLException {
-        String tmpUrl = this.url;
-
-        String pool = properties.getProperty("pool");
-        if (pool != null) {  // we want a connection name named like the pool property
+        String poolName = properties.getProperty("pool");
+        if (poolName != null) {  // we want a connection name named like the pool property
             synchronized (SJDataSource.class) {
                 if (poolUrl == null) {  // we didn't create a connection pool already, so do it now
-                    PoolSetup.setupConnection(pool, url, username, password, properties);
-                    poolUrl = PoolSetup.getUrl(pool);
+                    PoolSetup.setupConnection(poolName, url, username, password, properties);
+                    poolUrl = PoolSetup.getUrl(poolName);
                 }
             }
-            tmpUrl = poolUrl;  // url is now a pooling link
+            return getConnection(username, password, poolUrl);
         }
+        else {
+            return getConnection(username, password, url);
+        }
+    }
 
-        if(username == null || password == null) {
+    private Connection getConnection(String username, String password, String tmpUrl) throws SQLException {
+        if (username == null || password == null) {
             return DriverManager.getConnection(tmpUrl);
         }
-        return DriverManager.getConnection(tmpUrl, username, password);
+        else {
+            return DriverManager.getConnection(tmpUrl, username, password);
+        }
     }
 
     public PrintWriter getLogWriter() throws SQLException {
-        return pw;
+        return printWriter;
     }
 
     public int getLoginTimeout() throws SQLException {
@@ -119,7 +125,7 @@ public class SJDataSource implements DataSource {
     }
 
     public void setLogWriter(PrintWriter pw) throws SQLException {
-        this.pw = pw;
+        this.printWriter = pw;
     }
 
     public void setLoginTimeout(int timeout) throws SQLException {
@@ -131,17 +137,17 @@ public class SJDataSource implements DataSource {
     }
 
     public boolean equals(Object obj) {
-        if(obj == null) { 
+        if (obj == null) {
             return false;
         }
-        if(obj.getClass() != this.getClass()) {
+        if (obj.getClass() != this.getClass()) {
             return false;
         }
         SJDataSource other = (SJDataSource) obj;
 
         return other.url.equals(this.url) &&
-               other.driver.equals(this.driver) &&
-               other.username.equals(this.username);
+                other.driver.equals(this.driver) &&
+                other.username.equals(this.username);
     }
 
     public int hashCode() {
@@ -150,17 +156,17 @@ public class SJDataSource implements DataSource {
 
     // Added by JDK 1.6 via java.sql.Wrapper
     public boolean isWrapperFor(Class<?> iface) throws SQLException {
-         return false;
+        return false;
     }
 
     // Added by JDK 1.6 via java.sql.Wrapper
-    public <T>  T unwrap(Class<T> iface) throws SQLException {
+    public <T> T unwrap(Class<T> iface) throws SQLException {
         throw new SQLException("This object is not a wrapper");
     }
 
     // Patch for Java 1.7
     public Logger getParentLogger() throws SQLFeatureNotSupportedException {
-        throw new SQLFeatureNotSupportedException( "This class does not support this operation." );
+        throw new SQLFeatureNotSupportedException("This class does not support this operation.");
     }
 
 }

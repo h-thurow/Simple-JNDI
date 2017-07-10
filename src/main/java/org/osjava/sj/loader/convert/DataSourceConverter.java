@@ -42,12 +42,12 @@ public class DataSourceConverter implements ConverterIF {
     private static Logger LOGGER = LoggerFactory.getLogger(DataSourceConverter.class);
 
     public Object convert(Properties properties, String type) {
-        String driver = properties.getProperty("driver");
+        String driverName = properties.getProperty("driver");
         String url = properties.getProperty("url");
         String user = properties.getProperty("user");
         String password = properties.getProperty("password");
 
-        if (driver == null) {
+        if (driverName == null) {
             LOGGER.error("Incomplete arguments provided: properties={} type={}", properties, type);
             throw new IllegalArgumentException("Required subelement 'driver'");
         }
@@ -64,7 +64,7 @@ public class DataSourceConverter implements ConverterIF {
             throw new IllegalArgumentException("Required subelement 'password'");
         }
 
-        return new SJDataSource(driver, url, user, password, properties);
+        return new SJDataSource(driverName, url, user, password, properties);
     }
 
 }
