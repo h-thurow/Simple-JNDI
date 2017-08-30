@@ -68,7 +68,7 @@ public class SimpleNameParser implements NameParser {
     
     /**
      * Creates a ThreadNameParser.  Any relevant information that is needed, 
-     * such as the environment that is passed to {@link CompoundName CompundName}
+     * such as the environment that is passed to {@link CompoundName CompoundName}
      * objects that are created.
      * 
      * @param parent ThreadContext that utilizes the name parser.

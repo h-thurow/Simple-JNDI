@@ -35,6 +35,7 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.osjava.datasource.SJDataSource;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -288,7 +289,7 @@ public class JndiLoaderTest {
     }
 
     /**
-     * For testing legacy {@link org.osjava.sj.loader.convert.SJDataSource} with commons-dbcp.
+     * For testing legacy {@link SJDataSource} with commons-dbcp.
      */
     public void testPoolLive() throws IOException, NamingException, SQLException {
         Properties props = new Properties();

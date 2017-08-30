@@ -32,14 +32,15 @@
 
 package org.osjava.sj.loader.convert;
 
+import org.osjava.datasource.SJDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Properties;
 
-public class DataSourceConverter implements ConverterIF {
+public class SJDataSourceConverter implements ConverterIF {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(DataSourceConverter.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(SJDataSourceConverter.class);
 
     public Object convert(Properties properties, String type) {
         String driverName = properties.getProperty("driver");
@@ -63,7 +64,7 @@ public class DataSourceConverter implements ConverterIF {
             LOGGER.error("Incomplete arguments provided: properties={} type={}", properties, type);
             throw new IllegalArgumentException("Required subelement 'password'");
         }
-
+        // TODO Make Simple-JNDI independant from org.osjava.datasource
         return new SJDataSource(driverName, url, user, password, properties);
     }
 

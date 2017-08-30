@@ -99,6 +99,9 @@ public class JndiLoader {
                 loadFile(fileOrDirectory, ctxt, null, "", preserveFileNameAsContextName);
             }
         }
+        else {
+            LOGGER.warn("Not found: {}", fileOrDirectory.getAbsolutePath());
+        }
     }
 
     /**
@@ -120,12 +123,16 @@ public class JndiLoader {
                 loadFile(fileOrDirectory, ctxt, null, "", preserveFileNameAsContextName);
             }
         }
+        else {
+            LOGGER.warn("Not found: {}", fileOrDirectory.getAbsolutePath());
+        }
     }
 
     /**
      * Loads all .properties", .ini, .xml files in a directory into a context.
      */
     private void loadDirectory(File directory, Context ctxt, Context parentCtxt, String subName) throws NamingException, IOException {
+        LOGGER.debug("Loading {}", directory.getAbsolutePath());
         File[] files = directory.listFiles();
         if (files != null) {
             for (File file : files) {
@@ -154,6 +161,7 @@ public class JndiLoader {
      * @param file Not a directory
      */
     private void loadFile(File file, Context ctxt, Context parentCtxt, String subName, boolean preserveFileNameAsContextName) throws NamingException, IOException {
+        LOGGER.debug("Loading {}", file.getAbsolutePath());
         String parentName = file.getName();
         parentName = handleColonReplacement(parentName);
         Context subContext = ctxt;
