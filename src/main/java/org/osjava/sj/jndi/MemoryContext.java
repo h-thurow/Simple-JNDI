@@ -32,6 +32,7 @@
 
 package org.osjava.sj.jndi;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -45,6 +46,8 @@ import java.util.*;
  * @since Simple-JNDI 0.11
  */
 public class MemoryContext implements Cloneable, Context  {
+
+    public static final String IGNORE_CLOSE = "org.osjava.sj.jndi.ignoreClose";
 
     private Map<Name, Object> namesToObjects = Collections.synchronizedMap(new HashMap<Name, Object>());
     private Map<Name, Context> subContexts = Collections.synchronizedMap(new HashMap<Name, Context>());
@@ -604,46 +607,10 @@ public class MemoryContext implements Cloneable, Context  {
      */
     @Override
     public void close() throws NamingException {
-        destroySubcontexts(this);
-
-        // TODO This block is never entered by current tests.
-        while(namesToObjects.size() > 0 || subContexts.size() > 0) {
-            Iterator it = namesToObjects.keySet().iterator();
-            List toRemove = new LinkedList();
-            while(it.hasNext()) {
-                Name name = (Name)it.next();
-
-                Object entry = namesToObjects.get(name);
-
-                if(entry instanceof Thread) {
-                    Thread thread = (Thread) entry;
-                    if(thread.isAlive()) {
-                        toRemove.add(name);
-                    }
-                } else {
-                    toRemove.add(name);
-                }
-            }
-            for(it = toRemove.iterator(); it.hasNext();) {
-                namesToObjects.remove(it.next());
-            }
-
-            toRemove.clear();
-            it = subContexts.keySet().iterator();
-            while(it.hasNext()) {
-                Name name = (Name)it.next();
-                MemoryContext context = (MemoryContext) subContexts.get(name);
-                if(context.isEmpty()) {
-                    toRemove.add(name);
-                }
-            }
-            for(it = toRemove.iterator(); it.hasNext();) {
-                subContexts.remove(it.next());
-            }
+        String ignoreClose = (String) env.get(IGNORE_CLOSE);
+        if (!BooleanUtils.toBoolean(ignoreClose)) {
+            forceClose();
         }
-        env = null;
-        namesToObjects = null;
-        subContexts = null;
     }
 
     /**
@@ -686,6 +653,49 @@ public class MemoryContext implements Cloneable, Context  {
         }
         nameInNamespace = name;
         nameLock = true;
+    }
+
+    public void forceClose() throws NamingException {
+        destroySubcontexts(this);
+
+        // TODO This block is never entered by current tests.
+        while(namesToObjects.size() > 0 || subContexts.size() > 0) {
+            Iterator it = namesToObjects.keySet().iterator();
+            List toRemove = new LinkedList();
+            while(it.hasNext()) {
+                Name name = (Name)it.next();
+
+                Object entry = namesToObjects.get(name);
+
+                if(entry instanceof Thread) {
+                    Thread thread = (Thread) entry;
+                    if(thread.isAlive()) {
+                        toRemove.add(name);
+                    }
+                } else {
+                    toRemove.add(name);
+                }
+            }
+            for(it = toRemove.iterator(); it.hasNext();) {
+                namesToObjects.remove(it.next());
+            }
+
+            toRemove.clear();
+            it = subContexts.keySet().iterator();
+            while(it.hasNext()) {
+                Name name = (Name)it.next();
+                MemoryContext context = (MemoryContext) subContexts.get(name);
+                if(context.isEmpty()) {
+                    toRemove.add(name);
+                }
+            }
+            for(it = toRemove.iterator(); it.hasNext();) {
+                subContexts.remove(it.next());
+            }
+        }
+        env = null;
+        namesToObjects = null;
+        subContexts = null;
     }
 }
 

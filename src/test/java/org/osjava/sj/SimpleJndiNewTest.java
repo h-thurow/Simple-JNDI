@@ -785,6 +785,48 @@ public class SimpleJndiNewTest {
     }
 
     @Test
+    public void ignoreClose() throws Exception {
+        InitialContext ic = null;
+        final Hashtable<String, String> envNotClosable = new Hashtable<String, String>();
+        envNotClosable.put("org.osjava.sj.root",
+                "src/test/resources/roots/untypedProperty");
+        envNotClosable.put("org.osjava.sj.jndi.shared", "true");
+        envNotClosable.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
+        envNotClosable.put("org.osjava.sj.delimiter", "/");
+        envNotClosable.put(MemoryContext.IGNORE_CLOSE, "true");
+        Hashtable envClosable = (Hashtable) envNotClosable.clone();
+        envClosable.remove(MemoryContext.IGNORE_CLOSE);
+        try {
+
+            ic = new InitialContext(envNotClosable);
+            final String name1 = (String) ic.lookup("file1/name");
+            assertEquals("holger", name1);
+            ic.close();
+
+            ic = new InitialContext(envNotClosable);
+            final String name2 = (String) ic.lookup("file1/name");
+            assertEquals("holger", name2);
+            assertSame(name1, name2); // close has been ignored
+            ic.close();
+
+            // Destroy all contexts and free bound objects.
+            ic = new InitialContext(envClosable);
+            ic.close();
+
+            ic = new InitialContext(envNotClosable);
+            final String name3 = (String) ic.lookup("file1/name");
+            assertEquals("holger", name3);
+            assertNotSame(name2, name3);
+        }
+        finally {
+            if (ic != null) {
+                ic = new InitialContext(envClosable);
+                ic.close();
+            }
+        }
+    }
+
+    @Test
     public void closeContextAndInstantiateAgain() throws Exception {
         InitialContext ctx = null;
         try {

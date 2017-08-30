@@ -40,6 +40,7 @@
 
 package org.osjava.sj;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.osjava.sj.jndi.DelimiterConvertingContext;
 
 import javax.naming.Context;
@@ -48,6 +49,8 @@ import javax.naming.NamingException;
 import javax.naming.spi.InitialContextFactory;
 import java.util.Hashtable;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static org.osjava.sj.jndi.MemoryContext.IGNORE_CLOSE;
 
 /**
  * Initial Context Factory for SimpleContexts
@@ -68,7 +71,7 @@ public class SimpleContextFactory implements InitialContextFactory {
      * @see javax.naming.spi.InitialContextFactory#getInitialContext(java.util.Hashtable)
      */
     @Override
-    public Context getInitialContext(Hashtable environment) throws NamingException {
+    public Context getInitialContext(final Hashtable environment) throws NamingException {
         final Boolean isShared = Boolean.valueOf(
                 (String) environment.get(SimpleJndi.SHARED));
         if (!isShared) {
@@ -78,6 +81,10 @@ public class SimpleContextFactory implements InitialContextFactory {
             final String root = (String) environment.get(SimpleJndi.ROOT);
             final Context ctx = contextsByRoot.get(root);
             if (ctx != null) {
+                String ignoreClose = (String) environment.get(IGNORE_CLOSE);
+                ctx.addToEnvironment(
+                        IGNORE_CLOSE,
+                        BooleanUtils.toStringTrueFalse(BooleanUtils.toBoolean(ignoreClose)));
                 return ctx;
             }
             else {
@@ -85,10 +92,13 @@ public class SimpleContextFactory implements InitialContextFactory {
                 final DelimiterConvertingContext delimiterConvertingContext = new DelimiterConvertingContext(context) {
                     @Override
                     public void close() throws NamingException {
-                        // first remove, so the context will be removed even when close()
-                        // throws an Exception
-                        contextsByRoot.remove(root);
-                        target.close();
+                        String ignoreClose = (String) getEnvironment().get(IGNORE_CLOSE);
+                        if (!BooleanUtils.toBoolean(ignoreClose)) {
+                            // first remove, so the context will be removed even when close()
+                            // throws an Exception
+                            contextsByRoot.remove(root);
+                            target.close();
+                        }
                     }
 
                 };

@@ -40,6 +40,7 @@
 
 package org.osjava.sj;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.osjava.sj.jndi.MemoryContext;
 
 import javax.naming.Context;
@@ -48,12 +49,13 @@ import javax.naming.spi.InitialContextFactory;
 import java.util.Hashtable;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static org.osjava.sj.jndi.MemoryContext.IGNORE_CLOSE;
+
 /**
  * Initial Context Factory for MemoryContexts.
  * 
  * @author Robert M. Zigweid, Holger Thurow
  * @since Simple-JNDI 0.11
- * @version $Rev: 1743 $ $Date: 2005-06-24 16:56:40 -0700 (Fri, 24 Jun 2005) $
  */
 public class MemoryContextFactory implements InitialContextFactory {
 
@@ -61,7 +63,7 @@ public class MemoryContextFactory implements InitialContextFactory {
             new ConcurrentHashMap<String, Context>();
 
     /**
-     * Create a MemoryContextFactory
+     * @see javax.naming.spi.InitialContextFactory#getInitialContext(java.util.Hashtable)
      */
     public MemoryContextFactory() {
         super();
@@ -83,6 +85,10 @@ public class MemoryContextFactory implements InitialContextFactory {
             final Context ctx = contextsByRoot.get(root);
             // ctx.listBindings("").hasMore(): Ob alle Kontexte zerstört wurden.
             if (ctx != null) {
+                String ignoreClose = (String) environment.get(IGNORE_CLOSE);
+                ctx.addToEnvironment(
+                        IGNORE_CLOSE,
+                        BooleanUtils.toStringTrueFalse(BooleanUtils.toBoolean(ignoreClose)));
                 return ctx;
             }
             else {
@@ -90,10 +96,13 @@ public class MemoryContextFactory implements InitialContextFactory {
                 MemoryContext context = new MemoryContext(environment) {
                     @Override
                     public void close() throws NamingException {
-                        // first remove, so the context will be removed even when close()
-                        // throws an Exception
-                        contextsByRoot.remove(finalRoot);
-                        super.close();
+                        String ignoreClose = (String) getEnvironment().get(IGNORE_CLOSE);
+                        if (!BooleanUtils.toBoolean(ignoreClose)) {
+                            // first remove, so the context will be removed even when close()
+                            // throws an Exception
+                            contextsByRoot.remove(finalRoot);
+                            super.forceClose();
+                        }
                     }
 
                 };
