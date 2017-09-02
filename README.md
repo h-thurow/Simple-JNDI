@@ -187,7 +187,7 @@ new InitialContext(env).close();
 
 <h3>Thread considerations</h3>
 <p>
-Any object bound to a context after SimpleJNDI's initialization will be visible in any thread looking up the object. But to guarantee the visibility of modifications to an object in all threads after it was bound you have to use the set-after-write trick:</p>
+Any object manually bound to a context after SimpleJNDI's initialization will be visible in any thread looking up the object. But to guarantee the visibility of modifications to an object in all threads after it was bound you have to use the set-after-write trick:</p>
 <pre>
 InitialContext ic = new InitialContext();
 List&lt;City> cities = (List&lt;City>) ic.lookup("Cities");
