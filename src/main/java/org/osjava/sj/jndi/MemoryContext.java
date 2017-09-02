@@ -657,42 +657,6 @@ public class MemoryContext implements Cloneable, Context  {
 
     public void forceClose() throws NamingException {
         destroySubcontexts(this);
-
-        // TODO This block is never entered by current tests.
-        while(namesToObjects.size() > 0 || subContexts.size() > 0) {
-            Iterator it = namesToObjects.keySet().iterator();
-            List toRemove = new LinkedList();
-            while(it.hasNext()) {
-                Name name = (Name)it.next();
-
-                Object entry = namesToObjects.get(name);
-
-                if(entry instanceof Thread) {
-                    Thread thread = (Thread) entry;
-                    if(thread.isAlive()) {
-                        toRemove.add(name);
-                    }
-                } else {
-                    toRemove.add(name);
-                }
-            }
-            for(it = toRemove.iterator(); it.hasNext();) {
-                namesToObjects.remove(it.next());
-            }
-
-            toRemove.clear();
-            it = subContexts.keySet().iterator();
-            while(it.hasNext()) {
-                Name name = (Name)it.next();
-                MemoryContext context = (MemoryContext) subContexts.get(name);
-                if(context.isEmpty()) {
-                    toRemove.add(name);
-                }
-            }
-            for(it = toRemove.iterator(); it.hasNext();) {
-                subContexts.remove(it.next());
-            }
-        }
         env = null;
         namesToObjects = null;
         subContexts = null;
