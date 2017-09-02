@@ -185,6 +185,16 @@ env.put("java.naming.factory.initial", "org.osjava.sj.SimpleJndiContextFactory")
 new InitialContext(env).close();
 </pre>
 
+<h3>Thread considerations</h3>
+<p>
+Any object bound to a context after SimpleJNDI's initialization will be visible in any thread looking up the object. But to guarantee the visibility of modifications to an object in all threads after it was bound you have to use the set-after-write trick:</p>
+<pre>
+InitialContext ic = new InitialContext();
+List&lt;City> cities = (List&lt;City>) ic.lookup("Cities");
+cities.add(new City("Berlin"));
+ic.rebind("Cities", cities); // rebind guarantees visibilty in all threads
+</pre>
+
 <h3>See also</h3>
 
 <a href=https://github.com/h-thurow/Simple-JNDI/wiki/Change-log>Change log</a>
