@@ -1,5 +1,6 @@
 package org.osjava.sj;
 
+import junit.framework.AssertionFailedError;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -785,6 +786,38 @@ public class SimpleJndiNewTest {
     }
 
     @Test
+    public void closeContextAndInstantiateAgain() throws Exception {
+        InitialContext ctx = null;
+        try {
+            final Hashtable<String, String> env = new Hashtable<String, String>();
+            env.put("org.osjava.sj.root",
+                    "file://src/test/resources/roots/typedProperty");
+            env.put("org.osjava.sj.jndi.shared", "true");
+            env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
+            env.put("org.osjava.sj.delimiter", ".");
+            env.put(SimpleJndi.JNDI_SYNTAX_SEPARATOR, "/");
+//        env.put("org.osjava.sj.space", "java:comp/env");
+            ctx = new InitialContext(env);
+            int myInteger = (int) ctx.lookup("file1/myInteger");
+            assertEquals(123, myInteger);
+            ctx.close();
+            try {
+                ctx.lookup("file1/myInteger");
+                fail("We should not have arrived here.");
+            }
+            catch (NoInitialContextException ignore) { }
+            ctx = new InitialContext(env);
+            myInteger = (int) ctx.lookup("file1/myInteger");
+            assertEquals(123, myInteger);
+        }
+        finally {
+            if (ctx != null) {
+                ctx.close();
+            }
+        }
+    }
+
+    @Test
     public void ignoreClose() throws Exception {
         InitialContext ic = null;
         final Hashtable<String, String> envNotClosable = new Hashtable<String, String>();
@@ -826,34 +859,72 @@ public class SimpleJndiNewTest {
         }
     }
 
-    @Test
-    public void closeContextAndInstantiateAgain() throws Exception {
-        InitialContext ctx = null;
+    /**
+     * TODO Invoking any other method than close() on a closed context is not allowed, and results in undefined behaviour.
+     */
+    @Test(expected = Exception.class)
+    public void lookupIntoClosedContextIgnoreClose() throws Exception {
+        InitialContext ic = null;
+        final Hashtable<String, String> envNotClosable = new Hashtable<String, String>();
+        envNotClosable.put("org.osjava.sj.root",
+                "src/test/resources/roots/untypedProperty");
+        envNotClosable.put("org.osjava.sj.jndi.shared", "true");
+        envNotClosable.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
+        envNotClosable.put("org.osjava.sj.delimiter", "/");
+        envNotClosable.put(MemoryContext.IGNORE_CLOSE, "true");
+        Hashtable envClosable = (Hashtable) envNotClosable.clone();
+        envClosable.remove(MemoryContext.IGNORE_CLOSE);
         try {
-            final Hashtable<String, String> env = new Hashtable<String, String>();
-            env.put("org.osjava.sj.root",
-                    "file://src/test/resources/roots/typedProperty");
-            env.put("org.osjava.sj.jndi.shared", "true");
-            env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
-            env.put("org.osjava.sj.delimiter", ".");
-            env.put(SimpleJndi.JNDI_SYNTAX_SEPARATOR, "/");
-//        env.put("org.osjava.sj.space", "java:comp/env");
-            ctx = new InitialContext(env);
-            int myInteger = (int) ctx.lookup("file1/myInteger");
-            assertEquals(123, myInteger);
+            ic = new InitialContext(envNotClosable);
+            final Context ctx = (Context) ic.lookup("file1");
             ctx.close();
-            try {
-                ctx.lookup("file1/myInteger");
-                fail("We should not have arrived here.");
-            }
-            catch (NoInitialContextException ignore) { }
-            ctx = new InitialContext(env);
-            myInteger = (int) ctx.lookup("file1/myInteger");
-            assertEquals(123, myInteger);
+            final String name = (String) ctx.lookup("name");
         }
         finally {
-            if (ctx != null) {
-                ctx.close();
+            if (ic != null) {
+                ic = new InitialContext(envClosable);
+                ic.close();
+            }
+        }
+    }
+
+    /**
+     * TODO Invoking any other method than close() on a closed context is not allowed, and results in undefined behaviour.
+     */
+    @Test
+    public void lookupIntoClosedContext() throws Exception {
+        InitialContext ic = null;
+        final Hashtable<String, String> env = new Hashtable<String, String>();
+        env.put("org.osjava.sj.root",
+                "src/test/resources/roots/untypedProperty");
+        env.put("org.osjava.sj.jndi.shared", "true");
+        env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
+        env.put("org.osjava.sj.delimiter", "/");
+        try {
+            ic = new InitialContext(env);
+            final Context ctx = (Context) ic.lookup("file1");
+            ctx.close();
+            try {
+                String name = (String) ctx.lookup("name");
+                throw new AssertionFailedError("lookup should have throw a Exception.");
+            }
+            catch (Exception e) {
+                System.out.println("EXPECTED EXCEPTION");
+                e.printStackTrace();
+            }
+            try {
+                ctx.bind("xyz", 1);
+                throw new AssertionFailedError("bind should have throw a Exception.");
+            }
+            catch (Exception e) {
+                System.out.println("EXPECTED EXCEPTION");
+                e.printStackTrace();
+            }
+        }
+        finally {
+            if (ic != null) {
+                ic = new InitialContext(env);
+                ic.close();
             }
         }
     }

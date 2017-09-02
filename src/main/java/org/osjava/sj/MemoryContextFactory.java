@@ -52,7 +52,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import static org.osjava.sj.jndi.MemoryContext.IGNORE_CLOSE;
 
 /**
- * Initial Context Factory for MemoryContexts.
+ * Initial Context Factory for {@link MemoryContext}. Note the difference to {@link SimpleJndiContextFactory}.
  * 
  * @author Robert M. Zigweid, Holger Thurow
  * @since Simple-JNDI 0.11
@@ -94,14 +94,19 @@ public class MemoryContextFactory implements InitialContextFactory {
             else {
                 final String finalRoot = root;
                 MemoryContext context = new MemoryContext(environment) {
+                    private boolean isClosed;
                     @Override
                     public void close() throws NamingException {
-                        String ignoreClose = (String) getEnvironment().get(IGNORE_CLOSE);
-                        if (!BooleanUtils.toBoolean(ignoreClose)) {
-                            // first remove, so the context will be removed even when close()
-                            // throws an Exception
-                            contextsByRoot.remove(finalRoot);
-                            super.forceClose();
+                        // When already closed getEnvironment() throws an Exception.
+                        if (!isClosed) {
+                            String ignoreClose = (String) getEnvironment().get(IGNORE_CLOSE);
+                            if (!BooleanUtils.toBoolean(ignoreClose)) {
+                                // first remove, so the context will be removed even when close()
+                                // throws an Exception
+                                contextsByRoot.remove(finalRoot);
+                                super.forceClose();
+                                isClosed = true;
+                            }
                         }
                     }
 
