@@ -192,7 +192,7 @@ Any object manually bound to a context after SimpleJNDI's initialization will be
 InitialContext ic = new InitialContext();
 List&lt;City> cities = (List&lt;City>) ic.lookup("Cities");
 cities.add(new City("Berlin"));
-ic.rebind("Cities", cities); // rebind guarantees visibilty in all threads
+ic.rebind("Cities", cities); // rebind guarantees visibility in all threads
 </pre>
 
 <h3>See also</h3>
