@@ -57,6 +57,7 @@ public class MemoryContext implements Cloneable, Context  {
     private Name nameInNamespace = null;
     private boolean nameLock = false;
     private static Logger LOGGER = LoggerFactory.getLogger(MemoryContext.class);
+    protected boolean isClosed;
 
     /**
      * @param env a Hashtable containing the Context's environment.
@@ -660,6 +661,7 @@ public class MemoryContext implements Cloneable, Context  {
         env = null;
         namesToObjects = null;
         subContexts = null;
+        isClosed = true;
     }
 }
 

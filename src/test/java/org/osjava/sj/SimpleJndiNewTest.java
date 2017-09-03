@@ -859,6 +859,51 @@ public class SimpleJndiNewTest {
         }
     }
 
+    @Test
+    public void forceClose() throws Exception {
+        InitialContext ic = null;
+        final Hashtable<String, String> envNotClosable = new Hashtable<String, String>();
+        envNotClosable.put("org.osjava.sj.root",
+                "src/test/resources/roots/untypedProperty");
+        envNotClosable.put("org.osjava.sj.jndi.shared", "true");
+        envNotClosable.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
+        envNotClosable.put("org.osjava.sj.delimiter", "/");
+        envNotClosable.put(MemoryContext.IGNORE_CLOSE, "true");
+        Hashtable envClosable = (Hashtable) envNotClosable.clone();
+        envClosable.remove(MemoryContext.IGNORE_CLOSE);
+        try {
+
+            ic = new InitialContext(envNotClosable);
+            final String name1 = (String) ic.lookup("file1/name");
+            assertEquals("holger", name1);
+            ic.close();
+
+            ic = new InitialContext(envNotClosable);
+            final String name2 = (String) ic.lookup("file1/name");
+            assertEquals("holger", name2);
+            assertSame(name1, name2); // close has been ignored
+            ic.close();
+
+            // Destroy all contexts and free bound objects.
+            Hashtable origEnv = new InitialContext(envNotClosable).getEnvironment();
+            origEnv.remove(MemoryContext.IGNORE_CLOSE);
+            origEnv.put("java.naming.factory.initial", "org.osjava.sj.SimpleJndiContextFactory");
+            ic = new InitialContext(origEnv);
+            ic.close();
+
+            ic = new InitialContext(envNotClosable);
+            final String name3 = (String) ic.lookup("file1/name");
+            assertEquals("holger", name3);
+            assertNotSame(name2, name3);
+        }
+        finally {
+            if (ic != null) {
+                ic = new InitialContext(envClosable);
+                ic.close();
+            }
+        }
+    }
+
     /**
      * TODO Invoking any other method than close() on a closed context is not allowed, and results in undefined behaviour.
      */
@@ -906,7 +951,7 @@ public class SimpleJndiNewTest {
             ctx.close();
             try {
                 String name = (String) ctx.lookup("name");
-                throw new AssertionFailedError("lookup should have throw a Exception.");
+                throw new AssertionFailedError("lookup should have throw an Exception.");
             }
             catch (Exception e) {
                 System.out.println("EXPECTED EXCEPTION");
@@ -914,7 +959,7 @@ public class SimpleJndiNewTest {
             }
             try {
                 ctx.bind("xyz", 1);
-                throw new AssertionFailedError("bind should have throw a Exception.");
+                throw new AssertionFailedError("bind should have throw an Exception.");
             }
             catch (Exception e) {
                 System.out.println("EXPECTED EXCEPTION");

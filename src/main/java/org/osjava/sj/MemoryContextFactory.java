@@ -52,7 +52,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import static org.osjava.sj.jndi.MemoryContext.IGNORE_CLOSE;
 
 /**
- * Initial Context Factory for {@link MemoryContext}. Note the difference to {@link SimpleJndiContextFactory}.
+ * Unlike {@link SimpleJndiContextFactory} this factory returns nothing more than an empty {@link MemoryContext} which you have to bind objects to by yourself or with the help of {@link org.osjava.sj.loader.JndiLoader}. The only SimpleJndi specific features this factory supports are org.osjava.sj.root, org.osjava.sj.jndi.shared and org.osjava.sj.jndi.ignoreClose.
  * 
  * @author Robert M. Zigweid, Holger Thurow
  * @since Simple-JNDI 0.11
@@ -94,7 +94,6 @@ public class MemoryContextFactory implements InitialContextFactory {
             else {
                 final String finalRoot = root;
                 MemoryContext context = new MemoryContext(environment) {
-                    private boolean isClosed;
                     @Override
                     public void close() throws NamingException {
                         // When already closed getEnvironment() throws an Exception.
@@ -105,7 +104,6 @@ public class MemoryContextFactory implements InitialContextFactory {
                                 // throws an Exception
                                 contextsByRoot.remove(finalRoot);
                                 super.forceClose();
-                                isClosed = true;
                             }
                         }
                     }

@@ -41,6 +41,7 @@ import java.util.Hashtable;
 public class DelimiterConvertingContext implements Context {
 
     protected Context target;
+    protected boolean isClosed;
 
     public DelimiterConvertingContext(Context ctxt) {
         // ctxt ist ein MemoryContext.
@@ -183,6 +184,7 @@ public class DelimiterConvertingContext implements Context {
 
     public void close() throws NamingException {
         this.target.close();
+        isClosed = true;
     }
 
     public String getNameInNamespace() throws NamingException {
