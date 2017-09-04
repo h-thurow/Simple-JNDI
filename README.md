@@ -15,7 +15,7 @@ This JNDI implementation is entirely memory based, so no server instances are st
 &lt;dependency>
     &lt;groupId>com.github.h-thurow&lt;/groupId>
     &lt;artifactId>simple-jndi&lt;/artifactId>
-    &lt;version>0.15.0&lt;/version>
+    &lt;version>0.16.0&lt;/version>
 &lt;/dependency>
 </pre>
 or <a href=http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.github.h-thurow%22%20AND%20a%3A%22simple-jndi%22>download from here</a>.
@@ -172,6 +172,28 @@ The most popular object to get from JNDI is an object of type <i>javax.sql.DataS
 <h3>Context.close() and Context.destroySubcontext()</h3>
 
 Either methods will recursively destroy every context and dereference all contained objects. So when writing JUnit tests, it is good practice to call close() in tearDown() and reinitialize the JNDI environment in setUp() by calling new InitialContext(). But do not forget to close your datasources by yourself.
+
+New in 0.16.0: There are situations where you want prevent SimpleJNDI from closing the contexts this way when close() is called. See issue <a href=https://github.com/h-thurow/Simple-JNDI/issues/5>Multiple datasources created when using Spring JNDI template</a>. To do so set
+<pre>
+org.osjava.sj.jndi.ignoreClose = true
+</pre>
+Really closing those contexts is a little bit tricky now:
+<pre>
+Hashtable env = new InitialContext().getEnvironment();
+env.remove("org.osjava.sj.jndi.ignoreClose");
+env.put("java.naming.factory.initial", "org.osjava.sj.SimpleJndiContextFactory");
+new InitialContext(env).close();
+</pre>
+
+<h3>Thread considerations</h3>
+<p>
+Any object manually bound to a context after SimpleJNDI's initialization will be visible in any thread looking up the object. But to guarantee the visibility of modifications to an object in all threads after it was bound you have to use the set-after-write trick:</p>
+<pre>
+InitialContext ic = new InitialContext();
+List&lt;City> cities = (List&lt;City>) ic.lookup("Cities");
+cities.add(new City("Berlin"));
+ic.rebind("Cities", cities); // rebind guarantees visibility in all threads
+</pre>
 
 <h3>See also</h3>
 
