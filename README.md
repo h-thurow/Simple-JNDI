@@ -160,7 +160,7 @@ The most popular object to get from JNDI is an object of type <i>javax.sql.DataS
 
 <h3>Shared or unshared context?</h3>
 
-<p>Setting <code>org.osjava.sj.jndi.shared=true</code> will put the in-memory JNDI implementation into a mode whereby all InitialContexts share the same memory. By default this is not set, so every new InitialContext() call will provide an independent InitialContext that does not share its memory with the other contexts. When binding an object to one of these contexts by calling Context.bind() this object is not visible in the other contexts. This could be not what you want when using a DataSource or a connection pool because everytime you call new InitialContext() in your application a new DataSource or a new connection pool is created.</p>
+<p>Setting <code>org.osjava.sj.jndi.shared=true</code> will put the in-memory JNDI implementation into a mode whereby all InitialContexts share the same memory. By default this is not set, so every new InitialContext() call will provide an independent InitialContext that does not share its memory with the other contexts. This could be not what you want when using a DataSource or a connection pool because everytime you call new InitialContext() in your application a new DataSource or a new connection pool is created. Also when binding an object to a specific context by calling Context.bind() this object will be not visible in the context provided by a subsequent "new InitialContext()" call.</p>
 
 <h3>Dealing with "java:comp/env" (Environment Naming Context, ENC) while loading</h3>
 
