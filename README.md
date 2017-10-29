@@ -1,7 +1,7 @@
 # Simple-JNDI
 
 Simple-JNDI is intended to solve two problems. The first is that of finding a container independent way of opening a 
-database connection, the second is to access application configurations easily from anywhere in your application. If your only intention is to test or use classes that depend on Tomcat's JNDI environment outside of Tomcat give [TomcatJNDI](https://github.com/h-thurow/TomcatJNDI) a try.
+database connection, the second is to access application configurations easily from anywhere in your application. If your only intention is to test or use classes that depend on Tomcat's JNDI environment outside of Tomcat or you are only in need of a JNDI based DataSource give [TomcatJNDI](https://github.com/h-thurow/TomcatJNDI) a try.
 
 Simple-JNDI's JNDI implementation is entirely memory based. No server instance is started. The structure of a root directory serves as a model for the contexts structure. The contexts get populated with Objects defined by .properties files, XML files or Windows-style .ini files. Of course you can bind Objects programmatically to contexts too.
 
