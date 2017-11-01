@@ -152,6 +152,8 @@ The most popular object to get from JNDI is an object of type <i>javax.sql.DataS
 <a href=https://github.com/h-thurow/Simple-JNDI/wiki/DataSource-Configuration-HikariCP-(New-in-0.15.0)>DataSource Configuration HikariCP (New in 0.15.0)</a><br>
 <a href=https://github.com/h-thurow/Simple-JNDI/wiki/DataSource-Configuration-(commons-dbcp-1)>DataSource Configuration (commons dbcp 1)</a><br>
 <a href=https://github.com/h-thurow/Simple-JNDI/wiki/Usage-with-Spring>Usage with Spring - Inject a DataSource into beans</a>
+</p><p>
+    See also <a href=https://github.com/h-thurow/TomcatJNDI#only-interested-in-a-datasource>TomcatJNDI: Only interested in a DataSource?</a>
 </p>
 
 <h3>Shared or unshared context?</h3>
