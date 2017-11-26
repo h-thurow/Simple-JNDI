@@ -15,6 +15,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.text.SimpleDateFormat;
 
 import static org.junit.Assert.*;
 
@@ -321,6 +322,7 @@ public class SimpleJndiNewTest {
      */
     @Test
     public void beanSetterNotSharedMixedTypes() throws Exception {
+        /*
         InitialContext ctx1 = null;
         try {
             final Hashtable<String, String> env = new Hashtable<String, String>();
@@ -338,6 +340,8 @@ public class SimpleJndiNewTest {
                 ctx1.close();
             }
         }
+        */
+        // TODO remove, obsolete by beanWithSupportedSetters
     }
 
     @Test
@@ -375,6 +379,10 @@ public class SimpleJndiNewTest {
             assertEquals(new java.math.BigInteger("4000001"), bean.getBigInteger());
             assertEquals(java.util.Locale.US, bean.getLocale());
             assertEquals(java.math.RoundingMode.HALF_DOWN, bean.getRoundingMode());
+            assertEquals((new SimpleDateFormat("yyyy-MM-dd'T'HH:mm")).parse("2017-11-21T08:30"), bean.getUtilDate());
+            assertEquals(new java.sql.Date((new SimpleDateFormat("yyyy-MM-dd")).parse("2017-11-21").getTime()), bean.getSqlDate());
+            assertEquals(new java.sql.Time((new SimpleDateFormat("HH:mm")).parse("08:30").getTime()), bean.getTime());
+            assertEquals(new java.sql.Timestamp((new SimpleDateFormat("yyyy-MM-dd'T'HH:mm")).parse("2017-11-21T08:30").getTime()), bean.getTimestamp());
         }
         finally {
             if (ctx1 != null) {

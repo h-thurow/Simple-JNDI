@@ -227,6 +227,46 @@ public class BeanWithSupportedSetters {
         this.roundingMode = roundingMode;
     }
 
+    private java.util.Date utilDate;
+
+    public java.util.Date getUtilDate() {
+        return utilDate;
+    }
+
+    public void setUtilDate(java.util.Date utilDate) {
+        this.utilDate = utilDate;
+    }
+
+    private java.sql.Date sqlDate;
+
+    public java.sql.Date getSqlDate() {
+        return sqlDate;
+    }
+
+    public void setSqlDate(java.sql.Date sqlDate) {
+        this.sqlDate = sqlDate;
+    }
+
+    private java.sql.Time time;
+
+    public java.sql.Time getTime() {
+        return time;
+    }
+
+    public void setTime(java.sql.Time time) {
+        this.time = time;
+    }
+
+    private java.sql.Timestamp timestamp;
+
+    public java.sql.Timestamp getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(java.sql.Timestamp timestamp) {
+        this.timestamp = timestamp;
+    }
+
 
 
 }

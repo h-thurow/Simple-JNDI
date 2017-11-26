@@ -42,6 +42,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Properties;
 
 import java.beans.BeanInfo;
@@ -52,6 +53,9 @@ import java.beans.PropertyDescriptor;
 import java.util.Collections;
 import java.util.Set;
 import java.util.TreeSet;
+
+import java.text.SimpleDateFormat;
+import java.text.ParseException;
 
 /**
  * Create an object using its empty constructor, then
@@ -74,11 +78,37 @@ public class BeanConverter implements ConverterIF {
 
     public static final int OLD_ENUM_STYLE = Modifier.FINAL | Modifier.PUBLIC | Modifier.STATIC;
 
+    private static final List<SimpleDateFormat> dateTimeFormats;
+    private static final List<SimpleDateFormat> dateFormats;
+    private static final List<SimpleDateFormat> timeFormats;
+
     static {
         trueValues = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
         falseValues = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
         Collections.addAll(trueValues, "true", "t", "yes", "y", "on", "1", "x", "-1");
         Collections.addAll(falseValues, "false", "f", "no", "n", "off", "0", "");
+        dateTimeFormats = new ArrayList<SimpleDateFormat>();
+        Collections.addAll(dateTimeFormats, new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ"),
+            new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX"),
+            new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss"),
+            new SimpleDateFormat("yyyy-MM-dd'T'HH:mm"),
+            new SimpleDateFormat("yyyy-MM-dd"));
+        for(SimpleDateFormat sdf : dateTimeFormats) {
+            sdf.setLenient(false);
+        }
+        dateFormats = new ArrayList<SimpleDateFormat>();
+        Collections.addAll(dateFormats, new SimpleDateFormat("yyyy-MM-dd"));
+        for(SimpleDateFormat sdf : dateFormats) {
+            sdf.setLenient(false);
+        }
+        timeFormats = new ArrayList<SimpleDateFormat>();
+        Collections.addAll(timeFormats, new SimpleDateFormat("HH:mm:ss.SSSZ"),
+            new SimpleDateFormat("HH:mm:ss.SSSXXX"),
+            new SimpleDateFormat("HH:mm:ss"),
+            new SimpleDateFormat("HH:mm"));
+        for(SimpleDateFormat sdf : timeFormats) {
+            sdf.setLenient(false);
+        }
     }
 
     private static boolean convertStringToBooleanPrimitive(String value) {
@@ -155,6 +185,42 @@ public class BeanConverter implements ConverterIF {
             return Float.parseFloat(value.trim());
         } else if(double.class.equals(toWhat) || Double.class.equals(toWhat)) {
             return Double.parseDouble(value.trim());
+        } else if(java.util.Date.class.equals(toWhat)) {
+            value = value.trim();
+            for(SimpleDateFormat sdf : dateTimeFormats) {
+                try {
+                    return sdf.parse(value);
+                } catch(ParseException pe) {
+                }
+            }
+            throw new RuntimeException("The value, \"" + value + "\", could not be converted to a \"java.util.Date\".");
+        } else if(java.sql.Date.class.equals(toWhat)) {
+            value = value.trim();
+            for(SimpleDateFormat sdf : dateFormats) {
+                try {
+                    return new java.sql.Date(sdf.parse(value).getTime());
+                } catch(ParseException pe) {
+                }
+            }
+            throw new RuntimeException("The value, \"" + value + "\", could not be converted to a \"java.sql.Date\".");
+        } else if(java.sql.Time.class.equals(toWhat)) {
+            value = value.trim();
+            for(SimpleDateFormat sdf : timeFormats) {
+                try {
+                    return new java.sql.Time(sdf.parse(value).getTime());
+                } catch(ParseException pe) {
+                }
+            }
+            throw new RuntimeException("The value, \"" + value + "\", could not be converted to a \"java.sql.Time\".");
+        } else if(java.sql.Timestamp.class.equals(toWhat)) {
+            value = value.trim();
+            for(SimpleDateFormat sdf : dateTimeFormats) {
+                try {
+                    return new java.sql.Timestamp(sdf.parse(value).getTime());
+                } catch(ParseException pe) {
+                }
+            }
+            throw new RuntimeException("The value, \"" + value + "\", could not be converted to a \"java.sql.Timestamp\".");
         } else if(toWhat.isEnum()) {
             //return Enum.valueOf(toWhat, value.trim());
             value = value.trim();
