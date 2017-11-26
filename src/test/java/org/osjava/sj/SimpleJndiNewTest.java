@@ -341,6 +341,49 @@ public class SimpleJndiNewTest {
     }
 
     @Test
+    public void beanWithSupportedSetters() throws Exception {
+        InitialContext ctx1 = null;
+        try {
+            final Hashtable<String, String> env = new Hashtable<String, String>();
+            env.put("org.osjava.sj.root",
+                    "file://src/test/resources/roots/beanWithSupportedSetters");
+            env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
+            env.put("org.osjava.sj.delimiter", "/");
+            env.put("org.osjava.sj.space", "java:comp/env");
+            ctx1 = new InitialContext(env);
+            final BeanWithSupportedSetters bean = (BeanWithSupportedSetters) ctx1.lookup("java:comp/env/bean");
+            assert bean != null;
+            assertEquals("Hello World", bean.getString());
+            assertEquals("Hello World", bean.getCharSequence());
+            assertEquals(true, bean.getBooleanPrimitive());
+            assertEquals(false, bean.getBooleanObject());
+            assertEquals(Byte.parseByte("5"), bean.getBytePrimitive());
+            assertEquals(new Byte("7"), bean.getByteObject());
+            assertEquals('x', bean.getCharacterPrimitive());
+            assertEquals(new Character('Z'), bean.getCharacterObject());
+            assertEquals(Short.parseShort("10"), bean.getShortPrimitive());
+            assertEquals(new Short("11"), bean.getShortObject());
+            assertEquals(Integer.parseInt("100"), bean.getIntegerPrimitive());
+            assertEquals(new Integer("101"), bean.getIntegerObject());
+            assertEquals(Long.parseLong("1000"), bean.getLongPrimitive());
+            assertEquals(new Long("1001"), bean.getLongObject());
+            assertEquals(Float.parseFloat("2000"), bean.getFloatPrimitive());
+            assertEquals(new Float("2001"), bean.getFloatObject());
+            assertEquals(Double.parseDouble("3000"), bean.getDoublePrimitive());
+            assertEquals(new Double("3001"), bean.getDoubleObject());
+            assertEquals(new java.math.BigDecimal("4000000"), bean.getBigDecimal());
+            assertEquals(new java.math.BigInteger("4000001"), bean.getBigInteger());
+            assertEquals(java.util.Locale.US, bean.getLocale());
+            assertEquals(java.math.RoundingMode.HALF_DOWN, bean.getRoundingMode());
+        }
+        finally {
+            if (ctx1 != null) {
+                ctx1.close();
+            }
+        }
+    }
+
+    @Test
     public void beanSetterNotSharedStringsOnly() throws Exception {
         InitialContext ctx1 = null;
         try {

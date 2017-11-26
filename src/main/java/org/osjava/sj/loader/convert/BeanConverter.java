@@ -38,6 +38,8 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
@@ -67,8 +69,10 @@ public class BeanConverter implements ConverterIF {
 
     private static Logger LOGGER = LoggerFactory.getLogger(BeanConverter.class);
 
-    private static final Set<String> trueValues; 
-    private static final Set<String> falseValues; 
+    private static final Set<String> trueValues;
+    private static final Set<String> falseValues;
+
+    public static final int OLD_ENUM_STYLE = Modifier.FINAL | Modifier.PUBLIC | Modifier.STATIC;
 
     static {
         trueValues = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
@@ -85,6 +89,108 @@ public class BeanConverter implements ConverterIF {
             return false;
         }
         throw new RuntimeException("The value, \"" + value + "\", can not be converted to a boolean.");
+    }
+
+    private static PropertyDescriptor findPropertyDescriptorWithSetter(Class<?> clazz, String propertyName) {
+        try {
+            BeanInfo info = Introspector.getBeanInfo(clazz, Object.class);
+            for(PropertyDescriptor pd : info.getPropertyDescriptors()) {
+                if(pd.getName().equalsIgnoreCase(propertyName)) {
+                    Method setter = pd.getWriteMethod();
+                    if(setter != null) {
+                        return pd;
+                    }
+                }
+            }
+        } catch(IntrospectionException ie) {
+            throw new RuntimeException("Unable to find the properties of the bean of type, \"" + clazz + "\".", ie);
+        }
+        return null;
+    }
+
+    private static Field findOldStyleEnumField(Class<?> clazz, String value) {
+        Field[] fields = clazz.getFields();
+        for(Field field : fields) {
+            if(clazz.equals(field.getType()) && field.getName().equalsIgnoreCase(value.trim()) && ((field.getModifiers() & OLD_ENUM_STYLE) == OLD_ENUM_STYLE)) {
+                return field;
+            }
+        }
+        return null;
+    }
+
+    private static Object convert(String value, Class<?> toWhat) {
+        if(String.class.equals(toWhat)) {
+            return value;// as is, ie. no trimming
+        } else if(CharSequence.class.equals(toWhat)) {
+            return value;// as is, ie. no trimming
+        } else if(value == null) {
+            if(toWhat.isPrimitive()) {
+                throw new RuntimeException("The value, \"" + value + "\", could not be converted to a \"" + toWhat + "\".");
+            } else {
+                return null;
+            }
+        } else if(value.trim().length() == 0) {
+            if(toWhat.isPrimitive()) {
+                throw new RuntimeException("The value, \"" + value + "\", could not be converted to a \"" + toWhat + "\".");
+            } else {
+                return null;
+            }
+        } else if(boolean.class.equals(toWhat) || Boolean.class.equals(toWhat)) {
+            return convertStringToBooleanPrimitive(value.trim());
+        } else if(byte.class.equals(toWhat) || Byte.class.equals(toWhat)) {
+            return Byte.parseByte(value.trim());
+        } else if(char.class.equals(toWhat) || Character.class.equals(toWhat)) {
+            if(value.trim().length() == 1) {
+                return value.trim().charAt(0);
+            } else {
+                throw new RuntimeException("The value, \"" + value + "\", could not be converted to a character.");
+            }
+        } else if(short.class.equals(toWhat) || Short.class.equals(toWhat)) {
+            return Short.parseShort(value.trim());
+        } else if(int.class.equals(toWhat) || Integer.class.equals(toWhat)) {
+            return Integer.parseInt(value.trim());
+        } else if(long.class.equals(toWhat) || Long.class.equals(toWhat)) {
+            return Long.parseLong(value.trim());
+        } else if(float.class.equals(toWhat) || Float.class.equals(toWhat)) {
+            return Float.parseFloat(value.trim());
+        } else if(double.class.equals(toWhat) || Double.class.equals(toWhat)) {
+            return Double.parseDouble(value.trim());
+        } else if(toWhat.isEnum()) {
+            //return Enum.valueOf(toWhat, value.trim());
+            value = value.trim();
+            Object[] enumConstants = toWhat.getEnumConstants();
+            for(Object oe : enumConstants) {
+                Enum e = (Enum)oe;
+                if(e.name().equals(value)) {
+                    return e;
+                }
+            }
+            for(Object oe : enumConstants) {
+                Enum e = (Enum)oe;
+                if(e.name().equalsIgnoreCase(value)) {
+                    return e;
+                }
+            }
+            throw new RuntimeException("The value ,\"" + value + "\", is not a enumeration on enum " + toWhat);
+        } else {
+            try {
+                Field field = findOldStyleEnumField(toWhat, value.trim());
+                if(field == null) {
+                    Constructor constructor = toWhat.getConstructor(String.class);
+                    return constructor.newInstance(value);
+                } else {
+                    return field.get(null);
+                }
+            } catch (NoSuchMethodException e) {
+                throw new RuntimeException("Unable to find (String) constructor on class: " + toWhat, e);
+            } catch (InstantiationException e) {
+                throw new RuntimeException("Unable to instantiate class: " + toWhat, e);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException("Unable to access class: " + toWhat, e);
+            } catch (InvocationTargetException e) {
+                throw new RuntimeException("Unable to invoke (String) constructor on class: " + toWhat, e);
+            }
+        }
     }
 
     public Object convert(Properties properties, String type) {
@@ -112,121 +218,14 @@ public class BeanConverter implements ConverterIF {
                     Method m = c.getMethod(methodName, String.class);
                     m.invoke(bean, property);
                     */
-                    try {
-                        String strValue = (String)property;
-                        BeanInfo info = Introspector.getBeanInfo( c, Object.class );
-                        for ( PropertyDescriptor pd : info.getPropertyDescriptors() ) {
-                            if(pd.getName().equalsIgnoreCase(key)) {
-                                Method setter = pd.getWriteMethod();
-                                if(setter == null) {
-                                    throw new RuntimeException("The property, \"" + key + "\", on class, \"" + c + "\", was not defined.");
-                                } else {
-                                    Class<?> propertyType = pd.getPropertyType();
-                                    if(String.class.equals(propertyType)) {
-                                        setter.invoke(bean, strValue);
-                                    } else if(CharSequence.class.equals(propertyType)) {
-                                        setter.invoke(bean, strValue);
-                                    } else if(boolean.class.equals(propertyType)) {
-                                        setter.invoke(bean, convertStringToBooleanPrimitive(strValue));
-                                    } else if(Boolean.class.equals(propertyType)) {
-                                        if(strValue == null) {
-                                            setter.invoke(bean, null);
-                                        } else if(strValue.trim().length() == 0) {
-                                            setter.invoke(bean, null);
-                                        } else {
-                                            setter.invoke(bean, convertStringToBooleanPrimitive(strValue));
-                                        }
-                                    } else if(byte.class.equals(propertyType)) {
-                                        setter.invoke(bean, Byte.parseByte(strValue));
-                                    } else if(Byte.class.equals(propertyType)) {
-                                        if(strValue == null) {
-                                            setter.invoke(bean, null);
-                                        } else if(strValue.trim().length() == 0) {
-                                            setter.invoke(bean, null);
-                                        } else {
-                                            setter.invoke(bean, Byte.parseByte(strValue));
-                                        }
-                                    } else if(char.class.equals(propertyType)) {
-                                        if(strValue == null) {
-                                            throw new RuntimeException("The value, \"" + strValue + "\", could not be converted to a character.");
-                                        } else if(strValue.trim().length() == 1) {
-                                            setter.invoke(bean, strValue.charAt(0));
-                                        } else {
-                                            throw new RuntimeException("The value, \"" + strValue + "\", could not be converted to a character.");
-                                        }
-                                    } else if(Character.class.equals(propertyType)) {
-                                        if(strValue == null) {
-                                            setter.invoke(bean, null);
-                                        } else if(strValue.trim().length() == 0) {
-                                            setter.invoke(bean, null);
-                                        } else if(strValue.trim().length() == 1) {
-                                            setter.invoke(bean, strValue.charAt(0));
-                                        } else {
-                                            throw new RuntimeException("The value, \"" + strValue + "\", could not be converted to a character.");
-                                        }
-                                    } else if(short.class.equals(propertyType)) {
-                                        setter.invoke(bean, Short.parseShort(strValue));
-                                    } else if(Short.class.equals(propertyType)) {
-                                        if(strValue == null) {
-                                            setter.invoke(bean, null);
-                                        } else if(strValue.trim().length() == 0) {
-                                            setter.invoke(bean, null);
-                                        } else {
-                                            setter.invoke(bean, Short.parseShort(strValue));
-                                        }
-                                    } else if(int.class.equals(propertyType)) {
-                                        setter.invoke(bean, Integer.parseInt(strValue));
-                                    } else if(Integer.class.equals(propertyType)) {
-                                        if(strValue == null) {
-                                            setter.invoke(bean, null);
-                                        } else if(strValue.trim().length() == 0) {
-                                            setter.invoke(bean, null);
-                                        } else {
-                                            setter.invoke(bean, Integer.parseInt(strValue));
-                                        }
-                                    } else if(long.class.equals(propertyType)) {
-                                        setter.invoke(bean, Long.parseLong(strValue));
-                                    } else if(Long.class.equals(propertyType)) {
-                                        if(strValue == null) {
-                                            setter.invoke(bean, null);
-                                        } else if(strValue.trim().length() == 0) {
-                                            setter.invoke(bean, null);
-                                        } else {
-                                            setter.invoke(bean, Long.parseLong(strValue));
-                                        }
-                                    } else if(float.class.equals(propertyType)) {
-                                        setter.invoke(bean, Float.parseFloat(strValue));
-                                    } else if(Float.class.equals(propertyType)) {
-                                        if(strValue == null) {
-                                            setter.invoke(bean, null);
-                                        } else if(strValue.trim().length() == 0) {
-                                            setter.invoke(bean, null);
-                                        } else {
-                                            setter.invoke(bean, Float.parseFloat(strValue));
-                                        }
-                                    } else if(double.class.equals(propertyType)) {
-                                        setter.invoke(bean, Double.parseDouble(strValue));
-                                    } else if(Double.class.equals(propertyType)) {
-                                        if(strValue == null) {
-                                            setter.invoke(bean, null);
-                                        } else if(strValue.trim().length() == 0) {
-                                            setter.invoke(bean, null);
-                                        } else {
-                                            setter.invoke(bean, Double.parseDouble(strValue));
-                                        }
-                                    } else {
-                                        try {
-                                            Constructor constructor = propertyType.getConstructor(String.class);
-                                            return constructor.newInstance(value);
-                                        } catch (NoSuchMethodException e) {
-                                            throw new RuntimeException("Unable to find (String) constructor on class: " + propertyType, e);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    } catch(IntrospectionException ie) {
-                        LOGGER.error("Unable to find the properties of the bean of type, \"" + c + "\".", ie);
+                    String strValue = (String)property;
+                    PropertyDescriptor pd = findPropertyDescriptorWithSetter(c, key);
+                    if(pd == null) {
+                        throw new RuntimeException("No property with the name of \"" + key + "\" could be found on object of type, \"" + c + "\".");
+                    } else {
+                        Class<?> propertyType = pd.getPropertyType();
+                        Method setter = pd.getWriteMethod();
+                        setter.invoke(bean, convert(strValue, propertyType));
                     }
                 }
                 else if (property instanceof List) {
