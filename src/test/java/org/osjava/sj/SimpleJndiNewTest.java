@@ -954,7 +954,7 @@ public class SimpleJndiNewTest {
                 throw new AssertionFailedError("lookup should have throw an Exception.");
             }
             catch (Exception e) {
-                System.out.println("EXPECTED EXCEPTION");
+                System.out.println("EXPECTED EXCEPTION 1");
                 e.printStackTrace();
             }
             try {
@@ -962,12 +962,13 @@ public class SimpleJndiNewTest {
                 throw new AssertionFailedError("bind should have throw an Exception.");
             }
             catch (Exception e) {
-                System.out.println("EXPECTED EXCEPTION");
+                System.out.println("EXPECTED EXCEPTION 2");
                 e.printStackTrace();
             }
         }
         finally {
             if (ic != null) {
+                // The problem is, that closing a subcontext is not closing all contexts. The root and many contexts below it are still valid. So the closed contexts must be searched and reinitialized again.
                 ic = new InitialContext(env);
                 ic.close();
             }
