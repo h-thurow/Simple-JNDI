@@ -44,9 +44,6 @@ import javax.naming.NamingException;
 import java.io.File;
 import java.util.Hashtable;
 
-/**
- * Does some SimpleJndi specific preparation before forwarding the task of populating the contexts to {@link JndiLoader}.
- */
 public class SimpleJndi {
 
     public static final String ROOT = "org.osjava.sj.root";
@@ -150,7 +147,8 @@ public class SimpleJndi {
     }
 
     /**
-     * Allow system properties to override environment. Not overwriting {@link org.osjava.sj.jndi.MemoryContext#IGNORE_CLOSE} is on purpose to allow closing a context initialized with ignoreClose set to true.
+     * Allow system properties to override environment. Siehe
+     * {@link org.osjava.sj.jndi.AbstractContext#AbstractContext(Hashtable)}.
      */
     private void overwriteEnvironmentWithSystemProperties() {
         overwriteFromSystemProperty(ROOT);
