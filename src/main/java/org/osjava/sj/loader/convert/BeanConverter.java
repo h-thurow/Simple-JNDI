@@ -136,46 +136,44 @@ public class BeanConverter implements ConverterIF {
     }
 
     private static Object convert(String value, Class<?> toWhat) {
-        if(String.class == toWhat) {
+        if(String.class.equals(toWhat)) {
             return value;// as is, ie. no trimming
-        } else if(CharSequence.class == toWhat) {
+        } else if(CharSequence.class.equals(toWhat)) {
             return value;// as is, ie. no trimming
-        }
-//        else if(value == null) {
-//            if(toWhat.isPrimitive()) {
-//                throw new RuntimeException("The value, \"" + value + "\", could not be converted to a \"" + toWhat + "\".");
-//            } else {
-//                return null;
-//            }
-//        }
-        else if(value.length() == 0) {
+        } else if(value == null) {
             if(toWhat.isPrimitive()) {
                 throw new RuntimeException("The value, \"" + value + "\", could not be converted to a \"" + toWhat + "\".");
             } else {
                 return null;
             }
-        } else if(boolean.class == toWhat || Boolean.class == toWhat) {
-            return convertStringToBooleanPrimitive(value);
-        } else if(byte.class == toWhat || Byte.class == toWhat) {
-            return Byte.parseByte(value);
-        } else if(char.class == toWhat || Character.class == toWhat) {
-            if(value.length() == 1) {
-                return value.charAt(0);
+        } else if(value.trim().length() == 0) {
+            if(toWhat.isPrimitive()) {
+                throw new RuntimeException("The value, \"" + value + "\", could not be converted to a \"" + toWhat + "\".");
+            } else {
+                return null;
+            }
+        } else if(boolean.class.equals(toWhat) || Boolean.class.equals(toWhat)) {
+            return convertStringToBooleanPrimitive(value.trim());
+        } else if(byte.class.equals(toWhat) || Byte.class.equals(toWhat)) {
+            return Byte.parseByte(value.trim());
+        } else if(char.class.equals(toWhat) || Character.class.equals(toWhat)) {
+            if(value.trim().length() == 1) {
+                return value.trim().charAt(0);
             } else {
                 throw new RuntimeException("The value, \"" + value + "\", could not be converted to a character.");
             }
-        } else if(short.class == toWhat || Short.class == toWhat) {
-            return Short.parseShort(value);
-        } else if(int.class == toWhat || Integer.class == toWhat) {
-            return Integer.parseInt(value);
-        } else if(long.class == toWhat || Long.class == toWhat) {
-            return Long.parseLong(value);
-        } else if(float.class == toWhat || Float.class == toWhat) {
-            return Float.parseFloat(value);
-        } else if(double.class == toWhat || Double.class == toWhat) {
-            return Double.parseDouble(value);
-        } else if(java.util.Date.class == toWhat) {
-            value = value;
+        } else if(short.class.equals(toWhat) || Short.class.equals(toWhat)) {
+            return Short.parseShort(value.trim());
+        } else if(int.class.equals(toWhat) || Integer.class.equals(toWhat)) {
+            return Integer.parseInt(value.trim());
+        } else if(long.class.equals(toWhat) || Long.class.equals(toWhat)) {
+            return Long.parseLong(value.trim());
+        } else if(float.class.equals(toWhat) || Float.class.equals(toWhat)) {
+            return Float.parseFloat(value.trim());
+        } else if(double.class.equals(toWhat) || Double.class.equals(toWhat)) {
+            return Double.parseDouble(value.trim());
+        } else if(java.util.Date.class.equals(toWhat)) {
+            value = value.trim();
             for(SimpleDateFormat sdf : dateTimeFormats) {
                 try {
                     return sdf.parse(value);
@@ -183,8 +181,8 @@ public class BeanConverter implements ConverterIF {
                 }
             }
             throw new RuntimeException("The value, \"" + value + "\", could not be converted to a \"java.util.Date\".");
-        } else if(java.sql.Date.class == toWhat) {
-            value = value;
+        } else if(java.sql.Date.class.equals(toWhat)) {
+            value = value.trim();
             for(SimpleDateFormat sdf : dateFormats) {
                 try {
                     return new java.sql.Date(sdf.parse(value).getTime());
@@ -192,8 +190,8 @@ public class BeanConverter implements ConverterIF {
                 }
             }
             throw new RuntimeException("The value, \"" + value + "\", could not be converted to a \"java.sql.Date\".");
-        } else if(java.sql.Time.class == toWhat) {
-            value = value;
+        } else if(java.sql.Time.class.equals(toWhat)) {
+            value = value.trim();
             for(SimpleDateFormat sdf : timeFormats) {
                 try {
                     return new java.sql.Time(sdf.parse(value).getTime());
@@ -201,8 +199,8 @@ public class BeanConverter implements ConverterIF {
                 }
             }
             throw new RuntimeException("The value, \"" + value + "\", could not be converted to a \"java.sql.Time\".");
-        } else if(java.sql.Timestamp.class == toWhat) {
-            value = value;
+        } else if(java.sql.Timestamp.class.equals(toWhat)) {
+            value = value.trim();
             for(SimpleDateFormat sdf : dateTimeFormats) {
                 try {
                     return new java.sql.Timestamp(sdf.parse(value).getTime());
@@ -211,8 +209,8 @@ public class BeanConverter implements ConverterIF {
             }
             throw new RuntimeException("The value, \"" + value + "\", could not be converted to a \"java.sql.Timestamp\".");
         } else if(toWhat.isEnum()) {
-            //return Enum.valueOf(toWhat, value);
-            value = value;
+            //return Enum.valueOf(toWhat, value.trim());
+            value = value.trim();
             Object[] enumConstants = toWhat.getEnumConstants();
             for(Object oe : enumConstants) {
                 Enum e = (Enum)oe;
@@ -229,7 +227,7 @@ public class BeanConverter implements ConverterIF {
             throw new RuntimeException("The value ,\"" + value + "\", is not a enumeration on enum " + toWhat);
         } else {
             try {
-                Field field = findOldStyleEnumField(toWhat, value);
+                Field field = findOldStyleEnumField(toWhat, value.trim());
                 if(field == null) {
                     Constructor constructor = toWhat.getConstructor(String.class);
                     return constructor.newInstance(value);
