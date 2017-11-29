@@ -11,11 +11,11 @@ import org.osjava.sj.loader.JndiLoader;
 import javax.naming.*;
 import javax.sql.DataSource;
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.text.SimpleDateFormat;
 
 import static org.junit.Assert.*;
 
@@ -371,9 +371,9 @@ public class SimpleJndiNewTest {
             assertEquals(new Integer("101"), bean.getIntegerObject());
             assertEquals(Long.parseLong("1000"), bean.getLongPrimitive());
             assertEquals(new Long("1001"), bean.getLongObject());
-            assertEquals(Float.parseFloat("2000"), bean.getFloatPrimitive());
+            assertEquals(Float.parseFloat("2000"), bean.getFloatPrimitive(), 0);
             assertEquals(new Float("2001"), bean.getFloatObject());
-            assertEquals(Double.parseDouble("3000"), bean.getDoublePrimitive());
+            assertEquals(Double.parseDouble("3000"), bean.getDoublePrimitive(), 0);
             assertEquals(new Double("3001"), bean.getDoubleObject());
             assertEquals(new java.math.BigDecimal("4000000"), bean.getBigDecimal());
             assertEquals(new java.math.BigInteger("4000001"), bean.getBigInteger());
