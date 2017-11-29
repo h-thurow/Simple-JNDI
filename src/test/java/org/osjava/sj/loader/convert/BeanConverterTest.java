@@ -65,7 +65,7 @@ public class BeanConverterTest {
         Properties properties = new Properties();
         properties.setProperty("string", "");
         properties.setProperty("charSequence", "");
-//        properties.setProperty("booleanPrimitive", "");
+        properties.setProperty("booleanPrimitive", "");
         properties.setProperty("booleanObject", "");
         properties.setProperty("byteObject", "");
         BeanWithSupportedSetters bean = (BeanWithSupportedSetters) converter.convert(properties, BeanWithSupportedSetters.class.getName());
@@ -74,5 +74,23 @@ public class BeanConverterTest {
         assertEquals(false, bean.getBooleanPrimitive());
         assertEquals(null, bean.getBooleanObject());
         assertEquals(null, bean.getByteObject());
+    }
+
+    @Test
+    public void trailingWhitespaceStringField() throws Exception {
+        BeanConverter converter = new BeanConverter();
+        Properties properties = new Properties();
+        properties.setProperty("string", "trailing tab  ");
+        BeanWithSupportedSetters bean = (BeanWithSupportedSetters) converter.convert(properties, BeanWithSupportedSetters.class.getName());
+        assertEquals("trailing tab  ", bean.getString());
+    }
+
+    @Test
+    public void trailingWhitespaceIntField() throws Exception {
+        BeanConverter converter = new BeanConverter();
+        Properties properties = new Properties();
+        properties.setProperty("integerPrimitive", "1 ");
+        BeanWithSupportedSetters bean = (BeanWithSupportedSetters) converter.convert(properties, BeanWithSupportedSetters.class.getName());
+        assertEquals(1, bean.getIntegerPrimitive());
     }
 }
