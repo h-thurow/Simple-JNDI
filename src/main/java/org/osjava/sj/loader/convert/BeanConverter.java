@@ -142,16 +142,12 @@ public class BeanConverter implements ConverterIF {
             return value;// as is, ie. no trimming
         } else if(value == null) {
             if(toWhat.isPrimitive()) {
-                throw new RuntimeException("The value, \"" + value + "\", could not be converted to a \"" + toWhat + "\".");
+                throw new RuntimeException("The value \"null\", could not be converted to a \"" + toWhat + "\".");
             } else {
                 return null;
             }
-        } else if(value.trim().length() == 0) {
-            if(toWhat.isPrimitive()) {
-                throw new RuntimeException("The value, \"" + value + "\", could not be converted to a \"" + toWhat + "\".");
-            } else {
-                return null;
-            }
+        } else if(!toWhat.isPrimitive() && value.trim().length() == 0) {
+            return null;
         } else if(boolean.class.equals(toWhat) || Boolean.class.equals(toWhat)) {
             return convertStringToBooleanPrimitive(value.trim());
         } else if(byte.class.equals(toWhat) || Byte.class.equals(toWhat)) {
