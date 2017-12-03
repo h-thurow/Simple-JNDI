@@ -43,7 +43,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import static org.osjava.sj.jndi.MemoryContext.IGNORE_CLOSE;
 
 /**
- * Unlike {@link MemoryContextFactory} this factory could theoretically (untested) return another Context implementation than {@link org.osjava.sj.jndi.MemoryContext MemoryContext} by setting org.osjava.sj.factory to a different {@link InitialContextFactory} Implementation.
+ * Unlike {@link MemoryContextFactory} this factory could theoretically (untested) return another {@link Context} implementation than {@link org.osjava.sj.jndi.MemoryContext} by setting {@link SimpleJndi#CONTEXT_FACTORY} to a different {@link InitialContextFactory} Implementation.
  *
  * @author Henri Yandell, Holger Thurow
  */
@@ -79,8 +79,10 @@ public class SimpleJndiContextFactory implements InitialContextFactory {
                 return ctx;
             }
             else {
-                InitialContext initialContext = new SimpleJndi(environment).loadRoot();
-                final DelimiterConvertingContext delimiterConvertingContext = new DelimiterConvertingContext(initialContext) {
+                InitialContext context = new SimpleJndi(environment).loadRoot();
+                final DelimiterConvertingContext delimiterConvertingContext = new DelimiterConvertingContext(context) {
+                    private boolean isClosed;
+
                     @Override
                     public void close() throws NamingException {
                         // When already closed getEnvironment() throws an Exception.
@@ -90,6 +92,7 @@ public class SimpleJndiContextFactory implements InitialContextFactory {
                                 // first remove, so the context will be removed even when close() throws an Exception.
                                 contextsByRoot.remove(root);
                                 target.close();
+                                isClosed = true;
                             }
                         }
                     }

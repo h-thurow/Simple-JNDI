@@ -94,6 +94,7 @@ public class MemoryContextFactory implements InitialContextFactory {
             else {
                 final String finalRoot = root;
                 MemoryContext context = new MemoryContext(environment) {
+                    private boolean isClosed;
                     @Override
                     public void close() throws NamingException {
                         // When already closed getEnvironment() throws an Exception.
@@ -104,6 +105,7 @@ public class MemoryContextFactory implements InitialContextFactory {
                                 // throws an Exception
                                 contextsByRoot.remove(finalRoot);
                                 super.forceClose();
+                                isClosed = true;
                             }
                         }
                     }
