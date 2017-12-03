@@ -47,16 +47,14 @@
             </roles>
             <timezone>-5</timezone>
         </developer>
-    </developers>
-    <contributors>
-        <contributor>
+        <developer>
             <name>Holger Thurow</name>
             <email>thurow.h@googlemail.com</email>
             <roles>
-                <role>developer</role>
+                <role>Developer</role>
             </roles>
-        </contributor>
-    </contributors>
+        </developer>
+    </developers>
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -235,6 +233,9 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>2.10.4</version>
+                <configuration>
+                    <show>private</show>
+                </configuration>
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>
