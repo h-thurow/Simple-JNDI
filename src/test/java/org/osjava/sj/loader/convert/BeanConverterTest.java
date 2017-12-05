@@ -139,7 +139,6 @@ public class BeanConverterTest {
         Properties props = new Properties();
         props.setProperty("utilDate", "05.12.2017");
         BeanConverter converter = new BeanConverter();
-        thrown.expect(RuntimeException.class);
         thrown.expectMessage("The value, '05.12.2017' could not be converted to a 'java.util.Date'");
         converter.convert(props, BeanWithSupportedSetters.class.getName());
     }
