@@ -32,7 +32,8 @@
 
 package org.osjava.sj.loader.convert;
 
-import org.jetbrains.annotations.Nullable;
+import org.apache.commons.lang.math.NumberUtils;
+import org.osjava.StringsToTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,76 +41,26 @@ import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
-import java.lang.reflect.*;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Date;
+import java.util.List;
+import java.util.Properties;
 
 /**
- * Create an object using its empty constructor, then
- * call setXxx for each pseudo property. Only String
- * properties are supported.
- * <p>
+ * Create an object using its empty constructor.
  * <pre>
- * Foo.name=Arthur
- * Foo.answer=42
- * Foo.type=com.example.Person
- * Foo.converter=org.osjava.sj.loader.convert.BeanConverter
+ * name=Arthur
+ * answer=42
+ * type=com.example.Person
+ * converter=org.osjava.sj.loader.convert.BeanConverter
  * </pre>
  *
- * @author Henri Yandell, Jarrad Waterloo
+ * @author Henri Yandell, Jarrad Waterloo, Holger Thurow
  */
 public class BeanConverter implements ConverterIF {
 
     private static Logger LOGGER = LoggerFactory.getLogger(BeanConverter.class);
-
-    private static final Set<String> trueValues;
-    private static final Set<String> falseValues;
-
-    private static final int OLD_ENUM_STYLE = Modifier.FINAL | Modifier.PUBLIC | Modifier.STATIC;
-
-    private static final List<SimpleDateFormat> dateTimeFormats;
-    private static final List<SimpleDateFormat> dateFormats;
-    private static final List<SimpleDateFormat> timeFormats;
-
-    static {
-        trueValues = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
-        falseValues = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
-        Collections.addAll(trueValues, "true", "t", "yes", "y", "on", "1", "x", "-1");
-        Collections.addAll(falseValues, "false", "f", "no", "n", "off", "0", "");
-        dateTimeFormats = new ArrayList<SimpleDateFormat>();
-        Collections.addAll(dateTimeFormats, new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ"),
-                new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX"),
-                new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss"),
-                new SimpleDateFormat("yyyy-MM-dd'T'HH:mm"),
-                new SimpleDateFormat("yyyy-MM-dd"));
-        for (SimpleDateFormat sdf : dateTimeFormats) {
-            sdf.setLenient(false);
-        }
-        dateFormats = new ArrayList<SimpleDateFormat>();
-        Collections.addAll(dateFormats, new SimpleDateFormat("yyyy-MM-dd"));
-        for (SimpleDateFormat sdf : dateFormats) {
-            sdf.setLenient(false);
-        }
-        timeFormats = new ArrayList<SimpleDateFormat>();
-        Collections.addAll(timeFormats, new SimpleDateFormat("HH:mm:ss.SSSZ"),
-                new SimpleDateFormat("HH:mm:ss.SSSXXX"),
-                new SimpleDateFormat("HH:mm:ss"),
-                new SimpleDateFormat("HH:mm"));
-        for (SimpleDateFormat sdf : timeFormats) {
-            sdf.setLenient(false);
-        }
-    }
-
-    private static boolean convertStringToBooleanPrimitive(String value) {
-        if (trueValues.contains(value)) {
-            return true;
-        }
-        if (falseValues.contains(value)) {
-            return false;
-        }
-        throw new RuntimeException("The value, \"" + value + "\", can not be converted to a boolean.");
-    }
 
     private static PropertyDescriptor findPropertyDescriptorWithSetter(Class<?> clazz, String propertyName) {
         try {
@@ -129,200 +80,68 @@ public class BeanConverter implements ConverterIF {
         return null;
     }
 
-    private static Field findOldStyleEnumField(Class<?> clazz, String value) {
-        Field[] fields = clazz.getFields();
-        for (Field field : fields) {
-            if (clazz.equals(field.getType()) && field.getName().equalsIgnoreCase(value.trim()) && ((field.getModifiers() & OLD_ENUM_STYLE) == OLD_ENUM_STYLE)) {
-                return field;
-            }
-        }
-        return null;
-    }
-
     private static Object convert(String value, Class<?> toWhat) {
+        Object obj;
         if (String.class.equals(toWhat)) {
-            return value;// as is, ie. no trimming
+            obj = value;// as is, ie. no trimming
         }
         else if (CharSequence.class.equals(toWhat)) {
-            return value;// as is, ie. no trimming
+            obj = value;// as is, ie. no trimming
         }
         else {
             String trimmedValue = value.trim();
-            if (value.isEmpty() && !toWhat.isPrimitive()) {
-                return null;
+            if (trimmedValue.isEmpty() && !toWhat.isPrimitive()) {
+                obj = null;
             }
             else {
                 if (trimmedValue.length() == 0 && !toWhat.isPrimitive()) {
-                    return null;
+                    obj = null;
                 }
                 else if (boolean.class.equals(toWhat) || Boolean.class.equals(toWhat)) {
-                    return convertStringToBooleanPrimitive(trimmedValue);
+                    obj = StringsToTypes.toBoolean(trimmedValue);
                 }
-                else if (byte.class.equals(toWhat)) {
-                    return toByte(trimmedValue, (byte) 0);
+                else if (byte.class.equals(toWhat) || Byte.class.equals(toWhat)) {
+                    obj = NumberUtils.toByte(trimmedValue);
                 }
-                else if (Byte.class.equals(toWhat)) {
-                    return Byte.parseByte(trimmedValue);
+                else if (char.class.equals(toWhat) || Character.class.equals(toWhat)) {
+                    obj = StringsToTypes.toCharacter(trimmedValue);
                 }
-                else if (char.class.equals(toWhat)) {
-                    return toCharacter(trimmedValue, (char) Character.UNASSIGNED);
+                else if (short.class.equals(toWhat) || Short.class.equals(toWhat)) {
+                    obj = NumberUtils.toShort(trimmedValue);
                 }
-                else if (Character.class.equals(toWhat)) {
-                    return value.charAt(0);
+                else if (int.class.equals(toWhat) || Integer.class.equals(toWhat)) {
+                    obj = NumberUtils.toInt(trimmedValue);
                 }
-                else if (short.class.equals(toWhat)) {
-                    return toShort(trimmedValue, (short) 0);
+                else if (long.class.equals(toWhat) || Long.class.equals(toWhat)) {
+                    obj = NumberUtils.toLong(trimmedValue);
                 }
-                else if (Short.class.equals(toWhat)) {
-                    return Short.parseShort(trimmedValue);
+                else if (float.class.equals(toWhat) || Float.class.equals(toWhat)) {
+                    obj = NumberUtils.toFloat(trimmedValue);
                 }
-                else if (int.class.equals(toWhat)) {
-                    return toInteger(trimmedValue, 0);
-                }
-                else if (Integer.class.equals(toWhat)) {
-                    return Integer.parseInt(trimmedValue);
-                }
-                else if (long.class.equals(toWhat)) {
-                    return toLong(trimmedValue, 0L);
-                }
-                else if (Long.class.equals(toWhat)) {
-                    return Long.parseLong(trimmedValue);
-                }
-                else if (float.class.equals(toWhat)) {
-                    return toFloat(trimmedValue, 0F);
-                }
-                else if (Float.class.equals(toWhat)) {
-                    return Float.parseFloat(trimmedValue);
-                }
-                else if (double.class.equals(toWhat)) {
-                    return toDouble(trimmedValue, 0D);
-                }
-                else if (Double.class.equals(toWhat)) {
-                    return Double.parseDouble(value);
+                else if (double.class.equals(toWhat) || Double.class.equals(toWhat)) {
+                    obj = NumberUtils.toDouble(trimmedValue);
                 }
                 else if (Date.class.equals(toWhat)) {
-                    value = trimmedValue;
-                    for (SimpleDateFormat sdf : dateTimeFormats) {
-                        try {
-                            return sdf.parse(value);
-                        }
-                        catch (ParseException ignored) {
-                        }
-                    }
-                    throw new RuntimeException("The value, \"" + value + "\", could not be converted to a \"java.util.Date\".");
+                    obj = StringsToTypes.toDate(trimmedValue);
                 }
                 else if (java.sql.Date.class.equals(toWhat)) {
-                    value = trimmedValue;
-                    for (SimpleDateFormat sdf : dateFormats) {
-                        try {
-                            return new java.sql.Date(sdf.parse(value).getTime());
-                        }
-                        catch (ParseException ignored) {
-                        }
-                    }
-                    throw new RuntimeException("The value, \"" + value + "\", could not be converted to a \"java.sql.Date\".");
+                    obj = StringsToTypes.toSqlDate(trimmedValue);
                 }
                 else if (java.sql.Time.class.equals(toWhat)) {
-                    value = trimmedValue;
-                    for (SimpleDateFormat sdf : timeFormats) {
-                        try {
-                            return new java.sql.Time(sdf.parse(value).getTime());
-                        }
-                        catch (ParseException ignored) {
-                        }
-                    }
-                    throw new RuntimeException("The value, \"" + value + "\", could not be converted to a \"java.sql.Time\".");
+                    obj = StringsToTypes.toTime(trimmedValue);
                 }
                 else if (java.sql.Timestamp.class.equals(toWhat)) {
-                    value = trimmedValue;
-                    for (SimpleDateFormat sdf : dateTimeFormats) {
-                        try {
-                            return new java.sql.Timestamp(sdf.parse(value).getTime());
-                        }
-                        catch (ParseException ignored) {
-                        }
-                    }
-                    throw new RuntimeException("The value, \"" + value + "\", could not be converted to a \"java.sql.Timestamp\".");
+                    obj = StringsToTypes.toTimestamp(trimmedValue);
                 }
                 else if (toWhat.isEnum()) {
-                    //return Enum.valueOf(toWhat, value.trim());
-                    value = trimmedValue;
-                    Object[] enumConstants = toWhat.getEnumConstants();
-                    for (Object oe : enumConstants) {
-                        Enum e = (Enum) oe;
-                        if (e.name().equals(value)) {
-                            return e;
-                        }
-                    }
-                    for (Object oe : enumConstants) {
-                        Enum e = (Enum) oe;
-                        if (e.name().equalsIgnoreCase(value)) {
-                            return e;
-                        }
-                    }
-                    throw new RuntimeException("The value ,\"" + value + "\", is not a enumeration on enum " + toWhat);
+                    obj = StringsToTypes.toEnum(toWhat, trimmedValue);
                 }
                 else {
-                    try {
-                        Field field = findOldStyleEnumField(toWhat, trimmedValue);
-                        if (field == null) {
-                            Constructor constructor = toWhat.getConstructor(String.class);
-                            return constructor.newInstance(value);
-                        }
-                        else {
-                            return field.get(null);
-                        }
-                    }
-                    catch (NoSuchMethodException e) {
-                        throw new RuntimeException("Unable to find (String) constructor on class: " + toWhat, e);
-                    }
-                    catch (InstantiationException e) {
-                        throw new RuntimeException("Unable to instantiate class: " + toWhat, e);
-                    }
-                    catch (IllegalAccessException e) {
-                        throw new RuntimeException("Unable to access class: " + toWhat, e);
-                    }
-                    catch (InvocationTargetException e) {
-                        throw new RuntimeException("Unable to invoke (String) constructor on class: " + toWhat, e);
-                    }
+                    obj = StringsToTypes.toOldStyleEnumField(toWhat, trimmedValue);
                 }
             }
         }
-    }
-
-    @Nullable
-    static Short toShort(String value, @Nullable Short defaultValue) {
-        return !value.isEmpty() ? (Short)Short.parseShort(value) : defaultValue;
-    }
-
-    @Nullable
-    static Character toCharacter(String value, @Nullable Character defaultValue) {
-        return !value.isEmpty() ? (Character) value.charAt(0) : defaultValue;
-    }
-
-    @Nullable
-    static Byte toByte(String value, @Nullable Byte defaultValue) {
-        return !value.isEmpty() ? (Byte)Byte.parseByte(value) : defaultValue;
-    }
-
-    @Nullable
-    static Integer toInteger(String value, @Nullable Integer defaultValue) {
-        return !value.isEmpty() ? (Integer)Integer.parseInt(value) : defaultValue;
-    }
-
-    @Nullable
-    static Long toLong(String value, @Nullable Long defaultValue) {
-        return !value.isEmpty() ? (Long)Long.parseLong(value) : defaultValue;
-    }
-
-    @Nullable
-    static Float toFloat(String value, @Nullable Float defaultValue) {
-        return !value.isEmpty() ? (Float)Float.parseFloat(value) : defaultValue;
-    }
-
-    @Nullable
-    static Double toDouble(String value, @Nullable Double defaultValue) {
-        return !value.isEmpty() ? (Double)Double.parseDouble(value) : defaultValue;
+        return obj;
     }
 
     public Object convert(Properties properties, String type) {
@@ -337,19 +156,13 @@ public class BeanConverter implements ConverterIF {
         try {
             Class c = Class.forName(type);
             Object bean = c.newInstance();
-            Iterator itr = properties.keySet().iterator();
-            while (itr.hasNext()) {
-                String key = (String) itr.next();
+            for (Object o : properties.keySet()) {
+                String key = (String) o;
                 if ("converter".equals(key) || "type".equals(key)) {
                     continue;
                 }
                 Object property = properties.get(key);
                 if (property instanceof String) {
-                    /*
-                    methodName = "set" + Character.toTitleCase(key.charAt(0)) + key.substring(1);
-                    Method m = c.getMethod(methodName, String.class);
-                    m.invoke(bean, property);
-                    */
                     String strValue = (String) property;
                     PropertyDescriptor pd = findPropertyDescriptorWithSetter(c, key);
                     if (pd == null) {
@@ -369,7 +182,7 @@ public class BeanConverter implements ConverterIF {
                     for (int i = 0; i < sz; i++) {
                         Object item = list.get(i);
                         if (item instanceof String) {
-                            m.invoke(bean, new Integer(i), item);
+                            m.invoke(bean, i, item);
                         }
                         else {
                             LOGGER.error("Processing List: properties={} type={} property={} key={} item={}", properties, type, property, key, item);

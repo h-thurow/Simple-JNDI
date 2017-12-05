@@ -1,8 +1,12 @@
 package org.osjava.sj.loader.convert;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.osjava.StringsToTypes;
 import org.osjava.sj.BeanWithSupportedSetters;
 
+import java.math.RoundingMode;
 import java.util.Properties;
 
 import static org.junit.Assert.assertEquals;
@@ -12,6 +16,9 @@ import static org.junit.Assert.assertEquals;
  * @since 29.11.17
  */
 public class BeanConverterTest {
+
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
     @Test
     public void propertiesOmitted() {
@@ -48,15 +55,6 @@ public class BeanConverterTest {
         assertEquals(null, bean.getTime());
         assertEquals(null, bean.getTimestamp());
 
-    }
-
-    @Test
-    public void toType() {
-        assertEquals(null, BeanConverter.toShort("", null));
-        assertEquals(null, BeanConverter.toCharacter("", null));
-        assertEquals(null, BeanConverter.toByte("", null));
-        assertEquals(null, BeanConverter.toInteger("", null));
-        assertEquals(null, BeanConverter.toLong("", null));
     }
 
     @Test
@@ -136,4 +134,22 @@ public class BeanConverterTest {
         assertEquals(1, bean.getIntegerPrimitive());
     }
 
+    @Test
+    public void dateParseException() {
+        Properties props = new Properties();
+        props.setProperty("utilDate", "05.12.2017");
+        BeanConverter converter = new BeanConverter();
+        thrown.expect(RuntimeException.class);
+        thrown.expectMessage("The value, '05.12.2017' could not be converted to a 'java.util.Date'");
+        converter.convert(props, BeanWithSupportedSetters.class.getName());
+    }
+
+    @Test
+    public void toEnum() {
+        assertEquals(RoundingMode.HALF_DOWN, StringsToTypes.toEnum(RoundingMode.class, "HALF_DOWN"));
+        assertEquals(RoundingMode.HALF_DOWN, StringsToTypes.toEnum(RoundingMode.class, "half_down"));
+        thrown.expectMessage("The value, 'unknown' could not be converted to a 'java.math.RoundingMode'");
+        assertEquals(RoundingMode.HALF_DOWN, StringsToTypes.toEnum(RoundingMode.class, "unknown"));
+
+    }
 }
