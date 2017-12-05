@@ -1,6 +1,5 @@
 package org.osjava.sj;
 
-import junit.framework.AssertionFailedError;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -11,6 +10,7 @@ import org.osjava.sj.loader.JndiLoader;
 import javax.naming.*;
 import javax.sql.DataSource;
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +24,7 @@ public class SimpleJndiNewTest {
     public ExpectedException thrown = ExpectedException.none();
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         System.clearProperty(SimpleJndi.ROOT);
         System.clearProperty(SimpleJndi.SHARED);
         System.clearProperty(SimpleJndi.ENC);
@@ -320,7 +320,8 @@ public class SimpleJndiNewTest {
      *  "Only String properties are supported." See org.osjava.sj.loader.convert.BeanConverter.
      */
     @Test
-    public void beanSetterNotSharedMixedTypes() throws Exception {
+    public void beanSetterNotSharedMixedTypes() {
+        /*
         InitialContext ctx1 = null;
         try {
             final Hashtable<String, String> env = new Hashtable<String, String>();
@@ -332,6 +333,55 @@ public class SimpleJndiNewTest {
             thrown.expect(NamingException.class);
             thrown.expectMessage("Unable to find method setSize");
             ctx1 = new InitialContext(env);
+        }
+        finally {
+            if (ctx1 != null) {
+                ctx1.close();
+            }
+        }
+        */
+        // TODO remove, obsolete by beanWithSupportedSetters
+    }
+
+    @Test
+    public void beanWithSupportedSetters() throws Exception {
+        InitialContext ctx1 = null;
+        try {
+            final Hashtable<String, String> env = new Hashtable<String, String>();
+            env.put("org.osjava.sj.root",
+                    "file://src/test/resources/roots/beanWithSupportedSetters");
+            env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
+            env.put("org.osjava.sj.delimiter", "/");
+            env.put("org.osjava.sj.space", "java:comp/env");
+            ctx1 = new InitialContext(env);
+            final BeanWithSupportedSetters bean = (BeanWithSupportedSetters) ctx1.lookup("java:comp/env/bean");
+            assert bean != null;
+            assertEquals("Hello World", bean.getString());
+            assertEquals("Hello World", bean.getCharSequence());
+            assertEquals(true, bean.getBooleanPrimitive());
+            assertEquals(false, bean.getBooleanObject());
+            assertEquals(Byte.parseByte("5"), bean.getBytePrimitive());
+            assertEquals(new Byte("7"), bean.getByteObject());
+            assertEquals('x', bean.getCharacterPrimitive());
+            assertEquals(new Character('Z'), bean.getCharacterObject());
+            assertEquals(Short.parseShort("10"), bean.getShortPrimitive());
+            assertEquals(new Short("11"), bean.getShortObject());
+            assertEquals(Integer.parseInt("100"), bean.getIntegerPrimitive());
+            assertEquals(new Integer("101"), bean.getIntegerObject());
+            assertEquals(Long.parseLong("1000"), bean.getLongPrimitive());
+            assertEquals(new Long("1001"), bean.getLongObject());
+            assertEquals(Float.parseFloat("2000"), bean.getFloatPrimitive(), 0);
+            assertEquals(new Float("2001"), bean.getFloatObject());
+            assertEquals(Double.parseDouble("3000"), bean.getDoublePrimitive(), 0);
+            assertEquals(new Double("3001"), bean.getDoubleObject());
+            assertEquals(new java.math.BigDecimal("4000000"), bean.getBigDecimal());
+            assertEquals(new java.math.BigInteger("4000001"), bean.getBigInteger());
+            assertEquals(java.util.Locale.US, bean.getLocale());
+            assertEquals(java.math.RoundingMode.HALF_DOWN, bean.getRoundingMode());
+            assertEquals((new SimpleDateFormat("yyyy-MM-dd'T'HH:mm")).parse("2017-11-21T08:30"), bean.getUtilDate());
+            assertEquals(new java.sql.Date((new SimpleDateFormat("yyyy-MM-dd")).parse("2017-11-21").getTime()), bean.getSqlDate());
+            assertEquals(new java.sql.Time((new SimpleDateFormat("HH:mm")).parse("08:30").getTime()), bean.getTime());
+            assertEquals(new java.sql.Timestamp((new SimpleDateFormat("yyyy-MM-dd'T'HH:mm")).parse("2017-11-21T08:30").getTime()), bean.getTimestamp());
         }
         finally {
             if (ctx1 != null) {
@@ -859,11 +909,8 @@ public class SimpleJndiNewTest {
         }
     }
 
-    /**
-     * TODO Invoking any other method than close() on a closed context is not allowed, and results in undefined behaviour.
-     */
-    @Test(expected = Exception.class)
-    public void lookupIntoClosedContextIgnoreClose() throws Exception {
+    @Test
+    public void forceClose() throws Exception {
         InitialContext ic = null;
         final Hashtable<String, String> envNotClosable = new Hashtable<String, String>();
         envNotClosable.put("org.osjava.sj.root",
@@ -875,55 +922,33 @@ public class SimpleJndiNewTest {
         Hashtable envClosable = (Hashtable) envNotClosable.clone();
         envClosable.remove(MemoryContext.IGNORE_CLOSE);
         try {
+
             ic = new InitialContext(envNotClosable);
-            final Context ctx = (Context) ic.lookup("file1");
-            ctx.close();
-            final String name = (String) ctx.lookup("name");
+            final String name1 = (String) ic.lookup("file1/name");
+            assertEquals("holger", name1);
+            ic.close();
+
+            ic = new InitialContext(envNotClosable);
+            final String name2 = (String) ic.lookup("file1/name");
+            assertEquals("holger", name2);
+            assertSame(name1, name2); // close has been ignored
+            ic.close();
+
+            // Destroy all contexts and free bound objects.
+            Hashtable origEnv = new InitialContext(envNotClosable).getEnvironment();
+            origEnv.remove(MemoryContext.IGNORE_CLOSE);
+            origEnv.put("java.naming.factory.initial", "org.osjava.sj.SimpleJndiContextFactory");
+            ic = new InitialContext(origEnv);
+            ic.close();
+
+            ic = new InitialContext(envNotClosable);
+            final String name3 = (String) ic.lookup("file1/name");
+            assertEquals("holger", name3);
+            assertNotSame(name2, name3);
         }
         finally {
             if (ic != null) {
                 ic = new InitialContext(envClosable);
-                ic.close();
-            }
-        }
-    }
-
-    /**
-     * TODO Invoking any other method than close() on a closed context is not allowed, and results in undefined behaviour.
-     */
-    @Test
-    public void lookupIntoClosedContext() throws Exception {
-        InitialContext ic = null;
-        final Hashtable<String, String> env = new Hashtable<String, String>();
-        env.put("org.osjava.sj.root",
-                "src/test/resources/roots/untypedProperty");
-        env.put("org.osjava.sj.jndi.shared", "true");
-        env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
-        env.put("org.osjava.sj.delimiter", "/");
-        try {
-            ic = new InitialContext(env);
-            final Context ctx = (Context) ic.lookup("file1");
-            ctx.close();
-            try {
-                String name = (String) ctx.lookup("name");
-                throw new AssertionFailedError("lookup should have throw a Exception.");
-            }
-            catch (Exception e) {
-                System.out.println("EXPECTED EXCEPTION");
-                e.printStackTrace();
-            }
-            try {
-                ctx.bind("xyz", 1);
-                throw new AssertionFailedError("bind should have throw a Exception.");
-            }
-            catch (Exception e) {
-                System.out.println("EXPECTED EXCEPTION");
-                e.printStackTrace();
-            }
-        }
-        finally {
-            if (ic != null) {
-                ic = new InitialContext(env);
                 ic.close();
             }
         }

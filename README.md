@@ -1,13 +1,9 @@
 # Simple-JNDI
 
 Simple-JNDI is intended to solve two problems. The first is that of finding a container independent way of opening a 
-database connection, the second is to access application configurations easily from anywhere in your application.
+database connection, the second is to access application configurations easily from anywhere in your application. If your only intention is to test or use classes that depend on Tomcat's JNDI environment outside of Tomcat or you are only in need of a JNDI based DataSource give [TomcatJNDI](https://github.com/h-thurow/TomcatJNDI) (not to be confused with Simple-JNDI) a try.
 
-Unit tests or prototype code often need to emulate the environment within which the code is expected to run. A very 
-common one is to get an object of type javax.sql.DataSource from JNDI so a java.sql.Connection to your database of 
-choice may be opened.
-
-This JNDI implementation is entirely memory based, so no server instances are started. The structure of a root directory serves as a model for the contexts structure. The contexts get populated with Objects defined by .properties files, XML files or Windows-style .ini files. Of course you can bind Objects programmatically to contexts too.
+Simple-JNDI's JNDI implementation is entirely memory based. No server instance is started. The structure of a root directory serves as a model for the contexts structure. The contexts get populated with Objects defined by .properties files, XML files or Windows-style .ini files. Of course you can bind Objects programmatically to contexts too.
 
 <h3>Download</h3>
 
@@ -46,6 +42,7 @@ org.osjava.sj.root=config/
 # NEW in 0.13.0: Specify a list of files and/or directories. Separate them by the platform specific path separator.
 org.osjava.sj.root=file1.cfg:directory1/file.properties:directory2
 </pre>
+<p>Not required, but highly recommended is setting <a href=#shared-or-unshared-context>org.osjava.sj.jndi.shared = true</a> too.</p>
 <p>See also <a href="https://github.com/h-thurow/Simple-JNDI/wiki/Load-property-files-with-any-extension-from-any-location-(New-in-0.13.0)">Load property files with any extension from any location</a>.</p>
 
 <h3>Declaratively create your contexts and context objects</h3>
@@ -155,13 +152,15 @@ The most popular object to get from JNDI is an object of type <i>javax.sql.DataS
 <a href=https://github.com/h-thurow/Simple-JNDI/wiki/DataSource-Configuration-HikariCP-(New-in-0.15.0)>DataSource Configuration HikariCP (New in 0.15.0)</a><br>
 <a href=https://github.com/h-thurow/Simple-JNDI/wiki/DataSource-Configuration-(commons-dbcp-1)>DataSource Configuration (commons dbcp 1)</a><br>
 <a href=https://github.com/h-thurow/Simple-JNDI/wiki/Usage-with-Spring>Usage with Spring - Inject a DataSource into beans</a>
+</p><p>
+    See also <a href=https://github.com/h-thurow/TomcatJNDI#only-interested-in-a-datasource>TomcatJNDI: Only interested in a DataSource?</a>
 </p>
 
 <h3>Shared or unshared context?</h3>
 
-<p>Setting <code>org.osjava.sj.jndi.shared=true</code> will put the in-memory JNDI implementation into a mode whereby all InitialContexts share the same memory. By default this is not set, so every new InitialContext() call will provide an independent InitialContext that does not share its memory with the other contexts. When binding an object to one of these contexts by calling Context.bind() this object is not visible in the other contexts. This could be not what you want when using a DataSource or a connection pool because everytime you call new InitialContext() in your application a new DataSource or a new connection pool is created.</p>
+<p>Setting <code>org.osjava.sj.jndi.shared=true</code> will put the in-memory JNDI implementation into a mode whereby all InitialContexts share the same memory. By default this is not set, so every new InitialContext() call will provide an independent InitialContext that does not share its memory with the other contexts. This could be not what you want when using a DataSource or a connection pool because everytime you call new InitialContext() in your application a new DataSource or a new connection pool is created. Also when binding an object to a specific context by calling Context.bind() this object will be not visible in the context provided by a subsequent "new InitialContext()" call.</p>
 
-<h3>Dealing with "java:comp/env" (Environment Naming Context, ENC) while loading</h3>
+<h3>Dealing with "java:comp/env" (Enterprise Naming Context, ENC) while loading</h3>
 
 <p>Set the <code>org.osjava.sj.space</code> property. Whatever the property is set to will be automatically prepended to <i>every</i> value loaded into the system. Thus <code>org.osjava.sj.space=java:comp/env</code> simulates the JNDI environment of Tomcat. The org.osjava.sj.space property is not subject to delimiter parsing, so even when org.osjava.sj.delimiter is set to ".", you have to lookup "java:comp/env", not "java:comp.env". See also <a href=https://github.com/h-thurow/Simple-JNDI/issues/1>ENC problem</a>.</p>
 

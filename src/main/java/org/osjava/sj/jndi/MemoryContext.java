@@ -573,7 +573,7 @@ public class MemoryContext implements Cloneable, Context  {
      * @see javax.naming.Context#addToEnvironment(java.lang.String, java.lang.Object)
      */
     @Override
-    public Object addToEnvironment(String name, Object object) throws NamingException {
+    public Object addToEnvironment(String name, Object object) {
         if(this.env == null) {
             return null;
         }
@@ -584,7 +584,7 @@ public class MemoryContext implements Cloneable, Context  {
      * @see javax.naming.Context#removeFromEnvironment(java.lang.String)
      */
     @Override
-    public Object removeFromEnvironment(String name) throws NamingException {
+    public Object removeFromEnvironment(String name) {
         if(this.env == null) {
             return null;
         }
@@ -595,7 +595,7 @@ public class MemoryContext implements Cloneable, Context  {
      * @see javax.naming.Context#getEnvironment()
      */
     @Override
-    public Hashtable getEnvironment() throws NamingException {
+    public Hashtable getEnvironment() {
         if(this.env == null) {
             return new Hashtable();
         }
@@ -617,7 +617,7 @@ public class MemoryContext implements Cloneable, Context  {
      * @see javax.naming.Context#getNameInNamespace()
      */
     @Override
-    public String getNameInNamespace() throws NamingException {
+    public String getNameInNamespace() {
         return nameInNamespace.toString();
     }
 
