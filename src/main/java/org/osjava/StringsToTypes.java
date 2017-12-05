@@ -1,6 +1,8 @@
 package org.osjava;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -26,12 +28,13 @@ public class StringsToTypes {
     private static final List<SimpleDateFormat> timeFormats;
 
     static {
-        trueValues = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
-        falseValues = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+        trueValues = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        falseValues = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         Collections.addAll(trueValues, "true", "t", "yes", "y", "on", "1", "x", "-1");
         Collections.addAll(falseValues, "false", "f", "no", "n", "off", "0", "");
         dateTimeFormats = new ArrayList<SimpleDateFormat>();
-        Collections.addAll(dateTimeFormats, new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ"),
+        Collections.addAll(dateTimeFormats,
+                new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ"),
                 new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX"),
                 new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss"),
                 new SimpleDateFormat("yyyy-MM-dd'T'HH:mm"),
@@ -39,12 +42,12 @@ public class StringsToTypes {
         for (SimpleDateFormat sdf : dateTimeFormats) {
             sdf.setLenient(false);
         }
-        dateFormats = new ArrayList<SimpleDateFormat>();
+        dateFormats = new ArrayList<>();
         Collections.addAll(dateFormats, new SimpleDateFormat("yyyy-MM-dd"));
         for (SimpleDateFormat sdf : dateFormats) {
             sdf.setLenient(false);
         }
-        timeFormats = new ArrayList<SimpleDateFormat>();
+        timeFormats = new ArrayList<>();
         Collections.addAll(timeFormats, new SimpleDateFormat("HH:mm:ss.SSSZ"),
                 new SimpleDateFormat("HH:mm:ss.SSSXXX"),
                 new SimpleDateFormat("HH:mm:ss"),
@@ -54,6 +57,10 @@ public class StringsToTypes {
         }
     }
 
+    /**
+     * "true", "t", "yes", "y", "on", "1", "x", "-1" will return true.<br>
+     * "false", "f", "no", "n", "off", "0", "" will return false.
+     */
     public static boolean toBoolean(String value) {
         if (trueValues.contains(value)) {
             return true;
@@ -61,14 +68,15 @@ public class StringsToTypes {
         if (falseValues.contains(value)) {
             return false;
         }
-        throw getRuntimeException(value, boolean.class);
+        throw newRuntimeException(value, boolean.class);
     }
 
     /**
      *
      * @return public static final field with this name.
      */
-    private static Field findOldStyleEnumField(Class<?> clazz, String name) {
+    @Nullable
+    private static Field findOldStyleEnumField(@NotNull Class<?> clazz, String name) {
         Field[] fields = clazz.getFields();
         for (Field field : fields) {
             if (clazz.equals(field.getType()) && field.getName().equalsIgnoreCase(name.trim()) && ((field.getModifiers() & OLD_ENUM_STYLE) == OLD_ENUM_STYLE)) {
@@ -79,19 +87,35 @@ public class StringsToTypes {
     }
 
     /**
-     * Support for int/string enum pattern. That means classes declaring constants with public static final fields to mimic enums.
+     * Support for int/string enum pattern. That means classes declaring constants with public static final fields to mimic enums, e. g. {@link Locale}.
+     *
+     * @return ObjectUtils#NULL: no such public static final field.
      */
-    public static Object toOldStyleEnumField(Class<?> toWhat, String value) {
+    public static Object getOldStyleEnumFieldValue(Class<?> toWhat, String value) {
         Object obj;
         try {
             Field field = findOldStyleEnumField(toWhat, value);
             if (field == null) {
-                Constructor constructor = toWhat.getConstructor(String.class);
-                obj = constructor.newInstance(value);
+                obj = ObjectUtils.NULL;
             }
             else {
                 obj = field.get(null);
             }
+        }
+        catch (IllegalAccessException e) {
+            throw new RuntimeException("Unable to access class: " + toWhat, e);
+        }
+        return obj;
+    }
+
+    /**
+     * To retrieve instances of classes with a single string-argument constructor like {@link java.math.BigDecimal#BigDecimal(String)}, {@link java.math.BigInteger#BigInteger(String)}.
+     */
+    @NotNull
+    public static Object callConstructor(@NotNull Class<?> toWhat, String value) {
+        try {
+            Constructor constructor = toWhat.getConstructor(String.class);
+            return constructor.newInstance(value);
         }
         catch (NoSuchMethodException e) {
             throw new RuntimeException("Unable to find (String) constructor on class: " + toWhat, e);
@@ -105,11 +129,10 @@ public class StringsToTypes {
         catch (InvocationTargetException e) {
             throw new RuntimeException("Unable to invoke (String) constructor on class: " + toWhat, e);
         }
-        return obj;
     }
 
     @NotNull
-    public static Object toEnum(Class<?> toWhat, String value) {
+    public static Object toEnum(@NotNull Class<?> toWhat, String value) {
         Object obj = null;
         //obj = Enum.valueOf(toWhat, value.trim());
         boolean valid = false;
@@ -129,7 +152,7 @@ public class StringsToTypes {
             }
         }
         if (!valid) {
-            throw getRuntimeException(value, toWhat);
+            throw newRuntimeException(value, toWhat);
         }
         return obj;
     }
@@ -147,7 +170,7 @@ public class StringsToTypes {
             catch (ParseException ignored) { }
         }
         if (!valid) {
-            throw getRuntimeException(value, Timestamp.class);
+            throw newRuntimeException(value, Timestamp.class);
         }
         return obj;
     }
@@ -165,7 +188,7 @@ public class StringsToTypes {
             catch (ParseException ignored) { }
         }
         if (!valid) {
-            throw getRuntimeException(value, Time.class);
+            throw newRuntimeException(value, Time.class);
         }
         return obj;
     }
@@ -183,7 +206,7 @@ public class StringsToTypes {
             catch (ParseException ignored) { }
         }
         if (!valid) {
-            throw getRuntimeException(value, java.sql.Date.class);
+            throw newRuntimeException(value, java.sql.Date.class);
         }
         return obj;
     }
@@ -200,13 +223,13 @@ public class StringsToTypes {
             catch (ParseException ignored) { }
         }
         if (!valid) {
-            throw getRuntimeException(value, Date.class);
+            throw newRuntimeException(value, Date.class);
         }
         return obj;
     }
 
     @NotNull
-    private static RuntimeException getRuntimeException(String value, Class<?> toWhat) {
+    private static RuntimeException newRuntimeException(String value, Class<?> toWhat) {
         return new RuntimeException(
                 String.format(
                     "The value, '%s' could not be converted to a '%s'",
@@ -216,6 +239,10 @@ public class StringsToTypes {
         );
     }
 
+    /**
+     * @param value Can be empty.
+     * @return Empty value: {@link Character#UNASSIGNED}, otherwise the first character of value.
+     */
     public static char toCharacter(@NotNull String value) {
         return !value.isEmpty() ? value.charAt(0) : (char)Character.UNASSIGNED;
     }

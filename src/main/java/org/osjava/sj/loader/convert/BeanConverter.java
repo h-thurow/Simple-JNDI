@@ -32,6 +32,7 @@
 
 package org.osjava.sj.loader.convert;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.osjava.StringsToTypes;
 import org.slf4j.Logger;
@@ -137,7 +138,10 @@ public class BeanConverter implements ConverterIF {
                     obj = StringsToTypes.toEnum(toWhat, trimmedValue);
                 }
                 else {
-                    obj = StringsToTypes.toOldStyleEnumField(toWhat, trimmedValue);
+                    obj = StringsToTypes.getOldStyleEnumFieldValue(toWhat, trimmedValue);
+                    if (obj == ObjectUtils.NULL) {
+                        obj = StringsToTypes.callConstructor(toWhat, value);
+                    }
                 }
             }
         }
