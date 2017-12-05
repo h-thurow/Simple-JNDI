@@ -78,6 +78,9 @@ public class StringsToTypes {
         return null;
     }
 
+    /**
+     * Support for int/string enum pattern. That means classes declaring constants with public static final fields to mimic enums.
+     */
     public static Object toOldStyleEnumField(Class<?> toWhat, String value) {
         Object obj;
         try {
