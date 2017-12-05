@@ -313,36 +313,6 @@ public class SimpleJndiNewTest {
         }
     }
 
-    /**
-     * java.lang.RuntimeException: Unable to find method setSize on class: org.osjava.sj.BeanWithSetterMixedTypes
-     *  at org.osjava.sj.loader.convert.BeanConverter.convert(BeanConverter.java:101)
-     *  <p>
-     *  "Only String properties are supported." See org.osjava.sj.loader.convert.BeanConverter.
-     */
-    @Test
-    public void beanSetterNotSharedMixedTypes() {
-        /*
-        InitialContext ctx1 = null;
-        try {
-            final Hashtable<String, String> env = new Hashtable<String, String>();
-            env.put("org.osjava.sj.root",
-                    "file://src/test/resources/roots/beanWithSetter");
-            env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
-            env.put("org.osjava.sj.delimiter", "/");
-            env.put("org.osjava.sj.space", "java:comp/env");
-            thrown.expect(NamingException.class);
-            thrown.expectMessage("Unable to find method setSize");
-            ctx1 = new InitialContext(env);
-        }
-        finally {
-            if (ctx1 != null) {
-                ctx1.close();
-            }
-        }
-        */
-        // TODO remove, obsolete by beanWithSupportedSetters
-    }
-
     @Test
     public void beanWithSupportedSetters() throws Exception {
         InitialContext ctx1 = null;
