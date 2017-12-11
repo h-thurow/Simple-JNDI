@@ -89,7 +89,7 @@ public class StringsToTypes {
     /**
      * Support for int/string enum pattern. That means classes declaring constants with public static final fields to mimic enums, e. g. {@link Locale}.
      *
-     * @return ObjectUtils#NULL: no such public static final field.
+     * @return ObjectUtils.NULL: no such public static final field.
      */
     public static Object getOldStyleEnumFieldValue(Class<?> toWhat, String value) {
         Object obj;
