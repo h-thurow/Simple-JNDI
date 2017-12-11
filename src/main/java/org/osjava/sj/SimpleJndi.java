@@ -148,7 +148,7 @@ public class SimpleJndi {
 
     /**
      * Allow system properties to override environment. Siehe
-     * {@link org.osjava.sj.jndi.AbstractContext#AbstractContext(Hashtable)}.
+     * {@link org.osjava.sj.jndi.MemoryContext#MemoryContext(Hashtable)}.
      */
     private void overwriteEnvironmentWithSystemProperties() {
         overwriteFromSystemProperty(ROOT);
