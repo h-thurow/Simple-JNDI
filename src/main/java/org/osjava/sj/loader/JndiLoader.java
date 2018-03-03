@@ -89,6 +89,7 @@ public class JndiLoader {
      * Loads all .properties", .ini, .xml files in a directory or a single file into a context.
      */
     public void load(File fileOrDirectory, Context ctxt) throws NamingException, IOException {
+        fileOrDirectory = new File(fileOrDirectory.getAbsolutePath());
         if (fileOrDirectory.isDirectory()) {
             loadDirectory(fileOrDirectory, ctxt, null, "");
         }
@@ -110,6 +111,7 @@ public class JndiLoader {
      * @param ignoreFileExtension true: If fileOrDirectory is a file, it will be processed as property file whatever its extension is.
      */
     public void load(File fileOrDirectory, Context ctxt, boolean preserveFileNameAsContextName, boolean ignoreFileExtension) throws NamingException, IOException {
+        fileOrDirectory = new File(fileOrDirectory.getAbsolutePath());
         if (fileOrDirectory.isDirectory()) {
             loadDirectory(fileOrDirectory, ctxt, null, "");
         }

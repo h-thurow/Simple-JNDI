@@ -67,7 +67,7 @@ public class EncTest {
         System.setProperty("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
         System.setProperty("org.osjava.sj.root", "src/test/resources/roots/enc-test");
         System.setProperty("org.osjava.sj.delimiter", "/");
-        System.setProperty("org.osjava.sj.space", "java:/src");
+        System.setProperty("org.osjava.sj.space", "java:/comp/env");
         try {
             initContext = new InitialContext();
         } catch(NamingException ne) {
