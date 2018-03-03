@@ -38,7 +38,7 @@ public class HikariTest {
             DataSource ds = (DataSource) ctx.lookup("HikariDataSource");
             Connection con = ds.getConnection();
             Statement stmnt = con.createStatement();
-            //createTable(statement);
+            stmnt.executeUpdate("create table DATATYPES_TEST (a_varchar VARCHAR(255) )");
             stmnt.executeQuery("INSERT INTO DATATYPES_TEST (a_varchar) values ('test')");
             ResultSet rs = stmnt.executeQuery("SELECT count(*) FROM DATATYPES_TEST");
             rs.next();
