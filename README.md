@@ -39,7 +39,8 @@ org.osjava.sj.root=/home/hen/gj/simple-jndi/config/
 # relative directory, using the default file protocol
 org.osjava.sj.root=config/
 </pre><pre>
-# NEW in 0.13.0: Specify a list of files and/or directories. Separate them by the platform specific path separator.
+# NEW in 0.13.0: Specify a list of files and/or directories. Separate them by the platform specific path separator. 
+# From 0.17.2 on you should also set org.osjava.sj.pathSeparator to the separator used in org.osjava.sj.root to ensure platform independency of your jndi.properties file.
 org.osjava.sj.root=file1.cfg:directory1/file.properties:directory2
 </pre>
 <p>Not required, but highly recommended is setting <a href=#shared-or-unshared-context>org.osjava.sj.jndi.shared = true</a> too.</p>
