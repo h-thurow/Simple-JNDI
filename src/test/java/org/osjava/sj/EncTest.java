@@ -48,15 +48,7 @@ public class EncTest {
 
     @Before
     public void setUp() {
-        System.setProperty("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
-        System.setProperty("org.osjava.sj.root", "file://src/test/resources/roots/enc-test");
-        System.setProperty("org.osjava.sj.delimiter", "/");
-        System.setProperty("org.osjava.sj.space", "java:/comp/env");
-        try {
-            initContext = new InitialContext();
-        } catch(NamingException ne) {
-            ne.printStackTrace();
-        }
+
     }
 
     @After
@@ -71,6 +63,17 @@ public class EncTest {
 
     @Test
     public void testSystemPropertyContext() throws NamingException {
+
+        System.setProperty("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
+        System.setProperty("org.osjava.sj.root", "src/test/resources/roots/enc-test");
+        System.setProperty("org.osjava.sj.delimiter", "/");
+        System.setProperty("org.osjava.sj.space", "java:/src");
+        try {
+            initContext = new InitialContext();
+        } catch(NamingException ne) {
+            ne.printStackTrace();
+        }
+
         String dsString = "bing::::foofoo::::Boo";
         Context envContext = (Context) initContext.lookup("java:/comp/env");
         DataSource ds = (DataSource) envContext.lookup("jdbc/myoracle");
