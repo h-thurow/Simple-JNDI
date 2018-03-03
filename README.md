@@ -11,7 +11,7 @@ Simple-JNDI's JNDI implementation is entirely memory based. No server instance i
 &lt;dependency>
     &lt;groupId>com.github.h-thurow&lt;/groupId>
     &lt;artifactId>simple-jndi&lt;/artifactId>
-    &lt;version>0.17.0&lt;/version>
+    &lt;version>0.17.2&lt;/version>
 &lt;/dependency>
 </pre>
 or <a href=http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.github.h-thurow%22%20AND%20a%3A%22simple-jndi%22>download from here</a>.
@@ -39,7 +39,8 @@ org.osjava.sj.root=/home/hen/gj/simple-jndi/config/
 # relative directory, using the default file protocol
 org.osjava.sj.root=config/
 </pre><pre>
-# NEW in 0.13.0: Specify a list of files and/or directories. Separate them by the platform specific path separator.
+# NEW in 0.13.0: Specify a list of files and/or directories. Separate them by the platform specific path separator. 
+# From 0.17.2 on you should also set org.osjava.sj.pathSeparator to the separator used in org.osjava.sj.root to ensure platform independency of your jndi.properties file.
 org.osjava.sj.root=file1.cfg:directory1/file.properties:directory2
 </pre>
 <p>Not required, but highly recommended is setting <a href=#shared-or-unshared-context>org.osjava.sj.jndi.shared = true</a> too.</p>
