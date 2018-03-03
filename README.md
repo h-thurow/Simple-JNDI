@@ -115,7 +115,7 @@ Note that you have to write "quantity/type=java.lang.Integer" and "enabled/type=
 See also<br>
 <a href=https://github.com/h-thurow/Simple-JNDI/wiki/A-more-elegant-way-to-lookup-typed-properties-(New-in-0.14.0)>A more elegant way to lookup typed properties (New in 0.14.0)</a><br>
 <a href=https://github.com/h-thurow/Simple-JNDI/wiki/Load-self-defined-types-as-Beans-(New-in-0.15.0)>Load self-defined types as Beans (New in 0.15.0)</a><br>
-<a href=https://github.com/h-thurow/Simple-JNDI/wiki/Instantiate-beans-and-set-theirs-properties-(New-in-0.17.0)>Instantiate beans and set theirs properties (New in 0.17.0)</a>
+<a href=https://github.com/h-thurow/Simple-JNDI/wiki/Instantiate-beans-and-set-their-properties-(New-in-0.17.0)>Instantiate beans and set their properties (New in 0.17.0)</a>
 </p>
 
 <h3>Lookup pathes with "/" as context separator instead of "."</h3>
