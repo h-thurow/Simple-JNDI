@@ -1,5 +1,6 @@
 package org.osjava.sj;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -11,10 +12,7 @@ import javax.naming.*;
 import javax.sql.DataSource;
 import java.io.File;
 import java.text.SimpleDateFormat;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -32,6 +30,7 @@ public class SimpleJndiNewTest {
         System.clearProperty(SimpleJndi.FILENAME_TO_CONTEXT);
         System.clearProperty(JndiLoader.COLON_REPLACE);
         System.clearProperty(JndiLoader.DELIMITER);
+        System.clearProperty(SimpleJndi.PATH_SEPARATOR);
     }
 
     /**
@@ -1331,5 +1330,72 @@ public class SimpleJndiNewTest {
                 ctx.close();
             }
         }
+    }
+
+    /**
+     * Platform specific path separator is ";" or ":". The problem is the org.osjava.sj.root value has to be platform specific, what is inacceptable. Here is a workaround.
+     */
+    @Test
+    public void multiplePlatformSupportWorkaround() {
+
+        String unixSeparator = ":";
+        String winSeparator = ";";
+
+        String[] roots = "a/b/c".split(unixSeparator);
+        assertTrue(ArrayUtils.contains(roots, "a/b/c"));
+
+        roots = "a/b/c:d/e/f".split(unixSeparator);
+        List<String> paths = Arrays.asList(roots);
+        paths.containsAll(Arrays.asList("a/b/c", "d/e/f"));
+
+        roots = "a/b/c:d/e/f:;aa/bb/cc;dd/ee/ff".split(unixSeparator);
+        paths = Arrays.asList(roots);
+        assertTrue(paths.containsAll(Arrays.asList("a/b/c", "d/e/f", ";aa/bb/cc;dd/ee/ff")));
+
+        roots = "a/b/c:d/e/f:;aa/bb/cc;dd/ee/ff".split(winSeparator);
+        paths = Arrays.asList(roots);
+        assertTrue(paths.containsAll(Arrays.asList("a/b/c:d/e/f:", "aa/bb/cc", "dd/ee/ff")));
+
+        roots = "a/b/c;d/e/f;:aa/bb/cc:dd/ee/ff".split(winSeparator);
+        paths = Arrays.asList(roots);
+        assertTrue(paths.containsAll(Arrays.asList("a/b/c", "d/e/f", ":aa/bb/cc:dd/ee/ff")));
+
+        roots = "a/b/c;d/e/f;:aa/bb/cc:dd/ee/ff".split(unixSeparator);
+        paths = Arrays.asList(roots);
+        assertTrue(paths.containsAll(Arrays.asList("a/b/c;d/e/f;", "aa/bb/cc", "dd/ee/ff")));
+    }
+
+    /**
+     * When setting org.osjava.sj.root to more than one root, e. g. "root1:root2", set org.osjava.sj.pathSeparator to ":" too to make jndi.properties file platform independent, so it is working on Windows and *nix.
+     */
+    @Test
+    public void platformIndependentRoot() {
+        String platformSpecificPathSeparator = File.pathSeparator;
+        String separator = platformSpecificPathSeparator.equals(";") ? ":" : ";";
+        final Hashtable<String, String> env = new Hashtable<>();
+        String root = "root1" + separator + "root2";
+        env.put(SimpleJndi.ROOT, root);
+        env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
+        env.put(SimpleJndi.PATH_SEPARATOR, separator);
+        SimpleJndi simpleJndi = new SimpleJndi(env);
+        String[] roots = simpleJndi.extractRoots(root);
+        assertEquals("root1", roots[0]);
+        assertEquals("root2", roots[1]);
+    }
+
+    /**
+     * Legacy way: org.osjava.sj.root is platform dependent.
+     */
+    @Test
+    public void platformDependentRoot() {
+        String platformSpecificPathSeparator = File.pathSeparator;
+        String separator = platformSpecificPathSeparator.equals(";") ? ":" : ";";
+        final Hashtable<String, String> env = new Hashtable<>();
+        String root = "root1" + separator + "root2";
+        env.put(SimpleJndi.ROOT, root);
+        env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
+        SimpleJndi simpleJndi = new SimpleJndi(env);
+        String[] roots = simpleJndi.extractRoots(root);
+        assertEquals(1, roots.length);
     }
 }

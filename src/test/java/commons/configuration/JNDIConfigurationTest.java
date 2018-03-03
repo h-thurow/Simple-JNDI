@@ -19,7 +19,7 @@ import static org.junit.Assert.*;
 public class JNDIConfigurationTest {
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         System.clearProperty(SimpleJndi.ROOT);
         System.clearProperty(SimpleJndi.SHARED);
         System.clearProperty(SimpleJndi.ENC);
@@ -27,6 +27,7 @@ public class JNDIConfigurationTest {
         System.clearProperty(SimpleJndi.FILENAME_TO_CONTEXT);
         System.clearProperty(JndiLoader.COLON_REPLACE);
         System.clearProperty(JndiLoader.DELIMITER);
+        System.clearProperty(SimpleJndi.PATH_SEPARATOR);
     }
 
     @Test
@@ -371,4 +372,5 @@ public class JNDIConfigurationTest {
             }
         }
     }
+
 }

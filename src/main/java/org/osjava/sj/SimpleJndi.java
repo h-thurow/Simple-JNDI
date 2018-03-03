@@ -32,6 +32,7 @@
 package org.osjava.sj;
 
 import org.apache.commons.lang.BooleanUtils;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.osjava.StringUtils;
 import org.osjava.sj.loader.JndiLoader;
@@ -54,6 +55,7 @@ public class SimpleJndi {
     public static final String JNDI_SYNTAX_SEPARATOR = "jndi.syntax.separator";
     private static final Logger logger = LoggerFactory.getLogger(SimpleJndi.class);
     public static final String FILENAME_TO_CONTEXT = "org.osjava.sj.filenameToContext";
+    public static final String PATH_SEPARATOR = "org.osjava.sj.pathSeparator";
     private static final Logger LOGGER = LoggerFactory.getLogger(SimpleJndi.class);
 
     private Hashtable<String, String> env;
@@ -72,7 +74,7 @@ public class SimpleJndi {
         JndiLoader loader = new JndiLoader(env);
         String root = getRoot(env);
         if (root != null && !root.isEmpty()) {
-            final String[] roots = root.split(File.pathSeparator);
+            final String[] roots = extractRoots(root);
             for (String path : roots) {
                 final File rootFile = new File(path);
                 LOGGER.debug("Loading {}", rootFile.getAbsolutePath());
@@ -91,6 +93,13 @@ public class SimpleJndi {
             logger.warn("Mistakenly no root provided?");
         }
         return initialContext;
+    }
+
+    @NotNull
+    String[] extractRoots(String root) {
+        String pathSeparator = env.get(PATH_SEPARATOR);
+        return root.split(
+                pathSeparator == null ? File.pathSeparator : pathSeparator);
     }
 
     /**
@@ -147,24 +156,25 @@ public class SimpleJndi {
     }
 
     /**
-     * Allow system properties to override environment. Siehe
-     * {@link org.osjava.sj.jndi.MemoryContext#MemoryContext(Hashtable)}.
+     * Allow system properties to override environment. See Issue #2: Add JndiLoader.SIMPLE_COLON_REPLACE to overwriteEnvironmentWithSystemProperties.
      */
     private void overwriteEnvironmentWithSystemProperties() {
-        overwriteFromSystemProperty(ROOT);
-        overwriteFromSystemProperty(ENC);
-        overwriteFromSystemProperty(CONTEXT_FACTORY);
-        overwriteFromSystemProperty(SHARED);
-        overwriteFromSystemProperty(JNDI_SYNTAX_SEPARATOR);
-        overwriteFromSystemProperty(FILENAME_TO_CONTEXT);
-        overwriteFromSystemProperty(JndiLoader.DELIMITER);
-        overwriteFromSystemProperty(JndiLoader.COLON_REPLACE);
-        overwriteFromSystemProperty(Context.OBJECT_FACTORIES);
+        overwriteWithSystemProperty(ROOT);
+        overwriteWithSystemProperty(ENC);
+        overwriteWithSystemProperty(CONTEXT_FACTORY);
+        overwriteWithSystemProperty(SHARED);
+        overwriteWithSystemProperty(JNDI_SYNTAX_SEPARATOR);
+        overwriteWithSystemProperty(FILENAME_TO_CONTEXT);
+        overwriteWithSystemProperty(PATH_SEPARATOR);
+        overwriteWithSystemProperty(JndiLoader.DELIMITER);
+        overwriteWithSystemProperty(JndiLoader.COLON_REPLACE);
+        overwriteWithSystemProperty(Context.OBJECT_FACTORIES);
     }
 
-    private void overwriteFromSystemProperty(String key) {
-        if(System.getProperty(key) != null) {
-            env.put(key, System.getProperty(key));
+    private void overwriteWithSystemProperty(String key) {
+        String value = System.getProperty(key);
+        if(value != null) {
+            env.put(key, value);
         }
     }
 
