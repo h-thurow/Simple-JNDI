@@ -66,19 +66,19 @@ public class SimpleNameParser implements NameParser {
      */
     private Properties props = new Properties();
     
-    /**
-     * Creates a ThreadNameParser.  Any relevant information that is needed, 
-     * such as the environment that is passed to {@link CompoundName CompoundName}
-     * objects that are created.
-     * 
-     * @param parent ThreadContext that utilizes the name parser.
-     * @throws NamingException if a naming exception is found.
-     */
-    public SimpleNameParser(Context parent) throws NamingException {
-        this.parent = parent;
-        /* Properties from the parent context are in a HashTable. */
-        props.putAll(this.parent.getEnvironment());
-    }
+//    /**
+//     * Creates a ThreadNameParser.  Any relevant information that is needed,
+//     * such as the environment that is passed to {@link CompoundName CompoundName}
+//     * objects that are created.
+//     *
+//     * @param parent ThreadContext that utilizes the name parser.
+//     * @throws NamingException if a naming exception is found.
+//     */
+//    public SimpleNameParser(Context parent) throws NamingException {
+//        this.parent = parent;
+//        /* Properties from the parent context are in a HashTable. */
+//        props.putAll(this.parent.getEnvironment());
+//    }
 
     /** 
      * Parses a name into its components.<br>
@@ -100,18 +100,18 @@ public class SimpleNameParser implements NameParser {
         return ret;
     }
     
-    /* *
-     * Determine whether or not <code>ob</code> is equal to this object.
-     * If the ob is an instance of ThreadNameParser, it is considered to be 
-     * equal.
-     * <br/><br/>
-     * <b>NOTE:</b> The above assumption may actually be false under two
-     * circomstances.   Firstly, if the properties utilized by the contexts
-     * are different.  Secondly, if the ThreadNameParser is subclassed.
-     * 
-     * @param ob the objct which is being compared to this one.
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
+//    /**
+//     * Determine whether or not <code>ob</code> is equal to this object.
+//     * If the ob is an instance of ThreadNameParser, it is considered to be
+//     * equal.
+//     * <br/><br/>
+//     * <b>NOTE:</b> The above assumption may actually be false under two
+//     * circomstances.   Firstly, if the properties utilized by the contexts
+//     * are different.  Secondly, if the ThreadNameParser is subclassed.
+//     *
+//     * @param ob the objct which is being compared to this one.
+//     * @see java.lang.Object#equals(java.lang.Object)
+//     */
      /* HEN: No hashCode() method, and I'm rather concerned with the 
              implementation of equals below.
     public boolean equals(Object ob) {
