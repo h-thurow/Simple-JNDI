@@ -82,10 +82,13 @@ public class SimpleJndi {
                     loader.load(rootFile, ctxt, BooleanUtils.toBoolean(env.get(FILENAME_TO_CONTEXT)), true);
                 }
                 catch (Exception e) {
-                    LOGGER.error("Unable to load: ",
-                            rootFile.getAbsolutePath(), e);
+                    String message = "Unable to load: " +
+                        rootFile.getAbsolutePath();
+                    LOGGER.error(message, e);
                     initialContext.close();
-                    throw new NamingException("" + e.getMessage());
+                    NamingException e2 = new NamingException(message);
+                    e2.setRootCause(e);
+                    throw e2;
                 }
             }
         }
