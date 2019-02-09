@@ -231,26 +231,23 @@ public class JndiLoader {
     // TODO Make package-private
     public Properties toProperties(File file) throws IOException {
 //        System.err.println("LOADING: "+file);
-        SJProperties p;
+        SJProperties properties;
 
         if(file.getName().endsWith(".xml")) {
-            p = new XmlSJProperties();
-        } else
-        if(file.getName().endsWith(".ini")) {
-            p = new IniSJProperties();
-        } else {
-            p = new CustomSJProperties();
+            properties = new XmlSJProperties();
+        }
+        else if(file.getName().endsWith(".ini")) {
+            properties = new IniSJProperties();
+        }
+        else {
+            properties = new CustomSJProperties();
         }
 
-        p.setDelimiter( (String) environment.get(DELIMITER) );
+        properties.setDelimiter( (String) environment.get(DELIMITER) );
 
-        FileInputStream fin = null;
-        try {
-            fin = new FileInputStream(file);
-            p.load(fin);
-            return p;
-        } finally {
-            if(fin != null) fin.close();
+        try (FileInputStream stream = new FileInputStream(file)) {
+            properties.load(stream);
+            return properties;
         }
     }
 

@@ -52,7 +52,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import static org.osjava.sj.jndi.MemoryContext.IGNORE_CLOSE;
 
 /**
- * Initial Context Factory for {@link MemoryContext}. Note the difference to {@link SimpleJndiContextFactory}.
+ * Initial Context Factory for {@link MemoryContext}. Note the difference to {@link SimpleJndiContextFactory}. Here an empty context is returned. No sub contexts or JNDI objects are initialized from sub directories or property files under a root directory. The org.osjava.sj.root property may even not be set.
  * 
  * @author Robert M. Zigweid, Holger Thurow
  * @since Simple-JNDI 0.11

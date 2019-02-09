@@ -311,5 +311,4 @@ public class JndiLoaderUnitTest {
         Object o = loader.processType(properties, javax.sql.DataSource.class.getName(), null);
         assertEquals(org.apache.commons.dbcp2.BasicDataSource.class.getName(), o.getClass().getName());
     }
-
 }
