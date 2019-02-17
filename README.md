@@ -45,7 +45,7 @@ org.osjava.sj.root=file1.cfg:directory1/file.properties:directory2
 </pre><p>
 NEW in 0.18.0: You can load files or directories from JARs on classpath<br><p>
 <pre>org.osjava.sj.root=jarMarkerClass=any.class.in.Jar,root=/root/in/jar</pre>
-<p>The jarMarkerClass is the Name of a class unique over all JARs on classpath to identify the JAR containing the root directory. The JAR must be found in the file system.
+<p>The jarMarkerClass is the Name of a class unique over all JARs on classpath to identify the JAR containing the root directory. The JAR must be found in the file system. Very probably JARs encapsulated in WARs or uber jars will not work.
 </p>
 <p>Not required, but highly recommended is setting <a href=#shared-or-unshared-context>org.osjava.sj.jndi.shared = true</a> too.</p>
 <p>See also <a href="https://github.com/h-thurow/Simple-JNDI/wiki/Load-property-files-with-any-extension-from-any-location-(New-in-0.13.0)">Load property files with any extension from any location</a>.</p>
