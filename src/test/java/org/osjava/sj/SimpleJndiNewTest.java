@@ -112,8 +112,9 @@ public class SimpleJndiNewTest {
             env.put("org.osjava.sj.delimiter", ".");
             env.put("org.osjava.sj.space", "java:comp/env");
 
-            thrown.expect(NamingException.class);
-            thrown.expectMessage("Required subelement 'driver'");
+            // A NamingException is no longer thrown when processing a root has thrown an Exception. See org.osjava.sj.SimpleJndi.loadRoot(). The error will be logged only. So you can declare a root, active only with a specific environment.
+//            thrown.expect(NamingException.class);
+//            thrown.expectMessage("Required subelement 'driver'");
             ctx1 = new InitialContext(env);
         }
         finally {
@@ -1097,7 +1098,7 @@ public class SimpleJndiNewTest {
     }
 
     /**
-     * TODO Support for "java:"? Just now one have to lookup contexts within "java:" as "java:/".
+     * IMPROVE Support for "java:"? Just now one have to lookup contexts within "java:" as "java:/".
      */
     @Test
     public void testEncColonTerminated() throws Exception {
@@ -1198,7 +1199,7 @@ public class SimpleJndiNewTest {
             ctx = new InitialContext(env);
             Context emptyContext = (Context) ctx.lookup("java:comp/env");
             assertTrue(emptyContext != null);
-            // TODO java:comp.env.jdbc ohne schließendes "=" als Kontextdefinition interpretieren?
+            // CLARIFY java:comp.env.jdbc ohne schließendes "=" als Kontextdefinition interpretieren?
             String jdbc = (String) emptyContext.lookup("jdbc");
             assertEquals("", jdbc);
         }

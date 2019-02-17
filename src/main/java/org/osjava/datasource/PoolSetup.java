@@ -70,7 +70,7 @@ public class PoolSetup {
 
         ConnectionFactory connectionFactory;
         if (username == null || password == null) {
-            // TODO: Suck configuration in and build a Properties to replace the null below
+            // IMPROVE: Suck configuration in and build a Properties to replace the null below
             connectionFactory = new DriverManagerConnectionFactory(url, null);
         }
         else {

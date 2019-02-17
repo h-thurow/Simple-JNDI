@@ -66,7 +66,7 @@ public class MemoryContext implements Cloneable, Context  {
     }
 
     /**
-     * TODO Mandatory: Read jndi configuration from system properties otherwise it will not work correctly.
+     * IMPROVE Mandatory: Read jndi configuration from system properties otherwise it will not work correctly.
      */
     protected MemoryContext() {
         this(null, null);
@@ -106,7 +106,6 @@ public class MemoryContext implements Cloneable, Context  {
         try {
             nameInNamespace = nameParser.parse("");
         } catch (NamingException e) {
-            // TODO Auto-generated catch block
             /* This shouldn't be an issue at this point */
             e.printStackTrace();
         }
@@ -162,7 +161,7 @@ public class MemoryContext implements Cloneable, Context  {
     }
 
     /**
-     * TODO To be implemented? See {@link OperationNotSupportedException}.
+     * IMPROVE To be implemented? See {@link OperationNotSupportedException}.
      */
     @Nullable
     private Object newInstance() throws OperationNotSupportedException {
@@ -261,12 +260,8 @@ public class MemoryContext implements Cloneable, Context  {
             throw new InvalidNameException("Cannot unbind to empty name");
         }
         else if(name.size() == 1) {
-            if(namesToObjects.containsKey(name)) {
-                namesToObjects.remove(name);
-            }
-            if (subContexts.containsKey(name)) {
-                subContexts.remove(name);
-            }
+            namesToObjects.remove(name);
+            subContexts.remove(name);
         }
         else {
             Object targetContext = lookup(name.getPrefix(name.size() - 1));
@@ -359,7 +354,7 @@ public class MemoryContext implements Cloneable, Context  {
         }
         /* Couldn't find the subcontext and it wasn't pointing at us, throw
          * an exception. */
-        /* TODO: Give this a better message */
+        /* IMPROVE: Give this a better message */
         throw new NamingException();
     }
 
@@ -418,7 +413,7 @@ public class MemoryContext implements Cloneable, Context  {
                 destroySubcontexts(subContext);
                 return;
             } 
-            /* TODO: Better message might be necessary */
+            /* IMPROVE: Better message might be necessary */
             throw new NameNotFoundException();
         }
         /* Look at the contextStore to see if the name is bound there */

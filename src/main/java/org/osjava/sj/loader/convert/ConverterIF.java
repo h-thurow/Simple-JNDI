@@ -48,7 +48,7 @@ public interface ConverterIF {
      * <p>To get at the value of com.example.Foo itself, request the 
      * empty string, "".</p>
      *
-     * <p>TODO: No way for a converter to know the delimiter-type. </p>
+     * <p>IMPROVE: No way for a converter to know the delimiter-type. </p>
      *
      * @param properties a Properties data structure
      * @param type a String representation of object desired

@@ -64,7 +64,7 @@ public class SJDataSourceConverter implements ConverterIF {
             LOGGER.error("Incomplete arguments provided: properties={} type={}", properties, type);
             throw new IllegalArgumentException("Required subelement 'password'");
         }
-        // TODO Make Simple-JNDI independant from org.osjava.datasource
+        // IMPROVE Make Simple-JNDI independant from org.osjava.datasource
         return new SJDataSource(driverName, url, user, password, properties);
     }
 

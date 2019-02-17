@@ -35,7 +35,9 @@ import org.apache.commons.lang.BooleanUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.osjava.StringUtils;
+import org.osjava.sj.jndi.MemoryContext;
 import org.osjava.sj.loader.JndiLoader;
+import org.osjava.sj.loader.NioBasedJndiLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,6 +45,8 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.io.File;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Hashtable;
 
 public class SimpleJndi {
@@ -71,21 +75,45 @@ public class SimpleJndi {
         final InitialContext initialContext = createInitialContext();
         Context ctxt = initialContext;
         ctxt = createENC(env, ctxt);
-        JndiLoader loader = new JndiLoader(env);
+//        FileBasedJndiLoader loader = new FileBasedJndiLoader(env);
+        NioBasedJndiLoader loader = new NioBasedJndiLoader(env);
         String root = getRoot(env);
         if (root != null && !root.isEmpty()) {
             final String[] roots = extractRoots(root);
             for (String path : roots) {
-                final File rootFile = new File(path);
-                LOGGER.debug("Loading {}", rootFile.getAbsolutePath());
-                try {
-                    loader.load(rootFile, ctxt, BooleanUtils.toBoolean(env.get(FILENAME_TO_CONTEXT)), true);
+                if (!path.startsWith("jarMarkerClass=")) {
+                    final File rootFile = new File(path);
+                    LOGGER.debug("Loading {}", rootFile.getAbsolutePath());
+                    try {
+                        loader.load(rootFile, ctxt, BooleanUtils.toBoolean(env.get(FILENAME_TO_CONTEXT)));
+                    }
+                    catch (Exception e) {
+                        LOGGER.error("Unable to load: {}", rootFile.getAbsolutePath());
+                        LOGGER.error("", e);
+//                        initialContext.close();
+//                        throw new NamingException("" + e.getMessage());
+                    }
                 }
-                catch (Exception e) {
-                    LOGGER.error("Unable to load: ",
-                            rootFile.getAbsolutePath(), e);
-                    initialContext.close();
-                    throw new NamingException("" + e.getMessage());
+                else {
+                    String[] parts = path.split("[=;]");
+                    URL pathToJar = null;
+                    try {
+                        Class<?> clazz = Class.forName(parts[1]);
+                        pathToJar = clazz.getProtectionDomain().getCodeSource().getLocation();
+                        File jarFile = new File(pathToJar.toURI());
+                        loader.loadJar(jarFile, parts[3], ctxt, BooleanUtils.toBoolean(env.get(FILENAME_TO_CONTEXT)));
+                    }
+                    catch (ClassNotFoundException e) {
+                        LOGGER.error("Unable to load jarMarkerClass:", e);
+                    }
+                    catch (URISyntaxException e) {
+                        LOGGER.error("Unable to resolve path to jar file: {}", pathToJar);
+                        LOGGER.error("", e);
+                    }
+                    catch (Exception e) {
+                        LOGGER.error("Unable to load root from jar. jarMarkerClass: {} root: {}", parts[1], parts[3]);
+                        LOGGER.error("", e);
+                    }
                 }
             }
         }
@@ -169,6 +197,7 @@ public class SimpleJndi {
         overwriteWithSystemProperty(JndiLoader.DELIMITER);
         overwriteWithSystemProperty(JndiLoader.COLON_REPLACE);
         overwriteWithSystemProperty(Context.OBJECT_FACTORIES);
+        overwriteWithSystemProperty(MemoryContext.IGNORE_CLOSE);
     }
 
     private void overwriteWithSystemProperty(String key) {

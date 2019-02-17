@@ -34,6 +34,7 @@ package org.osjava.sj.memory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.osjava.sj.loader.FileBasedJndiLoader;
 import org.osjava.sj.loader.JndiLoader;
 import org.osjava.sj.loader.TestBean;
 
@@ -129,7 +130,7 @@ public class JndiLoader2Test {
         env.put("org.osjava.sj.filenameToContext", "true");
         try {
             File file = new File("src/test/resources/roots/test.properties");
-            JndiLoader loader = new JndiLoader(env);
+            FileBasedJndiLoader loader = new FileBasedJndiLoader(env);
             loader.load( file, ctxt );
             assertEquals( "13", ctxt.lookup("test/value") );
         } catch(IOException ioe) {
@@ -153,7 +154,7 @@ public class JndiLoader2Test {
         env.put(JndiLoader.DELIMITER, "/");
         try {
             File file = new File("src/test/resources/roots/default.properties");
-            JndiLoader loader = new JndiLoader(env);
+            FileBasedJndiLoader loader = new FileBasedJndiLoader(env);
             loader.load( file, ctxt );
             List list = (List) ctxt.lookup("name");
             assertEquals( "Henri", list.get(0) );
@@ -178,7 +179,7 @@ public class JndiLoader2Test {
         /* Separator is required for non-flat */
         env.put("jndi.syntax.separator", "/");
         env.put(JndiLoader.DELIMITER, "/");
-        JndiLoader loader = new JndiLoader(env);
+        FileBasedJndiLoader loader = new FileBasedJndiLoader(env);
         loader.load(loader.toProperties(
                 new File("src/test/resources/roots/fileAsRoot.cfg")), ctxt);
         final String infoCmd = (String) ctxt.lookup("IMAGE_INFO_CMD");
@@ -200,7 +201,7 @@ public class JndiLoader2Test {
         try {
             File file = new File("src/test/resources/roots/java.properties");
 
-            JndiLoader loader = new JndiLoader(env);
+            FileBasedJndiLoader loader = new FileBasedJndiLoader(env);
             loader.load( file, ctxt );
             Context subctxt = (Context) ctxt.lookup("java");
             assertEquals( dsString, subctxt.lookup("TestDS").toString() );
@@ -228,7 +229,7 @@ public class JndiLoader2Test {
         env.put(JndiLoader.DELIMITER, "/");
         try {
             File file = new File("src/test/resources/roots/TopLevelDS.properties");
-            JndiLoader loader = new JndiLoader(env);
+            FileBasedJndiLoader loader = new FileBasedJndiLoader(env);
             loader.load( file, ctxt );
             DataSource ds = (DataSource) ctxt.lookup("TopLevelDS");
             assertEquals( dsString, ds.toString() );
@@ -363,7 +364,7 @@ public class JndiLoader2Test {
         env.put("jndi.syntax.separator", "/");
         env.put(JndiLoader.DELIMITER, "/");
         File file = new File("src/test/resources/roots/pooltest");
-        JndiLoader loader = new JndiLoader(env);
+        FileBasedJndiLoader loader = new FileBasedJndiLoader(env);
         loader.load( file, ctxt );
         DataSource ds = (DataSource) ctxt.lookup("TestDS");
         DataSource ds1 = (DataSource) ctxt.lookup("OneDS");
@@ -389,7 +390,7 @@ public class JndiLoader2Test {
         env.put("jndi.syntax.separator", "/");
         env.put(JndiLoader.DELIMITER, "/");
         File file = new File("src/test/resources/roots/pooltest");
-        JndiLoader loader = new JndiLoader(env);
+        FileBasedJndiLoader loader = new FileBasedJndiLoader(env);
         loader.load( file, ctxt );
         DataSource ds = (DataSource) ctxt.lookup("TestDS");
         DataSource ds1 = (DataSource) ctxt.lookup("OneDS");
@@ -415,7 +416,7 @@ public class JndiLoader2Test {
         env.put("jndi.syntax.separator", "/");
         env.put(JndiLoader.DELIMITER, "/");
         File file = new File("src/test/resources/roots/pooltest1");
-        JndiLoader loader = new JndiLoader(env);
+        FileBasedJndiLoader loader = new FileBasedJndiLoader(env);
         loader.load( file, ctxt );
         DataSource ds = (DataSource) ctxt.lookup("OneDS");
         try {
@@ -437,7 +438,7 @@ public class JndiLoader2Test {
         env.put("jndi.syntax.separator", "/");
         env.put(JndiLoader.DELIMITER, "/");
         File file = new File("src/test/resources/roots/pooltest2");
-        JndiLoader loader = new JndiLoader(env);
+        FileBasedJndiLoader loader = new FileBasedJndiLoader(env);
         loader.load( file, ctxt );
         DataSource ds = (DataSource) ctxt.lookup("TestDS");
         try {
@@ -459,7 +460,7 @@ public class JndiLoader2Test {
         env.put("jndi.syntax.separator", "/");
         env.put(JndiLoader.DELIMITER, "/");
         File file = new File("src/test/resources/roots/pooltest3");
-        JndiLoader loader = new JndiLoader(env);
+        FileBasedJndiLoader loader = new FileBasedJndiLoader(env);
         loader.load( file, ctxt );
         DataSource ds = (DataSource) ctxt.lookup("ThreeDS");
         try {
@@ -481,7 +482,7 @@ public class JndiLoader2Test {
         env.put("jndi.syntax.separator", "/");
         env.put(JndiLoader.DELIMITER, "/");
         File file = new File("src/test/resources/roots/pooltest4");
-        JndiLoader loader = new JndiLoader(env);
+        FileBasedJndiLoader loader = new FileBasedJndiLoader(env);
         loader.load( file, ctxt );
         DataSource ds = (DataSource) ctxt.lookup("TwoDS");
         try {
@@ -503,7 +504,7 @@ public class JndiLoader2Test {
         env.put("jndi.syntax.separator", "/");
         env.put(JndiLoader.DELIMITER, "/");
         File file = new File("src/test/resources/roots/multiValueAttributes/integers");
-        JndiLoader loader = new JndiLoader(env);
+        FileBasedJndiLoader loader = new FileBasedJndiLoader(env);
         loader.load( file, ctxt );
         final LinkedList<Integer> ints = (LinkedList<Integer>) ctxt.lookup("person/age");
         assert ints.size() == 3;
@@ -520,7 +521,7 @@ public class JndiLoader2Test {
         env.put("jndi.syntax.separator", "/");
         env.put(JndiLoader.DELIMITER, "/");
         File file = new File("src/test/resources/roots/multiValueAttributes/noType");
-        JndiLoader loader = new JndiLoader(env);
+        FileBasedJndiLoader loader = new FileBasedJndiLoader(env);
         loader.load( file, ctxt );
         final LinkedList<String> ages = (LinkedList<String>) ctxt.lookup("person/name");
         assert ages.size() == 3;
@@ -540,7 +541,7 @@ public class JndiLoader2Test {
         env.put("jndi.syntax.separator", "/");
         env.put(JndiLoader.DELIMITER, "/");
         File file = new File("src/test/resources/roots/multiValueAttributes/booleans");
-        JndiLoader loader = new JndiLoader(env);
+        FileBasedJndiLoader loader = new FileBasedJndiLoader(env);
         loader.load( file, ctxt );
         final LinkedList<Boolean> booleans = (LinkedList<Boolean>) ctxt.lookup("person/myBooleans");
         assert booleans.size() == 3;
@@ -561,7 +562,7 @@ public class JndiLoader2Test {
         env.put("jndi.syntax.separator", "/");
         env.put(JndiLoader.DELIMITER, "/");
         File file = new File("src/test/resources/roots/multiValueAttributes/characters");
-        JndiLoader loader = new JndiLoader(env);
+        FileBasedJndiLoader loader = new FileBasedJndiLoader(env);
         loader.load( file, ctxt );
         final LinkedList<Character> characters = (LinkedList<Character>) ctxt.lookup("person/spelledName");
         final StringWriter writer = new StringWriter(characters.size());
@@ -586,7 +587,7 @@ public class JndiLoader2Test {
         env.put("jndi.syntax.separator", "/");
         env.put(JndiLoader.DELIMITER, "/");
         File file = new File("src/test/resources/roots/multiValueAttributes/shorts");
-        JndiLoader loader = new JndiLoader(env);
+        FileBasedJndiLoader loader = new FileBasedJndiLoader(env);
         loader.load( file, ctxt );
         final LinkedList<Short> shorts = (LinkedList<Short>) ctxt.lookup("person/myShort");
         assert shorts.size() == 2;
@@ -604,7 +605,7 @@ public class JndiLoader2Test {
         env.put("jndi.syntax.separator", "/");
         env.put(JndiLoader.DELIMITER, "/");
         File file = new File("src/test/resources/roots/multiValueAttributes/doubles");
-        JndiLoader loader = new JndiLoader(env);
+        FileBasedJndiLoader loader = new FileBasedJndiLoader(env);
         loader.load( file, ctxt );
         final LinkedList<Double> doubles = (LinkedList<Double>) ctxt.lookup("person/myDouble");
         assert doubles.size() == 3;
@@ -624,7 +625,7 @@ public class JndiLoader2Test {
         env.put("jndi.syntax.separator", "/");
         env.put(JndiLoader.DELIMITER, "/");
         File file = new File("src/test/resources/roots/multiValueAttributes");
-        JndiLoader loader = new JndiLoader(env);
+        FileBasedJndiLoader loader = new FileBasedJndiLoader(env);
         loader.load( file, ctxt );
         final LinkedList<Integer> ints = (LinkedList<Integer>) ctxt.lookup("integers/person/age");
         assert ints.size() == 3;

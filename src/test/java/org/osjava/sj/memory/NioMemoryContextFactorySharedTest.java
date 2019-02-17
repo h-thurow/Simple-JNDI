@@ -34,8 +34,8 @@ package org.osjava.sj.memory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.osjava.sj.loader.FileBasedJndiLoader;
 import org.osjava.sj.loader.JndiLoader;
+import org.osjava.sj.loader.NioBasedJndiLoader;
 import org.osjava.sj.loader.TestBean;
 
 import javax.naming.Context;
@@ -51,7 +51,7 @@ import java.util.*;
 
 import static org.junit.Assert.*;
 
-public class MemoryContextFactorySharedTest {
+public class NioMemoryContextFactorySharedTest {
 
     private Context ctxt;
     private Hashtable contextEnv;
@@ -90,41 +90,16 @@ public class MemoryContextFactorySharedTest {
     }
 
     /**
-     * 0.11.4.1 junit.framework.AssertionFailedError:
-     Expected :42
-     Actual   :13
-     */
-    @Test
-    public void testProperties() throws NamingException {
-
-        JndiLoader loader = new JndiLoader(contextEnv);
-        ctxt = new InitialContext(contextEnv);
-        try {
-            Properties props = new Properties();
-            props.put("foo", "13");
-            props.put("bar/foo", "42");
-            props.put("bar/test/foo", "101");
-            loader.load( props, ctxt );
-            assertEquals( "13", ctxt.lookup("foo") );
-            assertEquals( "42", ctxt.lookup("bar/foo") );
-            assertEquals( "101", ctxt.lookup("bar/test/foo") );
-        } catch(NamingException ne) {
-            ne.printStackTrace();
-            fail("NamingException: "+ne.getMessage());
-        }
-    }
-
-    /**
      * 0.11.4.1 javax.naming.ContextNotEmptyException
      */
     @Test
     public void testDirectory() throws NamingException {
         contextEnv.put("org.osjava.sj.filenameToContext", "true");
-        final FileBasedJndiLoader loader = new FileBasedJndiLoader(contextEnv);
+        final NioBasedJndiLoader loader = new NioBasedJndiLoader(contextEnv);
         ctxt = new InitialContext(contextEnv);
         try {
             File file = new File("src/test/resources/roots/test.properties");
-            loader.load( file, ctxt );
+            loader.load(file, ctxt, true);
             assertEquals( "13", ctxt.lookup("test/value") );
         } catch(IOException ioe) {
             ioe.printStackTrace();
@@ -140,11 +115,11 @@ public class MemoryContextFactorySharedTest {
      */
     @Test
     public void testDefaultFile() throws NamingException {
-        final FileBasedJndiLoader loader = new FileBasedJndiLoader(contextEnv);
+        final NioBasedJndiLoader loader = new NioBasedJndiLoader(contextEnv);
         ctxt = new InitialContext(contextEnv);
         try {
             File file = new File("src/test/resources/roots/default.properties");
-            loader.load( file, ctxt );
+            loader.load(file, ctxt, true);
             assertEquals( "Foo", ctxt.lookup("com.genjava") );
             List list = (List) ctxt.lookup("name");
             assertEquals( "Henri", list.get(0) );
@@ -164,12 +139,12 @@ public class MemoryContextFactorySharedTest {
     @Test
     public void testSubContext() throws NamingException {
         contextEnv.put("org.osjava.sj.filenameToContext", "true");
-        final FileBasedJndiLoader loader = new FileBasedJndiLoader(contextEnv);
+        final NioBasedJndiLoader loader = new NioBasedJndiLoader(contextEnv);
         ctxt = new InitialContext(contextEnv);
         String dsString = "bing::::foofoo::::Boo";
         try {
             File file = new File("src/test/resources/roots/java.properties");
-            loader.load(file, ctxt);
+            loader.load(file, ctxt, true);
             Context subctxt = (Context) ctxt.lookup("java");
             assertNotNull(subctxt);
             DataSource testDS = (DataSource) subctxt.lookup("TestDS");
@@ -191,12 +166,12 @@ public class MemoryContextFactorySharedTest {
      */
     @Test
     public void testTopLevelDataSource() throws NamingException {
-        final FileBasedJndiLoader loader = new FileBasedJndiLoader(contextEnv);
+        final NioBasedJndiLoader loader = new NioBasedJndiLoader(contextEnv);
         ctxt = new InitialContext(contextEnv);
         String dsString = "org.gjt.mm.mysql.Driver::::jdbc:mysql://127.0.0.1/tmp::::sa";
         try {
             File file = new File("src/test/resources/roots/TopLevelDS.properties");
-            loader.load( file, ctxt );
+            loader.load(file, ctxt, true);
             DataSource ds = (DataSource) ctxt.lookup("TopLevelDS");
             assertEquals( dsString, ds.toString() );
         } catch(IOException ioe) {
@@ -296,10 +271,10 @@ public class MemoryContextFactorySharedTest {
      */
     @Test
     public void testDbcp() throws IOException, NamingException {
-        final FileBasedJndiLoader loader = new FileBasedJndiLoader(contextEnv);
+        final NioBasedJndiLoader loader = new NioBasedJndiLoader(contextEnv);
         ctxt = new InitialContext(contextEnv);
         File file = new File("src/test/resources/roots/pooltest");
-        loader.load( file, ctxt );
+        loader.load(file, ctxt, true);
         DataSource ds = (DataSource) ctxt.lookup("TestDS");
         assertNotNull(ds);
         DataSource ds1 = (DataSource) ctxt.lookup("OneDS");
@@ -321,10 +296,10 @@ public class MemoryContextFactorySharedTest {
      */
     @Test
     public void testDbcpPooltest() throws IOException, NamingException {
-        final FileBasedJndiLoader loader = new FileBasedJndiLoader(contextEnv);
+        final NioBasedJndiLoader loader = new NioBasedJndiLoader(contextEnv);
         ctxt = new InitialContext(contextEnv);
         File file = new File("src/test/resources/roots/pooltest");
-        loader.load( file, ctxt );
+        loader.load(file, ctxt, true);
         DataSource ds = (DataSource) ctxt.lookup("TestDS");
         DataSource ds1 = (DataSource) ctxt.lookup("OneDS");
         DataSource ds2 = (DataSource) ctxt.lookup("TwoDS");
@@ -343,10 +318,10 @@ public class MemoryContextFactorySharedTest {
      */
     @Test
     public void testDbcp1() throws IOException, NamingException {
-        final FileBasedJndiLoader loader = new FileBasedJndiLoader(contextEnv);
+        final NioBasedJndiLoader loader = new NioBasedJndiLoader(contextEnv);
         ctxt = new InitialContext(contextEnv);
         File file = new File("src/test/resources/roots/pooltest1");
-        loader.load( file, ctxt );
+        loader.load(file, ctxt, true);
         DataSource ds = (DataSource) ctxt.lookup("OneDS");
         try {
             Connection conn = ds.getConnection();
@@ -361,10 +336,10 @@ public class MemoryContextFactorySharedTest {
      */
     @Test
     public void testDbcp2() throws IOException, NamingException {
-        final FileBasedJndiLoader loader = new FileBasedJndiLoader(contextEnv);
+        final NioBasedJndiLoader loader = new NioBasedJndiLoader(contextEnv);
         ctxt = new InitialContext(contextEnv);
         File file = new File("src/test/resources/roots/pooltest2");
-        loader.load( file, ctxt );
+        loader.load(file, ctxt, true);
         DataSource ds = (DataSource) ctxt.lookup("TestDS");
         try {
             Connection conn = ds.getConnection();
@@ -379,10 +354,10 @@ public class MemoryContextFactorySharedTest {
      */
     @Test
     public void testDbcp3() throws IOException, NamingException {
-        final FileBasedJndiLoader loader = new FileBasedJndiLoader(contextEnv);
+        final NioBasedJndiLoader loader = new NioBasedJndiLoader(contextEnv);
         ctxt = new InitialContext(contextEnv);
         File file = new File("src/test/resources/roots/pooltest3");
-        loader.load( file, ctxt );
+        loader.load(file, ctxt, true);
         DataSource ds = (DataSource) ctxt.lookup("ThreeDS");
         try {
             Connection conn = ds.getConnection();
@@ -397,10 +372,10 @@ public class MemoryContextFactorySharedTest {
      */
     @Test
     public void testDbcp4() throws IOException, NamingException {
-        final FileBasedJndiLoader loader = new FileBasedJndiLoader(contextEnv);
+        final NioBasedJndiLoader loader = new NioBasedJndiLoader(contextEnv);
         ctxt = new InitialContext(contextEnv);
         File file = new File("src/test/resources/roots/pooltest4");
-        loader.load( file, ctxt );
+        loader.load(file, ctxt, true);
         DataSource ds = (DataSource) ctxt.lookup("TwoDS");
         try {
             Connection conn = ds.getConnection();
@@ -412,20 +387,20 @@ public class MemoryContextFactorySharedTest {
 
     @Test
     public void testMultiValueAttributeIntegers() throws Exception {
-        final FileBasedJndiLoader loader = new FileBasedJndiLoader(contextEnv);
+        final NioBasedJndiLoader loader = new NioBasedJndiLoader(contextEnv);
         ctxt = new InitialContext(contextEnv);
         File file = new File("src/test/resources/roots/multiValueAttributes/integers");
-        loader.load( file, ctxt );
+        loader.load(file, ctxt, true);
         final LinkedList<Integer> ints = (LinkedList<Integer>) ctxt.lookup("person/age");
         assert ints.size() == 3;
     }
 
     @Test
     public void testMultiValueAttributeNoType() throws Exception {
-        final FileBasedJndiLoader loader = new FileBasedJndiLoader(contextEnv);
+        final NioBasedJndiLoader loader = new NioBasedJndiLoader(contextEnv);
         ctxt = new InitialContext(contextEnv);
         File file = new File("src/test/resources/roots/multiValueAttributes/noType");
-        loader.load( file, ctxt );
+        loader.load(file, ctxt, true);
         final LinkedList<String> ages = (LinkedList<String>) ctxt.lookup("person/name");
         assert ages.size() == 3;
     }
@@ -435,10 +410,10 @@ public class MemoryContextFactorySharedTest {
      */
     @Test
     public void testMultiValueAttributeBooleans() throws Exception {
-        final FileBasedJndiLoader loader = new FileBasedJndiLoader(contextEnv);
+        final NioBasedJndiLoader loader = new NioBasedJndiLoader(contextEnv);
         ctxt = new InitialContext(contextEnv);
         File file = new File("src/test/resources/roots/multiValueAttributes/booleans");
-        loader.load( file, ctxt );
+        loader.load(file, ctxt, true);
         final LinkedList<Boolean> booleans = (LinkedList<Boolean>) ctxt.lookup("person/myBooleans");
         assert booleans.size() == 3;
     }
@@ -449,10 +424,10 @@ public class MemoryContextFactorySharedTest {
      */
     @Test
     public void testMultiValueAttributeCharacters() throws Exception {
-        final FileBasedJndiLoader loader = new FileBasedJndiLoader(contextEnv);
+        final NioBasedJndiLoader loader = new NioBasedJndiLoader(contextEnv);
         ctxt = new InitialContext(contextEnv);
         File file = new File("src/test/resources/roots/multiValueAttributes/characters");
-        loader.load( file, ctxt );
+        loader.load(file, ctxt, true);
         final LinkedList<Character> characters = (LinkedList<Character>) ctxt.lookup("person/spelledName");
         final StringWriter writer = new StringWriter(characters.size());
         for (Character character : characters) {
@@ -467,10 +442,10 @@ public class MemoryContextFactorySharedTest {
      */
     @Test
     public void testMultiValueAttributeShorts() throws Exception {
-        final FileBasedJndiLoader loader = new FileBasedJndiLoader(contextEnv);
+        final NioBasedJndiLoader loader = new NioBasedJndiLoader(contextEnv);
         ctxt = new InitialContext(contextEnv);
         File file = new File("src/test/resources/roots/multiValueAttributes/shorts");
-        loader.load( file, ctxt );
+        loader.load(file, ctxt, true);
         final LinkedList<Short> shorts = (LinkedList<Short>) ctxt.lookup("person/myShort");
         assert shorts.size() == 2;
         assert shorts.get(0) == (short) -32768;
@@ -478,10 +453,10 @@ public class MemoryContextFactorySharedTest {
 
     @Test
     public void testMultiValueAttributeDoubles() throws Exception {
-        final FileBasedJndiLoader loader = new FileBasedJndiLoader(contextEnv);
+        final NioBasedJndiLoader loader = new NioBasedJndiLoader(contextEnv);
         ctxt = new InitialContext(contextEnv);
         File file = new File("src/test/resources/roots/multiValueAttributes/doubles");
-        loader.load( file, ctxt );
+        loader.load(file, ctxt, true);
         final LinkedList<Double> doubles = (LinkedList<Double>) ctxt.lookup("person/myDouble");
         assert doubles.size() == 3;
     }
@@ -491,10 +466,10 @@ public class MemoryContextFactorySharedTest {
      */
     @Test
     public void testMultiValueAttributeMultipleContexts() throws Exception {
-        final FileBasedJndiLoader loader = new FileBasedJndiLoader(contextEnv);
+        final NioBasedJndiLoader loader = new NioBasedJndiLoader(contextEnv);
         ctxt = new InitialContext(contextEnv);
         File file = new File("src/test/resources/roots/multiValueAttributes");
-        loader.load( file, ctxt );
+        loader.load(file, ctxt, true);
         final LinkedList<Integer> ints = (LinkedList<Integer>) ctxt.lookup("integers/person/age");
         assert ints.size() == 3;
         final LinkedList<String> ages = (LinkedList<String>) ctxt.lookup("noType/person/name");

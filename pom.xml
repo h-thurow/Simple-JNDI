@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.h-thurow</groupId>
     <artifactId>simple-jndi</artifactId>
-    <version>0.17.2</version>
+    <version>0.18.0</version>
     <name>${project.groupId}:${project.artifactId}</name>
     <description>
         An in-memory implementation of JNDI, so no server
@@ -83,6 +83,16 @@
             <version>4.12</version>
             <scope>test</scope>
         </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.junit.jupiter</groupId>-->
+            <!--<artifactId>junit-jupiter-api</artifactId>-->
+            <!--<version>5.3.2</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.junit.jupiter</groupId>-->
+            <!--<artifactId>junit-jupiter-engine</artifactId>-->
+            <!--<version>5.3.2</version>-->
+        <!--</dependency>-->
         <!-- Requires Java 1.7 -->
         <!--<dependency>-->
         <!--<groupId>io.takari.junit</groupId>-->

@@ -33,7 +33,6 @@ package org.osjava.sj.loader;
 
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.BooleanUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.osjava.StringUtils;
@@ -46,8 +45,6 @@ import org.slf4j.LoggerFactory;
 import javax.naming.*;
 import javax.naming.spi.NamingManager;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -66,7 +63,7 @@ public class JndiLoader {
     private static ConverterRegistry converterRegistry = new ConverterRegistry();
     private final Properties envAsProperties;
 
-    private Hashtable environment = new Hashtable();
+    Hashtable environment = new Hashtable();
     private Logger LOGGER = LoggerFactory.getLogger(this.getClass());
     public static final String FILENAME_TO_CONTEXT = "org.osjava.sj.filenameToContext";
 
@@ -83,119 +80,6 @@ public class JndiLoader {
         Properties props = new Properties();
         props.putAll(environment);
         envAsProperties = props;
-    }
-    
-    /**
-     * Loads all .properties", .ini, .xml files in a directory or a single file into a context.
-     */
-    public void load(File fileOrDirectory, Context ctxt) throws NamingException, IOException {
-        fileOrDirectory = new File(fileOrDirectory.getAbsolutePath());
-        if (fileOrDirectory.isDirectory()) {
-            loadDirectory(fileOrDirectory, ctxt, null, "");
-        }
-        else if (fileOrDirectory.isFile()) {
-            boolean preserveFileNameAsContextName = BooleanUtils.toBoolean(
-                    (String) environment.get(FILENAME_TO_CONTEXT));
-            if (isSupportedFile(fileOrDirectory)) {
-                loadFile(fileOrDirectory, ctxt, null, "", preserveFileNameAsContextName);
-            }
-        }
-        else {
-            LOGGER.warn("Not found: {}", fileOrDirectory.getAbsolutePath());
-        }
-    }
-
-    /**
-     *
-     * @param preserveFileNameAsContextName If fileOrDirectory is a file, the file's name is taken as context name.
-     * @param ignoreFileExtension true: If fileOrDirectory is a file, it will be processed as property file whatever its extension is.
-     */
-    public void load(File fileOrDirectory, Context ctxt, boolean preserveFileNameAsContextName, boolean ignoreFileExtension) throws NamingException, IOException {
-        fileOrDirectory = new File(fileOrDirectory.getAbsolutePath());
-        if (fileOrDirectory.isDirectory()) {
-            loadDirectory(fileOrDirectory, ctxt, null, "");
-        }
-        else if (fileOrDirectory.isFile()) {
-            if (!ignoreFileExtension) {
-                if (isSupportedFile(fileOrDirectory)) {
-                    loadFile(fileOrDirectory, ctxt, null, "", preserveFileNameAsContextName);
-                }
-            }
-            else {
-                loadFile(fileOrDirectory, ctxt, null, "", preserveFileNameAsContextName);
-            }
-        }
-        else {
-            LOGGER.warn("Not found: {}", fileOrDirectory.getAbsolutePath());
-        }
-    }
-
-    /**
-     * Loads all .properties", .ini, .xml files in a directory into a context.
-     */
-    private void loadDirectory(File directory, Context ctxt, Context parentCtxt, String subName) throws NamingException, IOException {
-        LOGGER.debug("Loading {}", directory.getAbsolutePath());
-        File[] files = directory.listFiles();
-        if (files != null) {
-            for (File file : files) {
-                if (file.isDirectory()) {
-                    String dirName = file.getName();
-                    if (!dirName.equals(".svn") && !dirName.equals("CVS")) {
-                        dirName = handleColonReplacement(dirName);
-                        Context tmpCtxt = ctxt.createSubcontext(dirName);
-                        loadDirectory(file, tmpCtxt, ctxt, dirName);
-                    }
-                }
-                else {
-                    String baseName = FilenameUtils.getBaseName(file.getName());
-                    boolean preserveFileNameAsContextName = !baseName.equals("default");
-                    if (isSupportedFile(file)) {
-                        loadFile(file, ctxt, parentCtxt, subName, preserveFileNameAsContextName);
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * Loads any file, not only those files {@link #isSupportedFile(File)} returns true for.
-     *
-     * @param file Not a directory
-     */
-    private void loadFile(File file, Context ctxt, Context parentCtxt, String subName, boolean preserveFileNameAsContextName) throws NamingException, IOException {
-        LOGGER.debug("Loading {}", file.getAbsolutePath());
-        String parentName = file.getName();
-        parentName = handleColonReplacement(parentName);
-        Context subContext = ctxt;
-        Properties properties = toProperties(file);
-        if (isNotNamespacedTypeDefinition(properties)) {
-            // preserve the file name as object name.
-            subName = FilenameUtils.getBaseName(parentName);
-            parentCtxt = subContext;
-        }
-        else if (!FilenameUtils.getBaseName(parentName).equals("default")) {
-            parentName = FilenameUtils.getBaseName(parentName);
-            if (preserveFileNameAsContextName) {
-                subContext = ctxt.createSubcontext(parentName);
-                parentCtxt = ctxt;
-            }
-            subName = parentName;
-        }
-        load(properties, subContext, parentCtxt, subName);
-    }
-
-    /**
-     * @return true: .properties, .ini, .xml file.
-     */
-    private boolean isSupportedFile(@NotNull File file) {
-        String[] extensionsToProcess = new String[]{"properties", "ini", "xml"};
-        String ext = FilenameUtils.getExtension(file.getName());
-        for (String extToProcess : extensionsToProcess) {
-            if (extToProcess.equals(ext)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     /**
@@ -224,33 +108,6 @@ public class JndiLoader {
         return name;
     }
 
-    /**
-     *
-     * @return xml file: {@link XmlSJProperties}. ini file: {@link IniSJProperties}. Sonst {@link CustomSJProperties}.
-     */
-    // TODO Make package-private
-    public Properties toProperties(File file) throws IOException {
-//        System.err.println("LOADING: "+file);
-        SJProperties properties;
-
-        if(file.getName().endsWith(".xml")) {
-            properties = new XmlSJProperties();
-        }
-        else if(file.getName().endsWith(".ini")) {
-            properties = new IniSJProperties();
-        }
-        else {
-            properties = new CustomSJProperties();
-        }
-
-        properties.setDelimiter( (String) environment.get(DELIMITER) );
-
-        try (FileInputStream stream = new FileInputStream(file)) {
-            properties.load(stream);
-            return properties;
-        }
-    }
-
 
     /**
      * Loads a properties object into a context.
@@ -259,7 +116,7 @@ public class JndiLoader {
         load(properties, ctxt, null, "");
     }
 
-    private void load(Properties properties, Context subContext, Context parentCtxt, String subName) throws NamingException {
+    void load(Properties properties, Context subContext, Context parentCtxt, String subName) throws NamingException {
 
         // NOTE: "type" effectively turns on pseudo-nodes; if it isn't there then other pseudo-nodes will result in re-bind errors.
 
@@ -346,7 +203,7 @@ public class JndiLoader {
     }
 
     private void processTypedProperty(Properties properties, Context subContext, String subName) throws NamingException {
-        // TODO Hier müssen irgendwie DataSource definitions unterschieden werden von basic type definitions mit unterschiedlich tief verschachtelten namespaces.
+        // IMPROVE Hier müssen irgendwie DataSource definitions unterschieden werden von basic type definitions mit unterschiedlich tief verschachtelten namespaces.
         // DataSource and beans without namespaced attributes
         if (isNotNamespacedTypeDefinition(properties)) {
             String typeDefinition = getTypeDefinition(properties);
@@ -452,7 +309,7 @@ public class JndiLoader {
      * @return  The CompoundName for path with respect to {@link JndiLoader#DELIMITER}.
      */
     @NotNull
-    private CompoundName toCompoundName(@NotNull String path) throws InvalidNameException {
+    CompoundName toCompoundName(@NotNull String path) throws InvalidNameException {
         Properties envCopy = new Properties(envAsProperties);
         envCopy.setProperty("jndi.syntax.separator", envAsProperties.getProperty(DELIMITER));
         envCopy.setProperty("jndi.syntax.direction", (String) envAsProperties.get("jndi.syntax.direction"));
@@ -469,7 +326,7 @@ public class JndiLoader {
         if (delimiter.length() == 1) { // be downwards compatible
             delimiter = delimiter.replace(".", "\\.");
         }
-        // TODO Compile once
+        // IMPROVE Compile once
         final Pattern pattern = Pattern.compile("^.+(" + delimiter + ").+");
         final Matcher matcher = pattern.matcher(key);
         if (matcher.find()) {
@@ -610,4 +467,17 @@ public class JndiLoader {
         return str.substring(0, idx);
     }
 
+    /**
+     * @return true: .properties, .ini, .xml file.
+     */
+    protected boolean isSupportedFile(@NotNull File file) {
+        String[] extensionsToProcess = new String[]{"properties", "ini", "xml"};
+        String ext = FilenameUtils.getExtension(file.getName());
+        for (String extToProcess : extensionsToProcess) {
+            if (extToProcess.equals(ext)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

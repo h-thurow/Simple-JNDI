@@ -41,7 +41,7 @@ public class ConverterRegistry {
 
     private Map converters = new HashMap();
 
-    // TODO: Support inheritence; ie) key on Class not String?
+    // IMPROVE: Support inheritence; ie) key on Class not String?
     //       Use gj-core ClassMap code?
     public ConverterRegistry() {
         this.converters.put( "javax.sql.DataSource", new SJDataSourceConverter());

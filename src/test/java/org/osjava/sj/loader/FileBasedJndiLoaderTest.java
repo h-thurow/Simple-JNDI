@@ -51,10 +51,10 @@ import java.util.*;
 
 import static org.junit.Assert.*;
 
-public class JndiLoaderTest {
+public class FileBasedJndiLoaderTest {
 
     private Context ctxt;
-    private JndiLoader loader;
+    private FileBasedJndiLoader loader;
 
     @Before
     public void setUp() {
@@ -76,7 +76,7 @@ public class JndiLoaderTest {
         */
 
 
-        loader = new JndiLoader(env);
+        loader = new FileBasedJndiLoader(env);
         
         try {
             ctxt = new InitialContext(env);
@@ -142,7 +142,7 @@ public class JndiLoaderTest {
         env.put("jndi.syntax.separator", "/");
         */
 
-        JndiLoader loader = new JndiLoader(env);
+        FileBasedJndiLoader loader = new FileBasedJndiLoader(env);
 
         try {
             ctxt = new InitialContext(env);
