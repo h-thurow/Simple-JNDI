@@ -32,9 +32,9 @@
 package org.osjava.sj;
 
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.osjava.StringUtils;
 import org.osjava.sj.jndi.MemoryContext;
 import org.osjava.sj.loader.JndiLoader;
 import org.osjava.sj.loader.NioBasedJndiLoader;
@@ -88,14 +88,17 @@ public class SimpleJndi {
                         loader.load(rootFile, ctxt, BooleanUtils.toBoolean(env.get(FILENAME_TO_CONTEXT)));
                     }
                     catch (Exception e) {
-                        LOGGER.error("Unable to load: {}", rootFile.getAbsolutePath());
-                        LOGGER.error("", e);
-//                        initialContext.close();
-//                        throw new NamingException("" + e.getMessage());
+                        String message = "Unable to load: " + rootFile.getAbsolutePath();
+                        throwException(initialContext, e, message);
                     }
                 }
                 else {
-                    String[] parts = path.split("[=;]");
+                    LOGGER.debug("Processing path={}", path);
+                    String[] parts = StringUtils.split(path, "=,");
+                    for (int i = 0; i < parts.length; i++) {
+                        String part = parts[i];
+                        LOGGER.debug("Split to: {}", part);
+                    }
                     URL pathToJar = null;
                     try {
                         Class<?> clazz = Class.forName(parts[1]);
@@ -104,15 +107,16 @@ public class SimpleJndi {
                         loader.loadJar(jarFile, parts[3], ctxt, BooleanUtils.toBoolean(env.get(FILENAME_TO_CONTEXT)));
                     }
                     catch (ClassNotFoundException e) {
-                        LOGGER.error("Unable to load jarMarkerClass:", e);
+                        String msg = "Unable to load jarMarkerClass";
+                        throwException(initialContext, e, msg);
                     }
                     catch (URISyntaxException e) {
-                        LOGGER.error("Unable to resolve path to jar file: {}", pathToJar);
-                        LOGGER.error("", e);
+                        String msg = "Unable to resolve path to jar file: " + pathToJar;
+                        throwException(initialContext, e, msg);
                     }
                     catch (Exception e) {
-                        LOGGER.error("Unable to load root from jar. jarMarkerClass: {} root: {}", parts[1], parts[3]);
-                        LOGGER.error("", e);
+                        String msg = "Unable to load root from jar. jarMarkerClass: " + parts[1] + " root: " + parts[3];
+                        throwException(initialContext, e, msg);
                     }
                 }
             }
@@ -121,6 +125,14 @@ public class SimpleJndi {
             logger.warn("Mistakenly no root provided?");
         }
         return initialContext;
+    }
+
+    private void throwException(final InitialContext initialContext, final Exception e, final String msg) throws NamingException {
+        LOGGER.error(msg, e);
+        initialContext.close();
+        NamingException e2 = new NamingException(msg);
+        e2.setRootCause(e);
+        throw e2;
     }
 
     @NotNull

@@ -112,9 +112,9 @@ public class SimpleJndiNewTest {
             env.put("org.osjava.sj.delimiter", ".");
             env.put("org.osjava.sj.space", "java:comp/env");
 
-            // A NamingException is no longer thrown when processing a root has thrown an Exception. See org.osjava.sj.SimpleJndi.loadRoot(). The error will be logged only. So you can declare a root, active only with a specific environment.
-//            thrown.expect(NamingException.class);
-//            thrown.expectMessage("Required subelement 'driver'");
+            thrown.expect(NamingException.class);
+            thrown.expectMessage("Unable to load");
+
             ctx1 = new InitialContext(env);
         }
         finally {
@@ -1398,5 +1398,28 @@ public class SimpleJndiNewTest {
         SimpleJndi simpleJndi = new SimpleJndi(env);
         String[] roots = simpleJndi.extractRoots(root);
         assertEquals(1, roots.length);
+    }
+
+    @Test
+    public void notExistingRootDirectory() throws Exception {
+        InitialContext ctx = null;
+        try {
+            final Hashtable<String, String> env = new Hashtable<String, String>();
+            env.put("org.osjava.sj.root", "no/such/dir");
+            env.put("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
+            env.put(SimpleJndi.SHARED, "true");
+            env.put(JndiLoader.DELIMITER, "/");
+            env.put(SimpleJndi.JNDI_SYNTAX_SEPARATOR, "/");
+            env.put(SimpleJndi.FILENAME_TO_CONTEXT, "true");
+
+            thrown.expect(NamingException.class);
+
+            ctx = new InitialContext(env);
+        }
+        finally {
+            if (ctx != null) {
+                ctx.close();
+            }
+        }
     }
 }

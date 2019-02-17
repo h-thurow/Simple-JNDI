@@ -239,7 +239,7 @@ postVisitDirectory: /
 
     @Test
     public void rootInJarDefinition() {
-        String[] parts = "jarMarkerClass=any.class.in.Jar;root=/path/to/root/in/jar".split("[=;]");
+        String[] parts = "jarMarkerClass=any.class.in.Jar,root=/path/to/root/in/jar".split("[=,]");
         System.out.println(parts[1]);
         System.out.println(parts[3]);
     }
