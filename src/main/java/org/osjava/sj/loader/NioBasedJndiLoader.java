@@ -45,6 +45,7 @@ public class NioBasedJndiLoader extends JndiLoader {
 
     /**
      *
+     * @param rootDir name-separator has to be platform independent always "/"
      * @param preserveFileNameAsContextName Siehe {@link #load(File, Context, boolean)}
      */
     public void loadJar(File jarFile, String rootDir, Context ctxt, boolean preserveFileNameAsContextName) throws IOException {
@@ -107,24 +108,24 @@ public class NioBasedJndiLoader extends JndiLoader {
     /**
      * Loads all .properties", .ini, .xml files in a directory into a context.
      */
-    private void loadDirectory(File directory, final String rootDir, final Context ctxt, final Context parentCtxt, final String subName) throws NamingException, IOException {
+    private void loadDirectory(File directory, final String platformSpecificRootDir, final Context ctxt, final Context parentCtxt, final String subName) throws NamingException, IOException {
 
-        Files.walkFileTree(directory.toPath(), new MySimpleFileVisitor(rootDir, ctxt, "", false));
+        Files.walkFileTree(directory.toPath(), new MySimpleFileVisitor(platformSpecificRootDir, ctxt, "", false));
     }
 
     class MySimpleFileVisitor extends SimpleFileVisitor<Path> {
 
-        private final String rootDir;
+        private final String platformSpecificRootDir;
         private final Context ctxt;
         private final String subName;
         private final ArrayList<Context> contexts = new ArrayList<>();
         private final boolean preserveRootFileNameAsContextName;
 
-        MySimpleFileVisitor(String rootDir, final Context ctxt, final String subName, final boolean preserveRootFileNameAsContextName) {
-            if (StringUtils.endsWith(rootDir, "/")) {
-                rootDir = rootDir.substring(0, rootDir.length() - 1);
+        MySimpleFileVisitor(String platformSpecificRootDir, final Context ctxt, final String subName, final boolean preserveRootFileNameAsContextName) {
+            if (StringUtils.endsWith(platformSpecificRootDir, File.separator)) {
+                platformSpecificRootDir = platformSpecificRootDir.substring(0, platformSpecificRootDir.length() - 1);
             }
-            this.rootDir = rootDir;
+            this.platformSpecificRootDir = platformSpecificRootDir;
             this.ctxt = ctxt;
             this.subName = subName;
             contexts.add(this.ctxt);
@@ -134,15 +135,15 @@ public class NioBasedJndiLoader extends JndiLoader {
         @Override
         public FileVisitResult preVisitDirectory(final Path dir, final BasicFileAttributes attrs) throws IOException {
             LOGGER.debug("preVisitDirectory: {}", dir);
-            String dirString = dir.toString();
-            if (StringUtils.endsWith(dirString, "/")) {
+            String dirString = dir.toString(); // dirString is platform specific
+            if (StringUtils.endsWith(dirString, File.separator)) {
                 dirString = dirString.substring(0, dirString.length() - 1);
             }
-            if (!rootDir.equals(dirString)) {
+            if (!platformSpecificRootDir.equals(dirString)) {
                 try {
 //                    CompoundName compoundName = toCompoundName(dirString);
 //                    String subCtxName = compoundName.get(compoundName.size() - 1);
-                    String[] parts = StringUtils.split(dirString, '/');
+                    String[] parts = StringUtils.split(dirString, File.separatorChar);
                     String subCtxName = parts[parts.length - 1];
                     if (!subCtxName.equals(".svn") && !subCtxName.equals("CVS")) {
                         subCtxName = handleColonReplacement(subCtxName);
@@ -159,7 +160,7 @@ public class NioBasedJndiLoader extends JndiLoader {
         @Override
         public FileVisitResult visitFile(final Path path, final BasicFileAttributes attrs) throws IOException {
             try {
-                if (path.toString().equals(rootDir)) {
+                if (path.toString().equals(platformSpecificRootDir)) {
                     loadFile(path, contexts.get(contexts.size() - 1), null, preserveRootFileNameAsContextName);
                 }
                 else {
@@ -182,7 +183,7 @@ public class NioBasedJndiLoader extends JndiLoader {
         @Override
         public FileVisitResult postVisitDirectory(final Path dir, final IOException exc) throws IOException {
             LOGGER.debug("postVisitDirectory: {}", dir);
-            if (!rootDir.equals(dir.toString())) {
+            if (!platformSpecificRootDir.equals(dir.toString())) {
                 contexts.remove(contexts.size() - 1);
             }
             return super.postVisitDirectory(dir, exc);

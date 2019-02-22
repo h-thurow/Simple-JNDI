@@ -1422,4 +1422,5 @@ public class SimpleJndiNewTest {
             }
         }
     }
+
 }
