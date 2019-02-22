@@ -203,10 +203,6 @@ ic.rebind("Cities", cities); // rebind guarantees visibility in all threads
 
 <a href=https://github.com/h-thurow/Simple-JNDI/wiki/Change-log>Change log</a>
 
-<h3>References</h3>
-
-<a href="http://www.mad-computer-scientist.com/blog/2017/01/06/creating-integration-tests-with-jndi">Creating Integration Tests with JNDI</a>
-
  <h3>Explanatory note</h3>
  
 <p>This project is based on old https://github.com/hen/osjava/tree/master/simple-jndi .</p>
