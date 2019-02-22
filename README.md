@@ -11,7 +11,7 @@ Simple-JNDI's JNDI implementation is entirely memory based. No server instance i
 &lt;dependency>
     &lt;groupId>com.github.h-thurow&lt;/groupId>
     &lt;artifactId>simple-jndi&lt;/artifactId>
-    &lt;version>0.18.0&lt;/version>
+    &lt;version>0.17.2&lt;/version> &lt;!-- Do not use 0.18.0. It has a problem on windows. -->
 &lt;/dependency>
 </pre>
 or <a href=http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.github.h-thurow%22%20AND%20a%3A%22simple-jndi%22>download from here</a>.
