@@ -177,7 +177,7 @@ The most popular object to get from JNDI is an object of type <i>javax.sql.DataS
 
 Either methods will recursively destroy every context and dereference all contained objects. So when writing JUnit tests, it is good practice to call close() in tearDown() and reinitialize the JNDI environment in setUp() by calling new InitialContext(). But do not forget to close your datasources by yourself.
 
-New in 0.16.0: There are situations where you want prevent SimpleJNDI from closing the contexts this way when close() is called. See issue <a href=https://github.com/h-thurow/Simple-JNDI/issues/5>Multiple datasources created when using Spring JNDI template</a>. To do so set
+New in 0.16.0: There are situations where you want prevent SimpleJNDI from closing the contexts this way when close() is called. See issue <a href=https://github.com/h-thurow/Simple-JNDI/issues/5>Multiple datasources created when using Spring JNDI template</a> and the Hibernate related issue <a href="https://github.com/h-thurow/Simple-JNDI/issues/13">How to setup a transaction manager?</a>. To do so set
 <pre>
 org.osjava.sj.jndi.ignoreClose = true
 </pre>
