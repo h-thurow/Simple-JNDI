@@ -35,7 +35,6 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.osjava.sj.jndi.MemoryContext;
 import org.osjava.sj.loader.JndiLoader;
 import org.osjava.sj.loader.NioBasedJndiLoader;
 import org.slf4j.Logger;
@@ -66,13 +65,11 @@ public class SimpleJndi {
 
     SimpleJndi(Hashtable<String, String> environment) {
         this.env = environment;
-        overwriteEnvironmentWithSystemProperties();
     }
 
     InitialContext loadRoot() throws NamingException {
-        initializeStandardJndiEnvironment();
 
-        final InitialContext initialContext = createInitialContext();
+        final InitialContext initialContext = new InitialContext(env);
         Context ctxt = initialContext;
         ctxt = createENC(env, ctxt);
 //        FileBasedJndiLoader loader = new FileBasedJndiLoader(env);
@@ -174,49 +171,6 @@ public class SimpleJndi {
             root = root.substring("file://".length());
         }
         return root;
-    }
-
-    private void initializeStandardJndiEnvironment() {
-        env.put("jndi.syntax.direction", "left_to_right");
-        if(!env.containsKey(JndiLoader.DELIMITER)) {
-            env.put(JndiLoader.DELIMITER, ".");
-        }
-        if (!env.containsKey(JNDI_SYNTAX_SEPARATOR)) {
-            env.put(JNDI_SYNTAX_SEPARATOR, env.get(JndiLoader.DELIMITER));
-        }
-    }
-
-    private InitialContext createInitialContext() throws NamingException {
-        if(!env.containsKey(CONTEXT_FACTORY)) {
-            env.put(CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
-        }
-        env.put("java.naming.factory.initial", env.get(CONTEXT_FACTORY) );
-        // Hier wird MemoryContextFactory#getInitialContext() gerufen!
-        return new InitialContext(env);
-    }
-
-    /**
-     * Allow system properties to override environment. See Issue #2: Add JndiLoader.SIMPLE_COLON_REPLACE to overwriteEnvironmentWithSystemProperties.
-     */
-    private void overwriteEnvironmentWithSystemProperties() {
-        overwriteWithSystemProperty(ROOT);
-        overwriteWithSystemProperty(ENC);
-        overwriteWithSystemProperty(CONTEXT_FACTORY);
-        overwriteWithSystemProperty(SHARED);
-        overwriteWithSystemProperty(JNDI_SYNTAX_SEPARATOR);
-        overwriteWithSystemProperty(FILENAME_TO_CONTEXT);
-        overwriteWithSystemProperty(PATH_SEPARATOR);
-        overwriteWithSystemProperty(JndiLoader.DELIMITER);
-        overwriteWithSystemProperty(JndiLoader.COLON_REPLACE);
-        overwriteWithSystemProperty(Context.OBJECT_FACTORIES);
-        overwriteWithSystemProperty(MemoryContext.IGNORE_CLOSE);
-    }
-
-    private void overwriteWithSystemProperty(String key) {
-        String value = System.getProperty(key);
-        if(value != null) {
-            env.put(key, value);
-        }
     }
 
 }

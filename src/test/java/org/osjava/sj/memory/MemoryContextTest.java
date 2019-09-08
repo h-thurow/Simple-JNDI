@@ -1,13 +1,19 @@
 package org.osjava.sj.memory;
 
+import org.hsqldb.jdbc.JDBCDataSource;
 import org.junit.Test;
+import org.osjava.sj.SimpleJndi;
 import org.osjava.sj.jndi.MemoryContext;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
+import java.io.IOException;
 import java.util.Hashtable;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * @author Holger Thurow (thurow.h@gmail.com) on 04/02/2017.
@@ -79,6 +85,85 @@ public class MemoryContextTest {
         finally {
             if (ctx != null) {
                 ctx.close();
+            }
+        }
+    }
+
+    /**
+     * <p>Workaround for <a href="https://stackoverflow.com/questions/51911367/error-when-trying-to-use-simple-jndi">Error when trying to use Simple-JNDI</a>
+     * </p>
+     */
+    @Test
+    public void initializeWithoutJndiPropertiesFile() throws NamingException {
+
+        InitialContext ic = null;
+        InitialContext ic2 = null;
+        try {
+            System.setProperty(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
+
+            Hashtable env = new Hashtable();
+            env.put("org.osjava.sj.jndi.shared", "true");
+
+            ic = new InitialContext(env);
+
+            ic.createSubcontext("java:/comp/env/jdbc");
+
+            JDBCDataSource ds = new JDBCDataSource();
+            ds.setDatabase("jdbc:hsqldb:hsql://localhost/xdb");
+            ds.setUser("SA");
+            ds.setPassword("");
+
+            ic.bind("java:/comp/env/jdbc/myDS", ds);
+
+            ic2 = new InitialContext(env);
+            DataSource dataSource = (DataSource) ic2.lookup("java:/comp/env/jdbc/myDS");
+            assertNotNull(dataSource);
+        }
+        finally {
+            System.clearProperty(Context.INITIAL_CONTEXT_FACTORY);
+            if (ic != null) {
+                ic.close();
+            }
+            if (ic2 != null) {
+                ic2.close();
+            }
+        }
+    }
+
+    /**
+     * See {@link #initializeWithoutJndiPropertiesFile()}
+     */
+    @Test
+    public void initializeWithoutJndiPropertiesFile2() throws NamingException, IOException {
+        InitialContext ic = null;
+        InitialContext ic2 = null;
+        try {
+            System.setProperty(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.MemoryContextFactory");
+            System.setProperty(SimpleJndi.SHARED, "true");
+
+            ic = new InitialContext();
+
+            ic.createSubcontext("java:/comp/env/jdbc");
+
+            JDBCDataSource ds = new JDBCDataSource();
+            ds.setDatabase("jdbc:hsqldb:hsql://localhost/xdb");
+            ds.setUser("SA");
+            ds.setPassword("");
+
+            ic.bind("java:/comp/env/jdbc/myDS", ds);
+
+            ic2 = new InitialContext();
+            DataSource dataSource = (DataSource) ic2.lookup("java:/comp/env/jdbc/myDS");
+            assertNotNull(dataSource);
+        }
+        finally {
+            System.clearProperty(Context.INITIAL_CONTEXT_FACTORY);
+            System.clearProperty(SimpleJndi.SHARED);
+            if (ic != null) {
+                ic.close();
+            }
+            if (ic2 != null) {
+                ic2.close();
             }
         }
     }

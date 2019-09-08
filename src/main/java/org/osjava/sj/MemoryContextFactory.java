@@ -57,7 +57,7 @@ import static org.osjava.sj.jndi.MemoryContext.IGNORE_CLOSE;
  * @author Robert M. Zigweid, Holger Thurow
  * @since Simple-JNDI 0.11
  */
-public class MemoryContextFactory implements InitialContextFactory {
+public class MemoryContextFactory extends ContextFactory implements InitialContextFactory {
 
     private static final ConcurrentHashMap<String, Context> contextsByRoot =
             new ConcurrentHashMap<String, Context>();
@@ -73,6 +73,8 @@ public class MemoryContextFactory implements InitialContextFactory {
      * @see InitialContextFactory#getInitialContext(Hashtable)
      */
     public Context getInitialContext(Hashtable environment) throws NamingException {
+        overwriteEnvironmentWithSystemProperties(environment);
+        initializeStandardJndiEnvironment(environment);
         final Boolean isShared = Boolean.valueOf(
                 (String) environment.get("org.osjava.sj.jndi.shared"));
         if (!isShared) {
@@ -80,8 +82,6 @@ public class MemoryContextFactory implements InitialContextFactory {
         }
         else {
             String root = (String) environment.get("org.osjava.sj.root");
-            // Siehe MemoryContextTest#loadViaInitialContext()
-            root = root != null ? root : "";
             final Context ctx = contextsByRoot.get(root);
             // ctx.listBindings("").hasMore(): Ob alle Kontexte zerstört wurden.
             if (ctx != null) {

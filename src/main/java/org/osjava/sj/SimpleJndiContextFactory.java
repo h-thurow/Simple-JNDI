@@ -47,7 +47,7 @@ import static org.osjava.sj.jndi.MemoryContext.IGNORE_CLOSE;
  *
  * @author Henri Yandell, Holger Thurow
  */
-public class SimpleJndiContextFactory implements InitialContextFactory {
+public class SimpleJndiContextFactory extends ContextFactory implements InitialContextFactory {
     private static final ConcurrentHashMap<String, DelimiterConvertingContext> contextsByRoot =
             new ConcurrentHashMap<String, DelimiterConvertingContext>();
 
@@ -63,6 +63,8 @@ public class SimpleJndiContextFactory implements InitialContextFactory {
      */
     @Override
     public Context getInitialContext(final Hashtable environment) throws NamingException {
+        overwriteEnvironmentWithSystemProperties(environment);
+        initializeStandardJndiEnvironment(environment);
         final Boolean isShared = Boolean.valueOf(
                 (String) environment.get(SimpleJndi.SHARED));
         if (!isShared) {

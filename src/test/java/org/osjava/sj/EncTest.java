@@ -44,7 +44,7 @@ import static org.junit.Assert.assertEquals;
 
 public class EncTest {
 
-    private InitialContext initContext;
+    private InitialContext initialContext;
 
     @Before
     public void setUp() {
@@ -53,12 +53,13 @@ public class EncTest {
 
     @After
     public void tearDown() throws NamingException {
-        initContext.close();
-        initContext = null;
+        initialContext.close();
+        initialContext = null;
         System.clearProperty("java.naming.factory.initial");
         System.clearProperty("org.osjava.sj.root");
         System.clearProperty("org.osjava.sj.delimiter");
         System.clearProperty("org.osjava.sj.space");
+        System.clearProperty("org.osjava.sj.jndi.shared");
     }
 
     @Test
@@ -67,16 +68,17 @@ public class EncTest {
         System.setProperty("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory");
         System.setProperty("org.osjava.sj.root", "src/test/resources/roots/enc-test");
         System.setProperty("org.osjava.sj.delimiter", "/");
-        System.setProperty("org.osjava.sj.space", "java:/comp/env");
+        System.setProperty("org.osjava.sj.space", "java:comp/env");
         try {
-            initContext = new InitialContext();
+            initialContext = new InitialContext();
         } catch(NamingException ne) {
             ne.printStackTrace();
         }
 
         String dsString = "bing::::foofoo::::Boo";
-        Context envContext = (Context) initContext.lookup("java:/comp/env");
+        Context envContext = (Context) initialContext.lookup("java:comp/env");
         DataSource ds = (DataSource) envContext.lookup("jdbc/myoracle");
         assertEquals( dsString, ds.toString() );
     }
+
 }
