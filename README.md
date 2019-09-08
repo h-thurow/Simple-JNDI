@@ -1,7 +1,6 @@
 # Simple-JNDI
 
-Simple-JNDI is intended to solve two problems. The first is that of finding a container independent way of opening a 
-database connection, the second is to access application configurations easily from anywhere in your application. If your only intention is to test or use classes that depend on Tomcat's JNDI environment outside of Tomcat or you are only in need of a JNDI based DataSource give [TomcatJNDI](https://github.com/h-thurow/TomcatJNDI) (not to be confused with Simple-JNDI) a try.
+Simple-JNDI is intended to solve two problems. The first is to test or use classes that depend on JNDI environment objects (most known a DataSource) provided by a Java EE container outside of such a container. The second is to access application configurations easily from anywhere in your application. If your only intention is to test or use classes that depend on Tomcat's JNDI environment outside of Tomcat or you are only in need of a JNDI based DataSource give [TomcatJNDI](https://github.com/h-thurow/TomcatJNDI) (not to be confused with Simple-JNDI) a try.
 
 Simple-JNDI's JNDI implementation is entirely memory based. No server instance is started. The structure of a root directory serves as a model for the contexts structure. The contexts get populated with Objects defined by .properties files, XML files or Windows-style .ini files. Of course you can bind Objects programmatically to contexts too.
 
@@ -11,7 +10,7 @@ Simple-JNDI's JNDI implementation is entirely memory based. No server instance i
 &lt;dependency>
     &lt;groupId>com.github.h-thurow&lt;/groupId>
     &lt;artifactId>simple-jndi&lt;/artifactId>
-    &lt;version>0.17.2&lt;/version> &lt;!-- Do not use 0.18.0. It has a problem on windows. -->
+    &lt;version>0.18.1&lt;/version>
 &lt;/dependency>
 </pre>
 or <a href=http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.github.h-thurow%22%20AND%20a%3A%22simple-jndi%22>download from here</a>.
@@ -178,7 +177,7 @@ The most popular object to get from JNDI is an object of type <i>javax.sql.DataS
 
 Either methods will recursively destroy every context and dereference all contained objects. So when writing JUnit tests, it is good practice to call close() in tearDown() and reinitialize the JNDI environment in setUp() by calling new InitialContext(). But do not forget to close your datasources by yourself.
 
-New in 0.16.0: There are situations where you want prevent SimpleJNDI from closing the contexts this way when close() is called. See issue <a href=https://github.com/h-thurow/Simple-JNDI/issues/5>Multiple datasources created when using Spring JNDI template</a>. To do so set
+New in 0.16.0: There are situations where you want prevent SimpleJNDI from closing the contexts this way when close() is called. See issue <a href=https://github.com/h-thurow/Simple-JNDI/issues/5>Multiple datasources created when using Spring JNDI template</a> and the Hibernate related issue <a href="https://github.com/h-thurow/Simple-JNDI/issues/13">How to setup a transaction manager?</a>. To do so set
 <pre>
 org.osjava.sj.jndi.ignoreClose = true
 </pre>
@@ -203,10 +202,6 @@ ic.rebind("Cities", cities); // rebind guarantees visibility in all threads
 <h3>See also</h3>
 
 <a href=https://github.com/h-thurow/Simple-JNDI/wiki/Change-log>Change log</a>
-
-<h3>References</h3>
-
-<a href="http://www.mad-computer-scientist.com/blog/2017/01/06/creating-integration-tests-with-jndi">Creating Integration Tests with JNDI</a>
 
  <h3>Explanatory note</h3>
  
