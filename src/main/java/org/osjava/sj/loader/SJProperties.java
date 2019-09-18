@@ -47,13 +47,10 @@ public class SJProperties extends Properties {
     // our index for the ordering
     protected ArrayList index = new ArrayList();
     
-    private StrSubstitutor substitutor;
-
+    private final StrSubstitutor substitutor;
 
     SJProperties() {
-        super();
-        substitutor = new StrSubstitutor(StrLookup.systemPropertiesLookup());
-        substitutor.setVariablePrefix("${sys:");
+        this(null);
     }
 
     /**
@@ -63,6 +60,8 @@ public class SJProperties extends Properties {
      */
     SJProperties(Properties defaults) {
         super(defaults);
+        substitutor = new StrSubstitutor(StrLookup.systemPropertiesLookup());
+        substitutor.setVariablePrefix("${sys:");
     }
 
     public void setDelimiter(String delimiter) {
