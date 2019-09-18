@@ -32,6 +32,8 @@
 
 package org.osjava.sj.loader;
 
+import org.apache.commons.lang.text.StrLookup;
+import org.apache.commons.lang.text.StrSubstitutor;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -44,9 +46,14 @@ public class SJProperties extends Properties {
     private String delimiter = ".";
     // our index for the ordering
     protected ArrayList index = new ArrayList();
+    
+    private StrSubstitutor substitutor;
+
 
     SJProperties() {
         super();
+        substitutor = new StrSubstitutor(StrLookup.systemPropertiesLookup());
+        substitutor.setVariablePrefix("${sys:");
     }
 
     /**
@@ -68,6 +75,9 @@ public class SJProperties extends Properties {
 
     @Override
     public synchronized Object put(Object key, Object value) {
+        if (value instanceof String) {
+            value = substitutor.replace(value);
+        }
         if(index.contains(key)) {
             Object obj = get(key);
             if( !(obj instanceof List)) {
