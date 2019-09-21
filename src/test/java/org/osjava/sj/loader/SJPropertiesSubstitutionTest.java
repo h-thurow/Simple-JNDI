@@ -13,7 +13,7 @@ import static org.junit.Assert.assertEquals;
 public class SJPropertiesSubstitutionTest {
 
     private final String sysName = "test.property";
-    private String literalValue = "${sj.sys:test.property}";
+    private final String literalValue = "${sj.sys:" + sysName + "}";
 
     @After
     public void tearDown() throws Exception {
