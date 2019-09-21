@@ -10,7 +10,7 @@ Simple-JNDI's JNDI implementation is entirely memory based. No server instance i
 &lt;dependency>
     &lt;groupId>com.github.h-thurow&lt;/groupId>
     &lt;artifactId>simple-jndi&lt;/artifactId>
-    &lt;version>0.18.2&lt;/version>
+    &lt;version>0.19.0&lt;/version>
 &lt;/dependency>
 </pre>
 or <a href=http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.github.h-thurow%22%20AND%20a%3A%22simple-jndi%22>download from here</a>.
@@ -74,6 +74,8 @@ in which the file looks like:</p>
 <li>String value = (String) ctxt.lookup("application1.users.quantity")</li>
 <li>String value = (String) ctxt.lookup("application1.users.enabled")</li>
 </ul>
+<p>
+    NEW in 0.19.0: See <a href="https://github.com/h-thurow/Simple-JNDI/issues/17">Enhancement request: system property substitution in resource files</a>
 </p>
 <p><a href=https://github.com/h-thurow/Simple-JNDI/wiki/Declarative-creation-of-contexts-and-context-objects>Further information.</a>
 </p>
