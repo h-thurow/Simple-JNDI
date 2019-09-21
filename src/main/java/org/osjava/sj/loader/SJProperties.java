@@ -61,7 +61,7 @@ public class SJProperties extends Properties {
     SJProperties(Properties defaults) {
         super(defaults);
         substitutor = new StrSubstitutor(StrLookup.systemPropertiesLookup());
-        substitutor.setVariablePrefix("${sys:");
+        substitutor.setVariablePrefix("${sj.sys:");
     }
 
     public void setDelimiter(String delimiter) {
