@@ -18,6 +18,8 @@ import static org.junit.Assert.*;
 
 public class JNDIConfigurationTest {
 
+    private final String sysPropName = "my.home";
+
     @Before
     public void setUp() {
         System.clearProperty(SimpleJndi.ROOT);
@@ -33,6 +35,7 @@ public class JNDIConfigurationTest {
     @Test
     public void slashDelimitedPropertiesUnshared() throws Exception {
         InitialContext ctx = null;
+        System.setProperty("my.name", "Holger");
         try {
             final Properties env = new Properties();
             env.put(SimpleJndi.ROOT, "src/test/resources/roots/commons/configuration/slashDelimiter");
@@ -43,10 +46,12 @@ public class JNDIConfigurationTest {
             ctx = new InitialContext(env);
             final JNDIConfiguration jndiConf = new JNDIConfiguration(ctx);
 
-            assertEquals(true, jndiConf.getBoolean("java:comp/env/boolean_true"));
+            assertTrue(jndiConf.getBoolean("java:comp/env/boolean_true"));
             int age = jndiConf.getInt("java:comp/env/parent/child1/size");
             assertEquals(186, age);
             assertEquals(MemoryContext.class, jndiConf.getProperty("java:comp/env/parent").getClass());
+            assertEquals("Holger", jndiConf.getString("java:comp/env/parent/interpolatedName"));
+            assertEquals("${parent/interpolated}", jndiConf.getString("java:comp/env/parent/interpolatedNameUnprefixed"));
 
             assertNotNull(ctx.lookup("java:comp"));
             assertNotNull(ctx.lookup("java:comp/env"));
@@ -63,6 +68,7 @@ public class JNDIConfigurationTest {
             if (ctx != null) {
                 ctx.close();
             }
+            System.clearProperty("my.name");
         }
     }
 
@@ -176,6 +182,7 @@ public class JNDIConfigurationTest {
     @Test
     public void dotDelimitedSharedAndVariableInterpolation() throws Exception {
         InitialContext ctx = null;
+        System.setProperty(sysPropName, "Berlin");
         try {
             final Properties env = new Properties();
             env.put(SimpleJndi.ROOT, "src/test/resources/roots/commons/configuration/dotDelimiter");
@@ -190,22 +197,24 @@ public class JNDIConfigurationTest {
             assert size == 186;
             final JNDIConfiguration jndiConf = new JNDIConfiguration(ctx);
 
-            assertEquals("/Users/hot", jndiConf.getString("java:comp/env.my.home"));
-            assertEquals("/Users/hot", jndiConf.getString("java:comp.env.my.home"));
-            assertEquals("/Users/hot", jndiConf.getString("java:comp/env/my/home"));
-            assertEquals("${sys:user.home}", ctx.lookup("java:comp.env.my.home"));
-            assertEquals("${sys:user.home}", ctx.lookup("java:comp/env/my/home"));
+            assertEquals("Berlin", jndiConf.getString("java:comp/env.my.home"));
+            assertEquals("Berlin", jndiConf.getString("java:comp.env.my.home"));
+            assertEquals("Berlin", jndiConf.getString("java:comp/env/my/home"));
+            assertEquals("${sys:my.home}", ctx.lookup("java:comp.env.my.home"));
+            assertEquals("${sys:my.home}", ctx.lookup("java:comp/env/my/home"));
         }
         finally {
             if (ctx != null) {
                 ctx.close();
             }
+            System.clearProperty(sysPropName);
         }
     }
 
     @Test
     public void dotDelimitedUnsharedAndVariableInterpolation() throws Exception {
         InitialContext ctx = null;
+        System.setProperty(sysPropName, "Berlin");
         try {
             final Properties env = new Properties();
             env.put(SimpleJndi.ROOT, "src/test/resources/roots/commons/configuration/dotDelimiter");
@@ -221,18 +230,19 @@ public class JNDIConfigurationTest {
 
             final JNDIConfiguration jndiConf = new JNDIConfiguration(ctx);
 
-            // variable interpolation (${sys:user.home})
+            // variable interpolation (${sys:my.home})
 
-            assertEquals("/Users/hot", jndiConf.getString("java:comp/env.my.home"));
-            assertEquals("/Users/hot", jndiConf.getString("java:comp.env.my.home"));
-            assertEquals("/Users/hot", jndiConf.getString("java:comp/env/my/home"));
-            assertEquals("${sys:user.home}", ctx.lookup("java:comp.env.my.home"));
-            assertEquals("${sys:user.home}", ctx.lookup("java:comp/env/my/home"));
+            assertEquals("Berlin", jndiConf.getString("java:comp/env.my.home"));
+            assertEquals("Berlin", jndiConf.getString("java:comp.env.my.home"));
+            assertEquals("Berlin", jndiConf.getString("java:comp/env/my/home"));
+            assertEquals("${sys:my.home}", ctx.lookup("java:comp.env.my.home"));
+            assertEquals("${sys:my.home}", ctx.lookup("java:comp/env/my/home"));
         }
         finally {
             if (ctx != null) {
                 ctx.close();
             }
+            System.clearProperty(sysPropName);
         }
     }
 

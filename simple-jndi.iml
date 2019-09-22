@@ -56,8 +56,10 @@
     <orderEntry type="library" scope="TEST" name="Maven: org.springframework:spring-beans:4.2.5.RELEASE" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.springframework:spring-core:4.2.5.RELEASE" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.springframework:spring-expression:4.2.5.RELEASE" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.springframework:spring-test:4.2.5.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: commons-lang:commons-lang:2.6" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: com.zaxxer:HikariCP-java7:2.4.12" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.hsqldb:hsqldb:2.3.5" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: com.github.stefanbirkner:system-rules:1.19.0" level="project" />
   </component>
 </module>
