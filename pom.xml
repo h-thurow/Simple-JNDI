@@ -205,7 +205,7 @@
                     <excludes>
                         <exclude>TestSuite.java</exclude>
                     </excludes>
-                    <testFailureIgnore>true</testFailureIgnore>
+                    <testFailureIgnore>false</testFailureIgnore>
                 </configuration>
             </plugin>
             <plugin>
