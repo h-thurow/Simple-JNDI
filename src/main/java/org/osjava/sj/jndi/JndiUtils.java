@@ -23,7 +23,8 @@ public class JndiUtils {
     }
 
     public static Reference toReference(Properties props, String className) {
-        Reference ref = new Reference(className);
+        final String factory = props.getProperty("factory", null);
+        Reference ref = new Reference(className, factory, null);
         for (Object key : props.keySet()) {
             ref.add(new StringRefAddr((String) key, props.getProperty((String) key)));
         }
