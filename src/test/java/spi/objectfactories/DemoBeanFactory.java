@@ -21,7 +21,6 @@ public class DemoBeanFactory implements ObjectFactory {
     public Object getObjectInstance(Object obj, Name name, Context nameCtx, Hashtable<?, ?> environment) throws Exception {
         LOGGER.debug("{} called.", this.getClass().getName());
         Reference ref = (Reference) obj;
-        String type = (String) ref.get("type").getContent();
         if (DemoBean.class.getName().equals(ref.getClassName())) {
             String fullName = (String) ref.get("fullName").getContent();
             int size = Integer.valueOf((String) ref.get("size").getContent());

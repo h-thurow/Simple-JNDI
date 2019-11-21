@@ -21,7 +21,6 @@ public class DemoBeanFactory2 implements ObjectFactory {
     public Object getObjectInstance(Object obj, Name name, Context nameCtx, Hashtable<?, ?> environment) throws Exception {
         LOGGER.debug("{} called.", this.getClass().getName());
         Reference ref = (Reference) obj;
-        String type = (String) ref.get("type").getContent();
         if (DemoBean2.class.getName().equals(ref.getClassName())) {
             String city = (String) ref.get("city").getContent();
             int inhabitants = Integer.valueOf((String) ref.get("inhabitants").getContent());
