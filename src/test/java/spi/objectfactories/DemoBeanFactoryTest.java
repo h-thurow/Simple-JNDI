@@ -69,7 +69,7 @@ public class DemoBeanFactoryTest {
         env.put("org.osjava.sj.delimiter", ".");
         env.put("jndi.syntax.separator", "/");
         env.put("jndi.syntax.direction", "left_to_right");
-        env.put(Context.OBJECT_FACTORIES, DemoBeanFactory.class.getName()+ ":" + DemoBeanFactory2.class.getName());
+        env.put(Context.OBJECT_FACTORIES, DemoBeanFactory.class.getName() + ":" + DemoBeanFactory2.class.getName());
 
         Properties properties = new Properties();
 
@@ -83,7 +83,7 @@ public class DemoBeanFactoryTest {
 
         properties.setProperty("org.osjava.sj.myBean2.type", DemoBean2.class.getName());
         properties.setProperty("org.osjava.sj.myBean2.inhabitants", "3754418");
-        properties.setProperty("org.osjava.sj.myBean2.city", "Berlin Thurow");
+        properties.setProperty("org.osjava.sj.myBean2.city", "Berlin");
 
         InitialContext ctx = new InitialContext(env);
         JndiLoader loader = new JndiLoader(env);
