@@ -13,18 +13,18 @@ import java.util.Hashtable;
  * @author Holger Thurow (thurow.h@gmail.com)
  * @since 03.07.17
  */
-public class DemoBeanFactory implements ObjectFactory {
+public class DemoBeanFactory2 implements ObjectFactory {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DemoBeanFactory.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DemoBeanFactory2.class);
 
     @Override
     public Object getObjectInstance(Object obj, Name name, Context nameCtx, Hashtable<?, ?> environment) throws Exception {
         LOGGER.debug("{} called.", this.getClass().getName());
         Reference ref = (Reference) obj;
-        if (DemoBean.class.getName().equals(ref.getClassName())) {
-            String fullName = (String) ref.get("fullName").getContent();
-            int size = Integer.valueOf((String) ref.get("size").getContent());
-            return new DemoBean(fullName, size);
+        if (DemoBean2.class.getName().equals(ref.getClassName())) {
+            String city = (String) ref.get("city").getContent();
+            int inhabitants = Integer.valueOf((String) ref.get("inhabitants").getContent());
+            return new DemoBean2(city, inhabitants);
         }
         else {
             return null;

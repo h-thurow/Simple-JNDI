@@ -61,5 +61,40 @@ public class DemoBeanFactoryTest {
         assertEquals(DemoBean.class.getName(), o.getClass().getName());
     }
 
+    @Test
+    public void severalObjectFactories() throws Exception {
+        Hashtable env = new Hashtable();
+        env.put(Context.INITIAL_CONTEXT_FACTORY, MemoryContextFactory.class.getName());
+        env.put("org.osjava.sj.jndi.shared", "true");
+        env.put("org.osjava.sj.delimiter", ".");
+        env.put("jndi.syntax.separator", "/");
+        env.put("jndi.syntax.direction", "left_to_right");
+        env.put(Context.OBJECT_FACTORIES, DemoBeanFactory.class.getName() + ":" + DemoBeanFactory2.class.getName());
+
+        Properties properties = new Properties();
+
+        // DemoBean1 configuration
+
+        properties.setProperty("org.osjava.sj.myBean.type", DemoBean.class.getName());
+        properties.setProperty("org.osjava.sj.myBean.size", "186");
+        properties.setProperty("org.osjava.sj.myBean.fullName", "Holger Thurow");
+
+        // DemoBean2 configuration
+
+        properties.setProperty("org.osjava.sj.myBean2.type", DemoBean2.class.getName());
+        properties.setProperty("org.osjava.sj.myBean2.inhabitants", "3754418");
+        properties.setProperty("org.osjava.sj.myBean2.city", "Berlin");
+
+        InitialContext ctx = new InitialContext(env);
+        JndiLoader loader = new JndiLoader(env);
+        loader.load(properties, ctx);
+
+        Object demoBean1 = ctx.lookup("org/osjava/sj/myBean");
+        assertEquals(DemoBean.class.getName(), demoBean1.getClass().getName());
+
+        Object demoBean2 = ctx.lookup("org/osjava/sj/myBean2");
+        assertEquals(DemoBean2.class.getName(), demoBean2.getClass().getName());
+    }
+
 
 }
