@@ -1,5 +1,6 @@
 package spi.objectfactories;
 
+import org.junit.After;
 import org.junit.Test;
 import org.osjava.sj.MemoryContextFactory;
 import org.osjava.sj.SimpleContextFactory;
@@ -16,7 +17,14 @@ import static org.junit.Assert.*;
  * @author Holger Thurow (thurow.h@gmail.com)
  * @since 03.07.17
  */
-public class DemoBeanFactoryTest {
+public class SpiObjectFactoryTest {
+
+    private static InitialContext ctx;
+
+    @After
+    public void tearDown() throws Exception {
+        ctx.close();
+    }
 
     @Test
     public void demoFactory() throws Exception {
@@ -28,7 +36,7 @@ public class DemoBeanFactoryTest {
         env.put("jndi.syntax.separator", "/");
         env.put(Context.OBJECT_FACTORIES, org.apache.commons.dbcp2.BasicDataSourceFactory.class.getName() + ":" + DemoBeanFactory.class.getName());
 
-        InitialContext ctx = new InitialContext(env);
+        ctx = new InitialContext(env);
 
         DemoBean bean = (DemoBean) ctx.lookup("myBean");
         assertNotNull(bean);
@@ -36,6 +44,7 @@ public class DemoBeanFactoryTest {
 
         DemoBean bean2 = (DemoBean) ctx.lookup("myBean");
         assertTrue(bean == bean2);
+
     }
 
     @Test
@@ -53,7 +62,7 @@ public class DemoBeanFactoryTest {
         properties.setProperty("org.osjava.sj.myBean.size", "186");
         properties.setProperty("org.osjava.sj.myBean.fullName", "Holger Thurow");
 
-        InitialContext ctx = new InitialContext(env);
+        ctx = new InitialContext(env);
         JndiLoader loader = new JndiLoader(env);
         loader.load(properties, ctx);
 
@@ -85,7 +94,7 @@ public class DemoBeanFactoryTest {
         properties.setProperty("org.osjava.sj.myBean2.inhabitants", "3754418");
         properties.setProperty("org.osjava.sj.myBean2.city", "Berlin");
 
-        InitialContext ctx = new InitialContext(env);
+        ctx = new InitialContext(env);
         JndiLoader loader = new JndiLoader(env);
         loader.load(properties, ctx);
 
