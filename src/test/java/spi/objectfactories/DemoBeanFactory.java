@@ -22,7 +22,7 @@ public class DemoBeanFactory implements ObjectFactory {
         LOGGER.debug("{} called.", this.getClass().getName());
         Reference ref = (Reference) obj;
         String type = (String) ref.get("type").getContent();
-        if (type.equals(DemoBean.class.getName())) {
+        if (ref.getClassName().equals(DemoBean.class.getName())) {
             String fullName = (String) ref.get("fullName").getContent();
             int size = Integer.valueOf((String) ref.get("size").getContent());
             return new DemoBean(fullName, size);
