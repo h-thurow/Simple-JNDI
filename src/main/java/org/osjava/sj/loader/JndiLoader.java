@@ -404,7 +404,7 @@ public class JndiLoader {
     @Nullable
     Object processType(Properties properties, String type, Object obj) {
         Object o = null;
-        if (environment.containsKey(Context.OBJECT_FACTORIES) || properties.containsKey("factory")) {
+        if (environment.containsKey(Context.OBJECT_FACTORIES) || properties.containsKey("javaxNamingSpiObjectFactory")) {
             try {
                 Reference reference = JndiUtils.toReference(properties, type);
                 o = NamingManager.getObjectInstance(reference, null, null, environment);

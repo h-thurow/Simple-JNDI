@@ -8,6 +8,7 @@ import org.osjava.sj.loader.JndiLoader;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import java.util.Hashtable;
 import java.util.Properties;
 
@@ -105,5 +106,39 @@ public class SpiObjectFactoryTest {
         assertEquals(DemoBean2.class.getName(), demoBean2.getClass().getName());
     }
 
+    @Test
+    public void demoJavaxNamingSpiObjectFactory() throws NamingException {
+        Hashtable env = new Hashtable();
+        env.put(Context.INITIAL_CONTEXT_FACTORY, MemoryContextFactory.class.getName());
+        env.put("org.osjava.sj.jndi.shared", "true");
+        env.put("org.osjava.sj.delimiter", ".");
+        env.put("jndi.syntax.separator", "/");
+        env.put("jndi.syntax.direction", "left_to_right");
 
+        Properties properties = new Properties();
+
+        // DemoBean1 configuration
+        properties.setProperty("org.osjava.sj.myBean.type", DemoBean.class.getName());
+        properties.setProperty("org.osjava.sj.myBean.javaxNamingSpiObjectFactory", DemoBeanFactory.class.getName());
+        properties.setProperty("org.osjava.sj.myBean.size", "186");
+        properties.setProperty("org.osjava.sj.myBean.fullName", "Holger Thurow");
+
+        // DemoBean2 configuration
+        properties.setProperty("org.osjava.sj.myBean2.type", DemoBean2.class.getName());
+        properties.setProperty("org.osjava.sj.myBean2.javaxNamingSpiObjectFactory", DemoBeanFactory2.class.getName());
+        properties.setProperty("org.osjava.sj.myBean2.inhabitants", "3754418");
+        properties.setProperty("org.osjava.sj.myBean2.city", "Berlin");
+
+        ctx = new InitialContext(env);
+        JndiLoader loader = new JndiLoader(env);
+        loader.load(properties, ctx);
+
+        Object demoBean1 = ctx.lookup("org/osjava/sj/myBean");
+        assertNotNull(demoBean1);
+        assertEquals(DemoBean.class.getName(), demoBean1.getClass().getName());
+
+        Object demoBean2 = ctx.lookup("org/osjava/sj/myBean2");
+        assertNotNull(demoBean2);
+        assertEquals(DemoBean2.class.getName(), demoBean2.getClass().getName());
+    }
 }
