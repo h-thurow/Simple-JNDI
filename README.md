@@ -75,10 +75,9 @@ in which the file looks like:</p>
 <li>String value = (String) ctxt.lookup("application1.users.quantity")</li>
 <li>String value = (String) ctxt.lookup("application1.users.enabled")</li>
 </ul>
-<p>
-    NEW in 0.19.0: See <a href="https://github.com/h-thurow/Simple-JNDI/issues/17">Enhancement request: system property substitution in resource files</a>
-</p>
 <p><a href=https://github.com/h-thurow/Simple-JNDI/wiki/Declarative-creation-of-contexts-and-context-objects>Further information.</a>
+</p><p>
+    NEW in 0.19.0: See <a href="https://github.com/h-thurow/Simple-JNDI/issues/17">Enhancement request: system property substitution in resource files</a>
 </p>
 
 <h3>Lookup typed properties, not only Strings</h3>
