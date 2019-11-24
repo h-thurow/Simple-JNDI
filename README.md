@@ -52,9 +52,9 @@ org.osjava.sj.root=file1.cfg:directory1/file.properties:directory2
     <b>NEW in 0.18.2:</b> You can declare all these parameters as system properties and dispense with jndi.properties file. See <a href="https://github.com/h-thurow/Simple-JNDI/issues/16">Enhancement request: make org.osjava.sj.root not mandatory in jndi.properties</a>.
 </p>
 
-<h3>Declaratively create your contexts and context objects</h3>
+<h3>Create your contexts and context objects</h3>
 
-<p>Simple-JNDI stores values in multiple .properties, xml or ini files. The files are located under a root directory as specified with the <i>org.osjava.sj.root</i> property. </p>
+<p>Simple-JNDI stores values in multiple .properties, .xml or .ini files. The files are located under a root directory as specified with the <i>org.osjava.sj.root</i> property. </p>
 <p>Directory names and file names become part of the lookup key. Each delimited tree-node becomes a JNDI Context, while the leaves are implementations. The only exceptions are pseudo sub-values, which you will see with DataSources.</p>
 <p>
 The easiest way to understand is to consider an example. Imagine a file-structure looking like,
@@ -78,7 +78,8 @@ in which the file looks like:</p>
 <p><a href=https://github.com/h-thurow/Simple-JNDI/wiki/Declarative-creation-of-contexts-and-context-objects>Further information.</a>
 </p><p>
     See also<br>
-    <a href="https://github.com/h-thurow/Simple-JNDI/issues/17">System property substitution in resource files (New in 0.19.0)</a>
+    <a href="https://github.com/h-thurow/Simple-JNDI/issues/17">System property substitution in resource files (New in 0.19.0)</a><br>
+    <a href=https://github.com/h-thurow/Simple-JNDI/wiki/Programmatically-create-your-contexts-and-context-objects-(no-resource-files-needed)>Programmatically create your contexts and context objects (no .properties, .xml or .ini files needed)</a>
 </p>
 
 <h3>Lookup typed properties, not only Strings</h3>
