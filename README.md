@@ -77,7 +77,8 @@ in which the file looks like:</p>
 </ul>
 <p><a href=https://github.com/h-thurow/Simple-JNDI/wiki/Declarative-creation-of-contexts-and-context-objects>Further information.</a>
 </p><p>
-    NEW in 0.19.0: See <a href="https://github.com/h-thurow/Simple-JNDI/issues/17">Enhancement request: system property substitution in resource files</a>
+    See also<br>
+    <a href="https://github.com/h-thurow/Simple-JNDI/issues/17">System property substitution in resource files (New in 0.19.0)</a>
 </p>
 
 <h3>Lookup typed properties, not only Strings</h3>
