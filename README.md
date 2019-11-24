@@ -37,7 +37,8 @@ org.osjava.sj.root=/home/hen/gj/simple-jndi/config/
 </pre><pre>
 # relative directory
 org.osjava.sj.root=config/
-</pre><p>
+</pre>
+<p>Not required, but highly recommended is setting <a href=#shared-or-unshared-context>org.osjava.sj.jndi.shared = true</a> too.</p><p>
     <b>NEW in 0.13.0:</b> Specify a list of files and/or directories. Separate them by the platform specific path separator.
 </p><pre>
 org.osjava.sj.root=file1.cfg:directory1/file.properties:directory2
@@ -50,7 +51,6 @@ org.osjava.sj.root=file1.cfg:directory1/file.properties:directory2
 </p><p>
     <b>NEW in 0.18.2:</b> You can declare all these parameters as system properties and dispense with jndi.properties file. See <a href="https://github.com/h-thurow/Simple-JNDI/issues/16">Enhancement request: make org.osjava.sj.root not mandatory in jndi.properties</a>.
 </p>
-<p>Not required, but highly recommended is setting <a href=#shared-or-unshared-context>org.osjava.sj.jndi.shared = true</a> too.</p>
 
 <h3>Declaratively create your contexts and context objects</h3>
 
