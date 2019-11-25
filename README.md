@@ -1,6 +1,6 @@
 # Simple-JNDI
 
-Simple-JNDI is intended to solve two problems. The first is to test or use classes that depend on JNDI environment objects (most known a DataSource) provided by a Java EE container outside of such a container. So it is recommended by Spring to replace their own deprecated JNDI Mock implementation (See [Introduction to Spring Testing > Unit Testing > Mock Objects > JNDI](https://docs.spring.io/spring-framework/docs/current/spring-framework-reference/testing.html#mock-objects-jndi)). The second problem Simple-JNDI is intended to solve is to access application configurations easily from anywhere in your application.
+Simple-JNDI is intended to solve two problems. The first is to test or use classes that depend on JNDI environment objects (most known a DataSource) provided by a Java EE container outside of such a container. So it is recommended by Spring to replace its own deprecated JNDI Mock implementation (See [Introduction to Spring Testing > Unit Testing > Mock Objects > JNDI](https://docs.spring.io/spring-framework/docs/current/spring-framework-reference/testing.html#mock-objects-jndi)). The second problem Simple-JNDI is intended to solve is to access application configurations easily from anywhere in your application.
 
 If your only intention is to test or use classes that depend on Tomcat's JNDI environment outside of Tomcat or you are only in need of a JNDI based DataSource give [TomcatJNDI](https://github.com/h-thurow/TomcatJNDI) (not to be confused with Simple-JNDI) a try.
 
