@@ -29,9 +29,9 @@ This is where all the work goes in a Simple-JNDI installation. Firstly you need 
 <pre>
 java.naming.factory.initial=org.osjava.sj.SimpleContextFactory
 </pre>
-<p>This property, <i>java.naming.factory.initial</i>, is a part of the jndi specification. </p>
+<p>This property, <code>java.naming.factory.initial</code>, is a part of the JNDI specification. </p>
 <p>
-The second required parameter, org.osjava.sj.root, is the location of your simple-jndi root, which is the location in which simple-jndi looks for values when code asks for them. The following code block details a few examples with explanatory comments.
+    The second required parameter, <code>org.osjava.sj.root</code>, is the location of your simple-jndi root, which is the location in which simple-jndi looks for values when code asks for them. The following code block details a few examples with explanatory comments.
 </p>
 <pre>
 # absolute directory
@@ -40,12 +40,12 @@ org.osjava.sj.root=/home/hen/gj/simple-jndi/config/
 # relative directory
 org.osjava.sj.root=config/
 </pre>
-<p>Not required, but highly recommended is setting <a href=#shared-or-unshared-context>org.osjava.sj.jndi.shared = true</a> too.</p><p>
+<p>Not required, but highly recommended is setting <code><a href=#shared-or-unshared-context>org.osjava.sj.jndi.shared = true</a></code> too.</p><p>
     <b>NEW in 0.13.0:</b> Specify a list of files and/or directories. Separate them by the platform specific path separator.
 </p><pre>
 org.osjava.sj.root=file1.cfg:directory1/file.properties:directory2
 </pre>
-<p>From 0.17.2 on you should also set org.osjava.sj.pathSeparator to the separator used in org.osjava.sj.root to ensure platform independency of your jndi.properties file. See also <a href="https://github.com/h-thurow/Simple-JNDI/wiki/Load-property-files-with-any-extension-from-any-location-(New-in-0.13.0)">Load property files with any extension from any location</a>.
+<p>From 0.17.2 on you should also set <code>org.osjava.sj.pathSeparator</code> to the separator used in <code>org.osjava.sj.root</code> to ensure platform independency of your jndi.properties file. See also <a href="https://github.com/h-thurow/Simple-JNDI/wiki/Load-property-files-with-any-extension-from-any-location-(New-in-0.13.0)">Load property files with any extension from any location</a>.
 </p><p>
 <b>NEW in 0.18.0:</b> You can load files or directories from JARs on classpath<br><p>
 <pre>org.osjava.sj.root=jarMarkerClass=any.class.in.Jar,root=/root/in/jar</pre>
@@ -56,7 +56,7 @@ org.osjava.sj.root=file1.cfg:directory1/file.properties:directory2
 
 <h3>Create your contexts and context objects</h3>
 
-<p>Simple-JNDI stores values in multiple .properties, .xml or .ini files. The files are located under a root directory as specified with the <i>org.osjava.sj.root</i> property. </p>
+<p>Simple-JNDI stores values in multiple .properties, .xml or .ini files. The files are located under a root directory as specified with the <code>org.osjava.sj.root</code> property. </p>
 <p>Directory names and file names become part of the lookup key. Each delimited tree-node becomes a JNDI Context, while the leaves are implementations. The only exceptions are pseudo sub-values, which you will see with DataSources.</p>
 <p>
 The easiest way to understand is to consider an example. Imagine a file-structure looking like,
@@ -71,7 +71,7 @@ in which the file looks like:</p>
     quantity=5
     enabled=true
 </pre>
-<p>The following pieces of Java are all legal ways in which to get values from Simple-JNDI. They assume that you set org.osjava.sj.root=config and that you instantiated ctxt by executing 'InitialContext ctxt = new InitialContext();'.</p>
+<p>The following pieces of Java are all legal ways in which to get values from Simple-JNDI. They assume that you set <code>org.osjava.sj.root = config</code> and that you instantiated ctxt by executing 'InitialContext ctxt = new InitialContext();'.</p>
 <ul>
 <li>String value = (String) ctxt.lookup("application1.users.admin")</li>
 <li>String value = (String) ctxt.lookup("application1.users.quantity")</li>
@@ -121,7 +121,7 @@ Now you can lookup a Map:
 <p>
 For further map examples <a href=https://github.com/h-thurow/Simple-JNDI/tree/master/src/test/resources/roots/maps>see here</a>.
 <p>
-Note that you have to write "quantity/type=java.lang.Integer" and "enabled/type=java.lang.Boolean" when setting "org.osjava.sj.delimiter=/" unless you <a href=https://github.com/h-thurow/Simple-JNDI/wiki/Use-slash-separated-lookup-pathes-with-dot-separated-property-names-(New-in-0.14.0)>follow this description</a>. And as you might anticipate already: "type" is a reserved word with Simple-JNDI.
+Note that you have to write <code>quantity/type = java.lang.Integer</code> and <code>enabled/type = java.lang.Boolean</code> when setting <code>org.osjava.sj.delimiter = /</code> unless you <a href=https://github.com/h-thurow/Simple-JNDI/wiki/Use-slash-separated-lookup-pathes-with-dot-separated-property-names-(New-in-0.14.0)>follow this description</a>. And as you might anticipate already: "type" is a reserved word with Simple-JNDI.
 </p>
 <p>
 See also<br>
@@ -146,13 +146,13 @@ But more usual in JNDI world are lookup pathes like
 ctxt.lookup("application1/users/enabled");
 </pre>
 <p>
-This is what org.osjava.sj.delimiter is for. If not specified, then a '.' is chosen. To use "/" as separator in lookup pathes set
+This is what <code>org.osjava.sj.delimiter</code> is for. If not specified, then a '.' is chosen. To use "/" as separator in lookup pathes set
 </p>
 <pre>
 org.osjava.sj.delimiter=/
 </pre>
 <p>
-Note that you can not mix up different separators in property names and lookup pathes. When setting "org.osjava.sj.delimiter=/" and using namespaced property names you can not declare "a.b.c=123". You have to declare "a/b/c=123". See also <a href=https://github.com/h-thurow/Simple-JNDI/issues/1>ENC problem</a>.
+Note that you can not mix up different separators in property names and lookup pathes. When setting <code>org.osjava.sj.delimiter = /</code> and using namespaced property names you can not declare <code>a.b.c = 123</code>. You have to declare <code>a/b/c = 123</code>. See also <a href=https://github.com/h-thurow/Simple-JNDI/issues/1>ENC problem</a>.
 <p>
 See also <a href=https://github.com/h-thurow/Simple-JNDI/wiki/Use-slash-separated-lookup-pathes-with-dot-separated-property-names-(New-in-0.14.0)>Use slash separated lookup pathes with dot separated property names (New in 0.14.0)</a>
 </p>
@@ -176,11 +176,11 @@ The most popular object to get from JNDI is an object of type <i>javax.sql.DataS
 
 <h3>Dealing with "java:comp/env" (Enterprise Naming Context, ENC) while loading</h3>
 
-<p>Set the <code>org.osjava.sj.space</code> property. Whatever the property is set to will be automatically prepended to <i>every</i> value loaded into the system. Thus <code>org.osjava.sj.space=java:comp/env</code> simulates the JNDI environment of Tomcat. The org.osjava.sj.space property is not subject to delimiter parsing, so even when org.osjava.sj.delimiter is set to ".", you have to lookup "java:comp/env", not "java:comp.env". See also <a href=https://github.com/h-thurow/Simple-JNDI/issues/1>ENC problem</a>.</p>
+<p>Set the <code>org.osjava.sj.space</code> property. Whatever the property is set to will be automatically prepended to <i>every</i> value loaded into the system. Thus <code>org.osjava.sj.space=java:comp/env</code> simulates the JNDI environment of Tomcat. The <code>org.osjava.sj.space</code> property is not subject to delimiter parsing, so even when <code>org.osjava.sj.delimiter</code> is set to ".", you have to lookup "java:comp/env", not "java:comp.env". See also <a href=https://github.com/h-thurow/Simple-JNDI/issues/1>ENC problem</a>.</p>
 
 <p>Another way to achieve a similar result is putting a default.properties directly under your root. In this file declare all your context objects that should reside under "java:comp/env" by prefixing all properties with "java:comp/env", e. g. "java:comp/env/my/size=186". This way you can set some context objects in "java:comp/env" and other objects in a different name space.</p>
 
- <p>You could also put a file named "java:comp.properties" in your root directory or name a directory under your root directory "java:comp". But Windows does not like having a : in a filename, so to deal with the : you can use the <code>org.osjava.sj.colon.replace</code> property. If, for example, you choose to replace a <code>:</code> with <code>--</code> (ie <code>org.osjava.sj.colon.replace=--</code>), then you will need a file named <code>java--comp.properties</code>, or a directory named <code>java--comp</code> containing a file "env.properties".</p>
+ <p>You could also put a file named "java:comp.properties" in your root directory or name a directory under your root directory "java:comp". But Windows does not like having a ":" in a filename, so to deal with the ":" you can use the <code>org.osjava.sj.colon.replace</code> property. If, for example, you choose to replace a ":" with "--" (ie <code>org.osjava.sj.colon.replace = --</code>), then you will need a file named <code>java--comp.properties</code>, or a directory named <code>java--comp</code> containing a file "env.properties".</p>
 
 <h3>Context.close() and Context.destroySubcontext()</h3>
 
