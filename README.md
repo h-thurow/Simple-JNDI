@@ -121,7 +121,7 @@ Now you can lookup a Map:
 <p>
 For further map examples <a href=https://github.com/h-thurow/Simple-JNDI/tree/master/src/test/resources/roots/maps>see here</a>.
 <p>
-Note that you have to write <code>quantity/type = java.lang.Integer</code> and <code>enabled/type = java.lang.Boolean</code> when setting <code>org.osjava.sj.delimiter = /</code> unless you <a href=https://github.com/h-thurow/Simple-JNDI/wiki/Use-slash-separated-lookup-pathes-with-dot-separated-property-names-(New-in-0.14.0)>follow this description</a>. And as you might anticipate already: "type" is a reserved word with Simple-JNDI.
+Note that you have to write <code>quantity/type = java.lang.Integer</code> and <code>enabled/type = java.lang.Boolean</code> when setting <code>org.osjava.sj.delimiter = /</code> unless you <a href=https://github.com/h-thurow/Simple-JNDI/wiki/Use-slash-separated-lookup-pathes-with-dot-separated-property-names-(New-in-0.14.0)>follow this description</a>. And as you might anticipate already: <code>type</code> is a reserved word with Simple-JNDI.
 </p>
 <p>
 See also<br>
