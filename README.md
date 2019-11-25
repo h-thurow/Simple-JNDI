@@ -67,9 +67,9 @@ The easiest way to understand is to consider an example. Imagine a file-structur
 </pre>
 <p>The following pieces of Java are all legal ways in which to get values from Simple-JNDI. They assume that you set <code>org.osjava.sj.root = config</code> and that you instantiated ctxt by executing 'InitialContext ctxt = new InitialContext();'.</p>
 <ul>
-<li>String value = (String) ctxt.lookup("application1.users.admin")</li>
-<li>String value = (String) ctxt.lookup("application1.users.quantity")</li>
-<li>String value = (String) ctxt.lookup("application1.users.enabled")</li>
+<li><code>String value = (String) ctxt.lookup("application1.users.admin")</code></li>
+<li><code>String value = (String) ctxt.lookup("application1.users.quantity")</code></li>
+<li><code>String value = (String) ctxt.lookup("application1.users.enabled")</code></li>
 </ul>
 <p><a href=https://github.com/h-thurow/Simple-JNDI/wiki/Declarative-creation-of-contexts-and-context-objects>Further information.</a>
 </p><p>
