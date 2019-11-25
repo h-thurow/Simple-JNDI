@@ -59,14 +59,8 @@ org.osjava.sj.root = file1.cfg:directory1/file.properties:directory2
 <p>Simple-JNDI stores values in multiple .properties, .xml or .ini files. The files are located under a root directory as specified with the <code>org.osjava.sj.root</code> property. </p>
 <p>Directory names and file names become part of the lookup key. Each delimited tree-node becomes a JNDI Context, while the leaves are implementations. The only exceptions are pseudo sub-values, which you will see with DataSources.</p>
 <p>
-The easiest way to understand is to consider an example. Imagine a file-structure looking like,
-</p>
-<pre>
-    config/application1/users.properties
-</pre>
-<p>
-in which the file looks like:</p>
-<pre>
+The easiest way to understand is to consider an example. Imagine a file-structure looking like <code>config/application1/users.properties</code> in which the file looks like:
+</p><pre>
     admin = fred
     quantity = 5
     enabled = true
