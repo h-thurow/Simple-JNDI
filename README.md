@@ -27,7 +27,7 @@ do however need additional dependencies. To get connection-pooling you will need
 This is where all the work goes in a Simple-JNDI installation. Firstly you need a jndi.properties file, which somehow needs to go into your classpath. This jndi.properties needs two mandatory values:
 </p>
 <pre>
-java.naming.factory.initial=org.osjava.sj.SimpleContextFactory
+java.naming.factory.initial = org.osjava.sj.SimpleContextFactory
 </pre>
 <p>This property, <code>java.naming.factory.initial</code>, is a part of the JNDI specification. </p>
 <p>
@@ -35,20 +35,20 @@ java.naming.factory.initial=org.osjava.sj.SimpleContextFactory
 </p>
 <pre>
 # absolute directory
-org.osjava.sj.root=/home/hen/gj/simple-jndi/config/
+org.osjava.sj.root = /home/hen/gj/simple-jndi/config/
 </pre><pre>
 # relative directory
-org.osjava.sj.root=config/
+org.osjava.sj.root = config/
 </pre>
 <p>Not required, but highly recommended is setting <code><a href=#shared-or-unshared-context>org.osjava.sj.jndi.shared = true</a></code> too.</p><p>
     <b>NEW in 0.13.0:</b> Specify a list of files and/or directories. Separate them by the platform specific path separator.
 </p><pre>
-org.osjava.sj.root=file1.cfg:directory1/file.properties:directory2
+org.osjava.sj.root = file1.cfg:directory1/file.properties:directory2
 </pre>
 <p>From 0.17.2 on you should also set <code>org.osjava.sj.pathSeparator</code> to the separator used in <code>org.osjava.sj.root</code> to ensure platform independency of your jndi.properties file. See also <a href="https://github.com/h-thurow/Simple-JNDI/wiki/Load-property-files-with-any-extension-from-any-location-(New-in-0.13.0)">Load property files with any extension from any location</a>.
 </p><p>
 <b>NEW in 0.18.0:</b> You can load files or directories from JARs on classpath<br><p>
-<pre>org.osjava.sj.root=jarMarkerClass=any.class.in.Jar,root=/root/in/jar</pre>
+<pre>org.osjava.sj.root = jarMarkerClass=any.class.in.Jar,root=/root/in/jar</pre>
 <p>The jarMarkerClass is the Name of a class unique over all JARs on classpath to identify the JAR containing the root directory. The JAR must be found in the file system. Very probably JARs encapsulated in WARs or uber jars will not work.
 </p><p>
     <b>NEW in 0.18.2:</b> You can declare all these parameters as system properties and dispense with jndi.properties file. See <a href="https://github.com/h-thurow/Simple-JNDI/issues/16">Enhancement request: make org.osjava.sj.root not mandatory in jndi.properties</a>.
@@ -67,9 +67,9 @@ The easiest way to understand is to consider an example. Imagine a file-structur
 <p>
 in which the file looks like:</p>
 <pre>
-    admin=fred
-    quantity=5
-    enabled=true
+    admin = fred
+    quantity = 5
+    enabled = true
 </pre>
 <p>The following pieces of Java are all legal ways in which to get values from Simple-JNDI. They assume that you set <code>org.osjava.sj.root = config</code> and that you instantiated ctxt by executing 'InitialContext ctxt = new InitialContext();'.</p>
 <ul>
@@ -90,10 +90,10 @@ in which the file looks like:</p>
 In the above example it would be favourable to lookup "quantity" as Integer and "enabled" as Boolean. To achieve this you can type your properties:
 </p>
 <pre>
-    quantity=5
-    quantity.type=java.lang.Integer
-    enabled=true
-    enabled.type=java.lang.Boolean
+    quantity = 5
+    quantity.type = java.lang.Integer
+    enabled = true
+    enabled.type = java.lang.Boolean
 </pre>
 <p>
 Thereafter you can call typed properties:
@@ -149,7 +149,7 @@ ctxt.lookup("application1/users/enabled");
 This is what <code>org.osjava.sj.delimiter</code> is for. If not specified, then a '.' is chosen. To use "/" as separator in lookup pathes set
 </p>
 <pre>
-org.osjava.sj.delimiter=/
+org.osjava.sj.delimiter = /
 </pre>
 <p>
 Note that you can not mix up different separators in property names and lookup pathes. When setting <code>org.osjava.sj.delimiter = /</code> and using namespaced property names you can not declare <code>a.b.c = 123</code>. You have to declare <code>a/b/c = 123</code>. See also <a href=https://github.com/h-thurow/Simple-JNDI/issues/1>ENC problem</a>.
@@ -172,13 +172,13 @@ The most popular object to get from JNDI is an object of type <i>javax.sql.DataS
 
 <h3>Shared or unshared context?</h3>
 
-<p>Setting <code>org.osjava.sj.jndi.shared=true</code> will put the in-memory JNDI implementation into a mode whereby all InitialContexts share the same memory. By default this is not set, so every new InitialContext() call will provide an independent InitialContext that does not share its memory with the other contexts. This could be not what you want when using a DataSource or a connection pool because everytime you call new InitialContext() in your application a new DataSource or a new connection pool is created. Also when binding an object to a specific context by calling Context.bind() this object will be not visible in the context provided by a subsequent "new InitialContext()" call.</p>
+<p>Setting <code>org.osjava.sj.jndi.shared = true</code> will put the in-memory JNDI implementation into a mode whereby all InitialContexts share the same memory. By default this is not set, so every new InitialContext() call will provide an independent InitialContext that does not share its memory with the other contexts. This could be not what you want when using a DataSource or a connection pool because everytime you call new InitialContext() in your application a new DataSource or a new connection pool is created. Also when binding an object to a specific context by calling Context.bind() this object will be not visible in the context provided by a subsequent "new InitialContext()" call.</p>
 
 <h3>Dealing with "java:comp/env" (Enterprise Naming Context, ENC) while loading</h3>
 
-<p>Set the <code>org.osjava.sj.space</code> property. Whatever the property is set to will be automatically prepended to <i>every</i> value loaded into the system. Thus <code>org.osjava.sj.space=java:comp/env</code> simulates the JNDI environment of Tomcat. The <code>org.osjava.sj.space</code> property is not subject to delimiter parsing, so even when <code>org.osjava.sj.delimiter</code> is set to ".", you have to lookup "java:comp/env", not "java:comp.env". See also <a href=https://github.com/h-thurow/Simple-JNDI/issues/1>ENC problem</a>.</p>
+<p>Set the <code>org.osjava.sj.space</code> property. Whatever the property is set to will be automatically prepended to <i>every</i> value loaded into the system. Thus <code>org.osjava.sj.space = java:comp/env</code> simulates the JNDI environment of Tomcat. The <code>org.osjava.sj.space</code> property is not subject to delimiter parsing, so even when <code>org.osjava.sj.delimiter</code> is set to ".", you have to lookup "java:comp/env", not "java:comp.env". See also <a href=https://github.com/h-thurow/Simple-JNDI/issues/1>ENC problem</a>.</p>
 
-<p>Another way to achieve a similar result is putting a default.properties directly under your root. In this file declare all your context objects that should reside under "java:comp/env" by prefixing all properties with "java:comp/env", e. g. "java:comp/env/my/size=186". This way you can set some context objects in "java:comp/env" and other objects in a different name space.</p>
+<p>Another way to achieve a similar result is putting a default.properties directly under your root. In this file declare all your context objects that should reside under "java:comp/env" by prefixing all properties with "java:comp/env", e. g. <code>java:comp/env/my/size = 186</code>. This way you can set some context objects in "java:comp/env" and other objects in a different name space.</p>
 
  <p>You could also put a file named "java:comp.properties" in your root directory or name a directory under your root directory "java:comp". But Windows does not like having a ":" in a filename, so to deal with the ":" you can use the <code>org.osjava.sj.colon.replace</code> property. If, for example, you choose to replace a ":" with "--" (ie <code>org.osjava.sj.colon.replace = --</code>), then you will need a file named <code>java--comp.properties</code>, or a directory named <code>java--comp</code> containing a file "env.properties".</p>
 
