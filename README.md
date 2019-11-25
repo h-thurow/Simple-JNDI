@@ -74,6 +74,8 @@ String enabled = (String) ctx.lookup("application1.users.enabled");
 </pre>
 <p>The example assumes that you set <code>org.osjava.sj.root = config</code>.
 </p>
+<p>There are some reserved words you can not use as property names: <code>type, converter, javaxNamingSpiObjectFactory</code>.
+</p>
 <p><a href=https://github.com/h-thurow/Simple-JNDI/wiki/Declarative-creation-of-contexts-and-context-objects>Further information.</a>
 </p><p>
     See also<br>
