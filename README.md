@@ -45,7 +45,7 @@ org.osjava.sj.root=config/
 </p><pre>
 org.osjava.sj.root=file1.cfg:directory1/file.properties:directory2
 </pre>
-<p>See also <a href="https://github.com/h-thurow/Simple-JNDI/wiki/Load-property-files-with-any-extension-from-any-location-(New-in-0.13.0)">Load property files with any extension from any location</a>. From 0.17.2 on you should also set org.osjava.sj.pathSeparator to the separator used in org.osjava.sj.root to ensure platform independency of your jndi.properties file.
+<p>From 0.17.2 on you should also set org.osjava.sj.pathSeparator to the separator used in org.osjava.sj.root to ensure platform independency of your jndi.properties file. See also <a href="https://github.com/h-thurow/Simple-JNDI/wiki/Load-property-files-with-any-extension-from-any-location-(New-in-0.13.0)">Load property files with any extension from any location</a>.
 </p><p>
 <b>NEW in 0.18.0:</b> You can load files or directories from JARs on classpath<br><p>
 <pre>org.osjava.sj.root=jarMarkerClass=any.class.in.Jar,root=/root/in/jar</pre>
