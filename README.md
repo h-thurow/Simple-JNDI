@@ -98,8 +98,8 @@ In the above example it would be favourable to lookup "quantity" as Integer and 
 Thereafter you can call typed properties:
 </p>
 <pre>
-    Integer value = (Integer) ctxt.lookup("application1.users.quantity");
-    Boolean value = (Boolean) ctxt.lookup("application1.users.enabled");
+    Integer quantity = (Integer) ctxt.lookup("application1.users.quantity");
+    Boolean enabled = (Boolean) ctxt.lookup("application1.users.enabled");
 </pre>
 <p>
 The following types are supported: Byte, Short, Integer, Long, Float, Double, Character.
@@ -114,8 +114,8 @@ Also supported are Maps (0.16.0):
 <p>
 Now you can lookup a Map:
 <pre>
-    Map myMap = (Map) ctx.lookup("city");
-    assertEquals("3.520.031", myMap.get("citizens"));
+    Map city = (Map) ctx.lookup("city");
+    assertEquals("3.520.031", city.get("citizens"));
 </pre>
 <p>
 For further map examples <a href=https://github.com/h-thurow/Simple-JNDI/tree/master/src/test/resources/roots/maps>see here</a>.
