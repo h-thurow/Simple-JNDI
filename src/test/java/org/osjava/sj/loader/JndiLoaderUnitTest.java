@@ -5,6 +5,7 @@ import org.osjava.sj.jndi.MemoryContext;
 
 import javax.naming.Context;
 import javax.naming.Name;
+import javax.naming.Reference;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Properties;
@@ -308,7 +309,8 @@ public class JndiLoaderUnitTest {
         properties.setProperty("username", "username");
         properties.setProperty("password", "password");
         properties.setProperty("url", "url");
+        properties.setProperty("type", "javax.sql.DataSource");
         Object o = loader.processType(properties, javax.sql.DataSource.class.getName(), null);
-        assertEquals(org.apache.commons.dbcp2.BasicDataSource.class.getName(), o.getClass().getName());
+        assertEquals(Reference.class.getName(), o.getClass().getName());
     }
 }

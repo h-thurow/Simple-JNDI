@@ -7,6 +7,7 @@ import spi.objectfactories.DemoBeanFactory;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -57,7 +58,7 @@ public class HikariTest {
     /**
      * See <a href=https://github.com/brettwooldridge/HikariCP/issues/928>HikariJNDIFactory should not throw a NamingException when !"javax.sql.DataSource".equals(ref.getClassName())</a>
      */
-    @Test(expected = AssertionError.class)
+    @Test(expected = NamingException.class)
     public void hikariCPAndBeans() throws Exception {
         InitialContext ctx = null;
         try {
@@ -69,8 +70,7 @@ public class HikariTest {
             env.put("jndi.syntax.separator", "/");
             env.put(Context.OBJECT_FACTORIES, HikariJNDIFactory.class.getName() + ":" + DemoBeanFactory.class.getName());
             ctx = new InitialContext(env);
-            DemoBean demoBean = (DemoBean) ctx.lookup("DemoBean");
-            assertNotNull(demoBean);
+            ctx.lookup("DemoBean");
         }
         finally {
             if (ctx != null) {

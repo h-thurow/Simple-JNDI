@@ -43,7 +43,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.naming.*;
-import javax.naming.spi.NamingManager;
 import java.io.File;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -403,38 +402,44 @@ public class JndiLoader {
 
     @Nullable
     Object processType(Properties properties, String type, Object obj) {
-        Object o = null;
-        if (environment.containsKey(Context.OBJECT_FACTORIES) || properties.containsKey("javaxNamingSpiObjectFactory")) {
-            try {
-                Reference reference = JndiUtils.toReference(properties, type);
-                o = NamingManager.getObjectInstance(reference, null, null, environment);
-                o = o == reference ? null : o;
+        if (properties.containsKey("type")) {
+            if (properties.containsKey("javaxNamingSpiObjectFactory")) {
+                obj = JndiUtils.toReference(properties, type);
             }
-            catch (Exception e) {
-                LOGGER.error("processType() Exception caught: ", e);
-            }
-        }
-        if (o == null) {
-            ConverterIF converter = converterRegistry.getConverter(type);
-            if (converter != null) {
-                final Object values = properties.get("valueToConvert");
-                if (values instanceof List) {
-                    List<String> vals = (List<String>) values;
-                    final LinkedList converted = new LinkedList();
-                    for (String val : vals) {
-                        final Properties props = new Properties();
-                        props.setProperty("valueToConvert", val);
-                        converted.add(converter.convert(props, type));
+            else {
+                ConverterIF converter = converterRegistry.getConverter(type);
+                if (converter != null) {
+                    final Object values = properties.get("valueToConvert");
+                    if (values instanceof List) {
+                        List<String> vals = (List<String>) values;
+                        final LinkedList converted = new LinkedList();
+                        for (String val : vals) {
+                            final Properties props = new Properties();
+                            props.setProperty("valueToConvert", val);
+                            converted.add(converter.convert(props, type));
+                        }
+                        obj = converted;
                     }
-                    obj = converted;
+                    else {
+                        try {
+                            obj = converter.convert(properties, type);
+                        }
+                        catch (IllegalArgumentException e) {
+                            if (type.equals("javax.sql.DataSource")
+                                    && environment.containsKey(Context.OBJECT_FACTORIES)) {
+                                // Although type is javax.sql.DataSource it is not a SJDataSource configuration.
+                                obj = JndiUtils.toReference(properties, type);
+                            }
+                            else {
+                                LOGGER.error("", e);
+                            }
+                        }
+                    }
                 }
-                else {
-                    obj = converter.convert(properties, type);
+                else if (environment.containsKey(Context.OBJECT_FACTORIES)) {
+                    obj = JndiUtils.toReference(properties, type);
                 }
             }
-        }
-        else {
-            obj = o;
         }
         return obj;
     }

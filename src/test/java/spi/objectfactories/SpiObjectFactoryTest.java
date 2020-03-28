@@ -1,7 +1,10 @@
 package spi.objectfactories;
 
+import org.hamcrest.CoreMatchers;
 import org.junit.After;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.osjava.sj.MemoryContextFactory;
 import org.osjava.sj.SimpleContextFactory;
 import org.osjava.sj.loader.JndiLoader;
@@ -21,6 +24,8 @@ import static org.junit.Assert.*;
 public class SpiObjectFactoryTest {
 
     private static InitialContext ctx;
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
     @After
     public void tearDown() throws Exception {
@@ -150,5 +155,32 @@ public class SpiObjectFactoryTest {
         Object demoBean2 = ctx.lookup("org/osjava/sj/myBean2");
         assertNotNull(demoBean2);
         assertEquals(DemoBean2.class.getName(), demoBean2.getClass().getName());
+    }
+
+    @Test
+    public void deferedObjectCreation() throws NamingException
+    {
+        Hashtable env = new Hashtable();
+        env.put(Context.INITIAL_CONTEXT_FACTORY, MemoryContextFactory.class.getName());
+        env.put("org.osjava.sj.jndi.shared", "true");
+        env.put("org.osjava.sj.delimiter", ".");
+        env.put("jndi.syntax.separator", "/");
+        env.put("jndi.syntax.direction", "left_to_right");
+
+        Properties properties = new Properties();
+
+        properties.setProperty("org.osjava.sj.deferedObjectFactory.type", DeferedObjectFactory.class.getName());
+        // The new factory property
+        properties.setProperty("org.osjava.sj.deferedObjectFactory.javaxNamingSpiObjectFactory", DeferedObjectFactory.class.getName());
+
+        ctx = new InitialContext(env);
+        JndiLoader loader = new JndiLoader(env);
+        // object creation is defered, so no exception is thrown on loading.
+        loader.load(properties, ctx);
+
+        // object creation is defered until lookup.
+        thrown.expectCause(CoreMatchers.<Throwable>instanceOf(DeferedObjectFactoryException.class));
+        ctx.lookup("org/osjava/sj/deferedObjectFactory");
+
     }
 }

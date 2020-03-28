@@ -112,10 +112,12 @@ public class SimpleJndiNewTest {
             env.put("org.osjava.sj.delimiter", ".");
             env.put("org.osjava.sj.space", "java:comp/env");
 
-            thrown.expect(NamingException.class);
-            thrown.expectMessage("Unable to load");
-
             ctx1 = new InitialContext(env);
+
+            thrown.expect(NamingException.class);
+            thrown.expectMessage("java:comp/env/TestDS");
+
+            ctx1.lookup("java:comp/env/TestDS");
         }
         finally {
             if (ctx1 != null) {

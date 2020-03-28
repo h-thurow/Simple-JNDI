@@ -39,6 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.naming.*;
+import javax.naming.spi.NamingManager;
 import java.util.*;
 
 /**
@@ -149,7 +150,22 @@ public class MemoryContext implements Cloneable, Context  {
             }
             else { // Can be a subcontext or an object.
                 if (namesToObjects.containsKey(name)) {
-                    return namesToObjects.get(objName);
+                    Object o = namesToObjects.get(objName);
+                    if (o instanceof Reference) {
+                        Object instance;
+                        try {
+                            instance = NamingManager.getObjectInstance(o, null, null, getEnvironment());
+                        }
+                        catch (Exception e) {
+                            LOGGER.error("", e);
+                            NamingException namingException = new NamingException();
+                            namingException.setRootCause(e);
+                            throw namingException;
+                        }
+                        o = instance == o ? null : instance;
+                        namesToObjects.put(objName, o);
+                    }
+                    return o;
                 }
                 if (subContexts.containsKey(name)) {
                     return subContexts.get(name);
