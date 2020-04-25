@@ -49,6 +49,7 @@ import java.util.*;
 public class MemoryContext implements Cloneable, Context  {
 
     public static final String IGNORE_CLOSE = "org.osjava.sj.jndi.ignoreClose";
+    private Properties envAsProperties;
 
     private Map<Name, Object> namesToObjects = Collections.synchronizedMap(new HashMap<Name, Object>());
     private Map<Name, Context> subContexts = Collections.synchronizedMap(new HashMap<Name, Context>());
@@ -88,16 +89,19 @@ public class MemoryContext implements Cloneable, Context  {
     protected MemoryContext(Hashtable env, NameParser parser) {
         if(env != null) {
             this.env = (Hashtable)env.clone();
+            Properties props = new Properties();
+            props.putAll(env);
+            envAsProperties = props;
         }
 
         if(parser == null) {
             try {
                 nameParser = new SimpleNameParser(this);
             } catch (NamingException e) {
-                /* 
-                 * XXX: This should never really occur.  If it does, there is 
+                /*
+                 * XXX: This should never really occur.  If it does, there is
                  * a severe problem.  I also don't want to throw the exception
-                 * right now because that would break compatability, even 
+                 * right now because that would break compatability, even
                  * though it is probably the right thing to do.  This might
                  * get upgraded to a fixme.
                  */
@@ -140,6 +144,7 @@ public class MemoryContext implements Cloneable, Context  {
         }
         else {
             Name objName = name.getPrefix(1);
+            objName = JndiUtils.toCompoundName(objName, envAsProperties);
             if (name.size() > 1) { // A subcontext is lookuped.
                 if (subContexts.containsKey(objName)) {
                     return subContexts.get(objName).lookup(name.getSuffix(1));
@@ -149,6 +154,7 @@ public class MemoryContext implements Cloneable, Context  {
                 throw new NamingException();
             }
             else { // Can be a subcontext or an object.
+                name = JndiUtils.toCompoundName(name, envAsProperties);
                 if (namesToObjects.containsKey(name)) {
                     Object o = namesToObjects.get(objName);
                     if (o instanceof Reference) {

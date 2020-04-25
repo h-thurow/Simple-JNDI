@@ -309,10 +309,7 @@ public class JndiLoader {
      */
     @NotNull
     CompoundName toCompoundName(@NotNull String path) throws InvalidNameException {
-        Properties envCopy = new Properties(envAsProperties);
-        envCopy.setProperty("jndi.syntax.separator", envAsProperties.getProperty(DELIMITER));
-        envCopy.setProperty("jndi.syntax.direction", (String) envAsProperties.get("jndi.syntax.direction"));
-        return new CompoundName(path, envCopy);
+        return JndiUtils.toCompoundName(path, envAsProperties);
     }
 
     /**

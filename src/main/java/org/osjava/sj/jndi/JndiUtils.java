@@ -1,8 +1,9 @@
 package org.osjava.sj.jndi;
 
-import javax.naming.RefAddr;
-import javax.naming.Reference;
-import javax.naming.StringRefAddr;
+import org.jetbrains.annotations.NotNull;
+import org.osjava.sj.loader.JndiLoader;
+
+import javax.naming.*;
 import java.util.Enumeration;
 import java.util.Properties;
 
@@ -30,4 +31,26 @@ public class JndiUtils {
         }
         return ref;
     }
+
+    /**
+     * {@link CompositeName} to {@link CompoundName} conversion. See issue #14.
+     */
+    static Name toCompoundName(Name objName, final Properties env) throws InvalidNameException
+    {
+        if (objName instanceof CompositeName) {
+            return toCompoundName(objName.toString(), env);
+        }
+        return objName;
+    }
+
+    @NotNull
+    public static CompoundName toCompoundName(final String objName, final Properties env) throws InvalidNameException
+    {
+        Properties envCopy = new Properties(env);
+        envCopy.setProperty("jndi.syntax.separator", env.getProperty(JndiLoader.DELIMITER));
+        envCopy.setProperty("jndi.syntax.direction", (String) env.get("jndi.syntax.direction"));
+        return new CompoundName(objName, envCopy);
+    }
+
+
 }

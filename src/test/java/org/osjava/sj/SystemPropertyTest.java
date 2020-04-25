@@ -44,7 +44,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * By default allow system properties to override environment argument. See
- * {@link org.osjava.sj.jndi.AbstractContext#AbstractContext(Hashtable)}
+ * {@link org.osjava.sj.jndi.MemoryContext#MemoryContext(Hashtable)}
  */
 public class SystemPropertyTest {
 
