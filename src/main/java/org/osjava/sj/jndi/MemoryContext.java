@@ -118,7 +118,7 @@ public class MemoryContext implements Cloneable, Context  {
 
     @Override
     public String toString() {
-        return "AbstractContext{" +
+        return "MemoryContext{" +
                 "namesToObjects=" + namesToObjects +
                 ", subContexts=" + subContexts +
                 ", env=" + env +
@@ -144,7 +144,7 @@ public class MemoryContext implements Cloneable, Context  {
                 if (subContexts.containsKey(objName)) {
                     return subContexts.get(objName).lookup(name.getSuffix(1));
                 }
-                String msg = "AbstractContext#lookup(\"{}\"): Invalid subcontext '{}' in context '{}': {}";
+                String msg = "MemoryContext#lookup(\"{}\"): Invalid subcontext '{}' in context '{}': {}";
                 LOGGER.error(msg, name, objName, getNameInNamespace(), this);
                 throw new NamingException();
             }
@@ -170,7 +170,7 @@ public class MemoryContext implements Cloneable, Context  {
                 if (subContexts.containsKey(name)) {
                     return subContexts.get(name);
                 }
-                LOGGER.debug("AbstractContext#lookup() {} not found in {}", name, this);
+                LOGGER.debug("MemoryContext#lookup() {} not found in {}", name, this);
                 throw new NameNotFoundException(name.toString());
             }
         }
@@ -405,7 +405,7 @@ public class MemoryContext implements Cloneable, Context  {
         }
         else {
         /* Couldn't find the subcontext and it wasn't pointing at us, throw an exception. */
-            throw new NamingException("AbstractContext#listBindings(\"" + name + "\"): subcontext not found.");
+            throw new NamingException("MemoryContext#listBindings(\"" + name + "\"): subcontext not found.");
         }
     }
 
