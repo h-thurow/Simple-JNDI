@@ -84,7 +84,7 @@ String enabled = (String) ctx.lookup("application1.users.enabled");
 
 <h3>Create your contexts and context objects (programmatically)</h3>
 
-<p>See <a href=https://github.com/h-thurow/Simple-JNDI/wiki/Programmatically-create-your-contexts-and-context-objects-(no-resource-files-needed)>Programmatically create your contexts and context objects (no .properties, .xml or .ini files needed)</a></p>
+<p>When only some objects are needed, e. g. just a DataSource, it might be more convenient, to do it programmatically. See <a href=https://github.com/h-thurow/Simple-JNDI/wiki/Programmatically-create-your-contexts-and-context-objects-(no-resource-files-needed)>Programmatically create your contexts and context objects (no .properties, .xml or .ini files needed)</a></p>
 
 <h3>Lookup typed properties, not only Strings</h3>
 
