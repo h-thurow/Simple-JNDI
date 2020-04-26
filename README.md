@@ -54,7 +54,7 @@ org.osjava.sj.root = file1.cfg:directory1/file.properties:directory2
     <b>NEW in 0.18.2:</b> You can declare all these parameters as system properties and dispense with jndi.properties file. See <a href="https://github.com/h-thurow/Simple-JNDI/issues/16">Enhancement request: make org.osjava.sj.root not mandatory in jndi.properties</a>.
 </p>
 
-<h3>Create your contexts and context objects</h3>
+<h3>Create your contexts and context objects (file system based)</h3>
 
 <p>Simple-JNDI stores values in multiple .properties, .xml or .ini files. The files are located under a root directory as specified with the <code>org.osjava.sj.root</code> property. </p>
 <p>Directory names and file names become part of the lookup key. Each delimited tree-node becomes a JNDI Context, while the leaves are implementations. The only exceptions are pseudo sub-values, which you will see with DataSources.</p>
@@ -80,8 +80,11 @@ String enabled = (String) ctx.lookup("application1.users.enabled");
 </p><p>
     See also<br>
     <a href="https://github.com/h-thurow/Simple-JNDI/issues/17">System property substitution in resource files (New in 0.19.0)</a><br>
-    <a href=https://github.com/h-thurow/Simple-JNDI/wiki/Programmatically-create-your-contexts-and-context-objects-(no-resource-files-needed)>Programmatically create your contexts and context objects (no .properties, .xml or .ini files needed)</a>
 </p>
+
+<h3>Create your contexts and context objects (programmatically)</h3>
+
+<p>See <a href=https://github.com/h-thurow/Simple-JNDI/wiki/Programmatically-create-your-contexts-and-context-objects-(no-resource-files-needed)>Programmatically create your contexts and context objects (no .properties, .xml or .ini files needed)</a></p>
 
 <h3>Lookup typed properties, not only Strings</h3>
 
