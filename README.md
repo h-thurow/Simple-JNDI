@@ -4,7 +4,7 @@ Simple-JNDI is intended to solve two problems. The first is to test or use class
 
 If your only intention is to test or use classes that depend on Tomcat's JNDI environment outside of Tomcat or you are only in need of a JNDI based DataSource give [TomcatJNDI](https://github.com/h-thurow/TomcatJNDI) (not to be confused with Simple-JNDI) a try.
 
-Simple-JNDI's JNDI implementation is entirely memory based. No server instance is started. A java.util.Properties object, the structure of a root directory or a list of .property files serves as a model for the contexts structure. The contexts get populated with objects defined programmatically or declarative in .properties, .xml or .ini files.
+Simple-JNDI's JNDI implementation is entirely memory based. No server instance is started. A java.util.Properties object, the structure of a root directory or a list of .property files serves as a model for the contexts structure. The contexts get populated with objects defined programmatically or declared in .properties, .xml or .ini files.
 
 <h3>Download</h3>
 
