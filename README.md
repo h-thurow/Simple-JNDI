@@ -31,7 +31,7 @@ java.naming.factory.initial = org.osjava.sj.SimpleContextFactory
 </pre>
 <p>This property, <code>java.naming.factory.initial</code>, is a part of the JNDI specification. </p>
 <p>
-    The second required parameter, <code>org.osjava.sj.root</code>, is the location of your simple-jndi root, which is the location in which simple-jndi looks for values when code asks for them. The following code block details a few examples with explanatory comments.
+    The second required parameter, when not creating the context objects programmatically, is <code>org.osjava.sj.root</code>, where you store the files, that define the context objects you want Simple-JNDI to create. The following code block details a few examples with explanatory comments.
 </p>
 <pre>
 # absolute directory
