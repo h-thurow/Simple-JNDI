@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.h-thurow</groupId>
 	<artifactId>simple-jndi</artifactId>
-	<version>0.23.0</version>
+	<version>0.24.0</version>
 	<name>${project.groupId}:${project.artifactId}</name>
 	<description>
         An in-memory implementation of JNDI, so no server instances are started.
@@ -110,7 +110,7 @@
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
-			<version>1.4.7</version>
+			<version>1.4.12</version>
 			<scope>test</scope>
 			<exclusions>
 				<exclusion>
@@ -274,7 +274,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-gpg-plugin</artifactId>
-				<version>1.6</version>
+				<version>3.1.0</version>
 				<executions>
 					<execution>
 						<id>sign-artifacts</id>
