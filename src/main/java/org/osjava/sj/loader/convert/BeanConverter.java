@@ -32,8 +32,8 @@
 
 package org.osjava.sj.loader.convert;
 
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.osjava.StringsToTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

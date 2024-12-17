@@ -227,7 +227,7 @@ postVisitDirectory: /
         // file:/Users/hot/.m2/repository/commons-lang/commons-lang/2.6/commons-lang-2.6.jar!/org/apache/commons/lang/StringUtils.class
 //        System.out.println(path);
 
-        Class<?> clazz = Class.forName("org.apache.commons.lang.StringUtils");
+        Class<?> clazz = Class.forName("org.apache.commons.lang3.StringUtils");
         URL pathToJar = clazz.getProtectionDomain().getCodeSource().getLocation();
         // file:/Users/hot/.m2/repository/commons-lang/commons-lang/2.6/commons-lang-2.6.jar
         System.out.println(pathToJar);
