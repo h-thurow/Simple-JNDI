@@ -39,8 +39,8 @@ public class OSGiSuite {
 
     @Configuration
     public Option[] configuration() throws IOException {
-        return new Option[] { CoreOptions.junitBundles(), CoreOptions.mavenBundle().groupId("commons-io").artifactId("commons-io").version("2.5"),
-                CoreOptions.mavenBundle().groupId("commons-lang").artifactId("commons-lang").version("2.6"), CoreOptions.url("file:target/classes/"), };
+        return new Option[] { CoreOptions.junitBundles(), CoreOptions.mavenBundle().groupId("commons-io").artifactId("commons-io").version("2.7"),
+                CoreOptions.mavenBundle().groupId("org.apache.commons").artifactId("commons-lang3").version("3.17.0"), CoreOptions.url("file:target/classes/"), };
     }
 
     @Test
