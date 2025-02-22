@@ -17,6 +17,7 @@
 	<url>https://github.com/h-thurow/Simple-JNDI</url>
 	<licenses>
 		<license>
+			<name>BSD 3-Clause License</name>	
 			<url>
                 https://raw.githubusercontent.com/h-thurow/Simple-JNDI/master/LICENSE.txt
             </url>
