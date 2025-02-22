@@ -40,7 +40,7 @@
 
 package org.osjava.sj;
 
-import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.osjava.sj.jndi.MemoryContext;
 
 import javax.naming.Context;
