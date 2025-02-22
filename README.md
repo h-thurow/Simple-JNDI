@@ -20,7 +20,7 @@ Simple-JNDI's JNDI implementation is entirely memory based. No server instance i
     &lt;version>0.25.0&lt;/version>
 &lt;/dependency>
 </pre>
-or <a href=http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.github.h-thurow%22%20AND%20a%3A%22simple-jndi%22>download from here</a>.
+or <a href=https://central.sonatype.com/artifact/com.github.h-thurow/simple-jndi>download from here</a>.
 <h3>Installing Simple-JNDI</h3>
 
 After download, installing Simple-JNDI is as simple as adding the simple-jndi jar to your classpath. Some of the features 
