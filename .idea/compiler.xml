@@ -9,8 +9,5 @@
         <module name="simple-jndi" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="simple-jndi" target="1.7" />
-    </bytecodeTargetLevel>
   </component>
 </project>
